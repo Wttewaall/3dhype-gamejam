@@ -123,17 +123,7 @@ public class AntiPiracy : MonoBehaviour
     /// <returns>True if the current host is permitted to host the game.</returns>
     public bool IsValidHost()
     {
-        if (IsValidLocalHost() == true)
-        {
-            return true;
-        }
-
-        if (IsValidRemoteHost() == true)
-        {
-            return true;
-        }
-
-        return false;
+		return (IsValidLocalHost() || IsValidRemoteHost());
     }
 
     /// <summary>
