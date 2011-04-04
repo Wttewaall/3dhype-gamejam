@@ -4,6 +4,7 @@ using System.Collections;
 public class Cannon : MonoBehaviour {
 	
 	public GameObject ballPrefab;
+	public AudioClip audio_fire;
 	
 	protected GameObjectPool balls;
 	protected Transform spawnPoint;
@@ -46,6 +47,8 @@ public class Cannon : MonoBehaviour {
 		// add a bit of rotation
 		System.Random random = new System.Random();
 		ball.rigidbody.angularVelocity = new Vector3(random.Next(-1, 1), random.Next(-1, 1), random.Next(-1, 1));
+		
+		audio.PlayOneShot(audio_fire);
 	}
 	
 	// ---- protected methods ----

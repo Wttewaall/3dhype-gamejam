@@ -63,6 +63,9 @@
      <Compile Include="Assets\Scripts\utils\AntiPiracy.cs" />
      <Compile Include="Assets\Scripts\utils\ShowFPS.cs" />
      <None Include="Assets\Shaders\3DTextShader.shader" />
+     <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Light.shader" />
+     <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Multiply.shader" />
+     <None Include="Assets\Standard Assets\Projectors\Guidelines.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
