@@ -52,7 +52,11 @@
   <ItemGroup>
      <Compile Include="Assets\Plugins\iTween.cs" />
      <Compile Include="Assets\Scripts\behaviors\Cannon.cs" />
+     <Compile Include="Assets\Scripts\GUI\MouseTest.cs" />
+     <None Include="Assets\Scripts\managers\CursorManager.js" />
+     <Compile Include="Assets\Scripts\managers\DragManager.cs" />
      <Compile Include="Assets\Scripts\managers\GameObjectPool.cs" />
+     <Compile Include="Assets\Scripts\managers\MouseManager.cs" />
      <Compile Include="Assets\Scripts\managers\ShuffleBag.cs" />
      <Compile Include="Assets\Scripts\model\GameModel.cs" />
      <Compile Include="Assets\Scripts\model\GUIModel.cs" />

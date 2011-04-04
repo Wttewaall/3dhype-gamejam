@@ -1,8 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\behaviors\Cannon.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\managers\DragManager.cs">
     <Files>
-      <File FileName="Assets\Scripts\behaviors\Cannon.cs" Line="18" Column="26" />
+      <File FileName="Assets\Scripts\managers\DragManager.cs" Line="22" Column="39" />
+      <File FileName="Assets\Scripts\managers\MouseManager.cs" Line="32" Column="43" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
