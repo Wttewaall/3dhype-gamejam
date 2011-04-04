@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+
+Project("{6D0E7F23-FE2B-060F-DF6B-2B84FBF7973D}") = "Mediamonkey", "Mediamonkey.csproj", "{D33ECD12-7E39-F3DF-D36D-10E79048FB49}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D33ECD12-7E39-F3DF-D36D-10E79048FB49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D33ECD12-7E39-F3DF-D36D-10E79048FB49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D33ECD12-7E39-F3DF-D36D-10E79048FB49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D33ECD12-7E39-F3DF-D36D-10E79048FB49}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	
+EndGlobal
