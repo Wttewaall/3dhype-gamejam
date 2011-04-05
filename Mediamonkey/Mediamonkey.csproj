@@ -51,9 +51,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Plugins\iTween.cs" />
+     <Compile Include="Assets\Scripts\behaviors\AutoDestruct.cs" />
      <Compile Include="Assets\Scripts\behaviors\Cannon.cs" />
+     <Compile Include="Assets\Scripts\behaviors\Hover.cs" />
      <Compile Include="Assets\Scripts\GUI\MouseTest.cs" />
-     <None Include="Assets\Scripts\managers\CursorManager.js" />
      <Compile Include="Assets\Scripts\managers\DragManager.cs" />
      <Compile Include="Assets\Scripts\managers\GameObjectPool.cs" />
      <Compile Include="Assets\Scripts\managers\MouseManager.cs" />
@@ -63,9 +64,19 @@
      <Compile Include="Assets\Scripts\utils\AntiPiracy.cs" />
      <Compile Include="Assets\Scripts\utils\ShowFPS.cs" />
      <None Include="Assets\Shaders\3DTextShader.shader" />
-     <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Light.shader" />
-     <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Multiply.shader" />
+     <None Include="Assets\Shaders\Projector Additive.shader" />
+     <None Include="Assets\Shaders\Projector Light.shader" />
+     <None Include="Assets\Shaders\Projector Multiply Offset.shader" />
+     <None Include="Assets\Shaders\Projector Multiply.shader" />
+     <None Include="Assets\Shaders\test1.shader" />
      <None Include="Assets\Standard Assets\Projectors\Guidelines.txt" />
+     <None Include="Assets\StrumpyShaderEditor\Editor\Resources\Internal\Temp\TempShader.shader" />
+     <None Include="Assets\StrumpyShaderEditor\Editor\Resources\Internal\TextureCopy.shader" />
+     <Compile Include="Assets\StrumpyShaderEditor\Editor\Scripts\NodeEditorWindow.cs" />
+     <Compile Include="Assets\StrumpyShaderEditor\Editor\Scripts\StrumpyPreviewWindow.cs" />
+ <Reference Include="StrumpyShaderEditor">
+ <HintPath>Assets\StrumpyShaderEditor\Editor\StrumpyShaderEditor.dll</HintPath>
+ </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,150 @@
+fileFormatVersion: 1
+guid: 51571c562ee92054a8ec0974d6f5b9b4
+ModelImporter:
+  importerVersion: 7
+  meshes:
+    scaleFactor: 0.01
+    useFileUnits: 1
+    meshCompression: 0
+    generateColliders: 1
+    swapUVs: 0
+  tangentSpace:
+    normalImportMode: 0
+    tangentImportMode: 1
+    smoothingAngle: 60
+    splitTangents: 1
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    Mesh12:
+    - 100000
+    - 400000
+    - 3300000
+    - 2300000
+    - 6400004
+    Mesh14:
+    - 100002
+    - 400002
+    - 3300002
+    - 2300002
+    - 6400010
+    Mesh13:
+    - 100004
+    - 400004
+    - 3300004
+    - 2300004
+    - 6400006
+    Object5_1:
+    - 100006
+    - 400006
+    Mesh11:
+    - 100008
+    - 400008
+    - 3300006
+    - 2300006
+    - 6400000
+    Object4_1:
+    - 100010
+    - 400010
+    Mesh10:
+    - 100012
+    - 400012
+    - 3300008
+    - 2300008
+    - 6400002
+    Mesh9:
+    - 100014
+    - 400014
+    - 3300010
+    - 2300010
+    - 6400026
+    Mesh8:
+    - 100016
+    - 400016
+    - 3300012
+    - 2300012
+    - 6400022
+    Object3_1:
+    - 100018
+    - 400018
+    Mesh7:
+    - 100020
+    - 400020
+    - 3300014
+    - 2300014
+    - 6400018
+    Mesh6:
+    - 100022
+    - 400022
+    - 3300016
+    - 2300016
+    - 6400008
+    Mesh5:
+    - 100024
+    - 400024
+    - 3300018
+    - 2300018
+    - 6400024
+    Mesh4:
+    - 100026
+    - 400026
+    - 3300020
+    - 2300020
+    - 6400012
+    Object2_1:
+    - 100028
+    - 400028
+    Mesh3:
+    - 100030
+    - 400030
+    - 3300022
+    - 2300022
+    - 6400016
+    Mesh2:
+    - 100032
+    - 400032
+    - 3300024
+    - 2300024
+    - 6400020
+    Object1_1:
+    - 100034
+    - 400034
+    Mesh1:
+    - 100036
+    - 400036
+    - 3300026
+    - 2300026
+    - 6400014
+    Object1:
+    - 100038
+    - 400038
+    Mucca1:
+    - 100040
+    - 400040
+    //RootNode:
+    - 100042
+    - 400042
+    - 11100000
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: Mesh1
+    4300002: Mesh2
+    4300004: Mesh3
+    4300006: Mesh4
+    4300008: Mesh5
+    4300010: Mesh6
+    4300012: Mesh7
+    4300014: Mesh8
+    4300016: Mesh9
+    4300018: Mesh10
+    4300020: Mesh11
+    4300022: Mesh12
+    4300024: Mesh13
+    4300026: Mesh14

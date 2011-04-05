@@ -1,6 +1,16 @@
 using UnityEngine;
 using System.Collections;
 
+public struct MouseButton {
+	
+	public const int LEFT		= 0;
+	public const int RIGHT		= 1;
+	public const int MIDDLE		= 2;
+	public const int BACK		= 3;
+	public const int FORWARD	= 4;
+	
+}
+
 public class MouseManager : MonoBehaviour {
 	
 	// ---- singleton & static methods ----
@@ -12,17 +22,6 @@ public class MouseManager : MonoBehaviour {
 			if (!_instance) throw new UnityException("this behavior should be added at least once to a live object");
 			return _instance;
 		}
-	}
-	
-	public static string buttonName(int buttonID) {
-		switch (buttonID) {
-			case 0: return "left";
-			case 1: return "right";
-			case 2: return "middle";
-			case 3: return "back";
-			case 4: return "forward";
-		}
-		return "unknown";
 	}
 	
 	// ---- EventHandler & events ----

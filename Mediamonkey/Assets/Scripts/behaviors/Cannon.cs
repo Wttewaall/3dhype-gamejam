@@ -4,9 +4,10 @@ using System.Collections;
 public class Cannon : MonoBehaviour {
 	
 	public GameObject ballPrefab;
+	public Projector target;
 	public AudioClip audio_fire;
 	
-	protected GameObjectPool balls;
+	protected GameObjectPool ammoPool;
 	protected Transform spawnPoint;
 	protected ShuffleBag<Color> bag;
 	
@@ -14,13 +15,16 @@ public class Cannon : MonoBehaviour {
 	
 	void Awake() {
 		// create cannonball pool
-		balls = new GameObjectPool(ballPrefab, 5, initBallAction, false);
+		ammoPool = new GameObjectPool(ballPrefab, 5, initBallAction, false);
 		
 		// shufflebag of colors: chance of 1/2 red, 1/3 green, 1/6 blue
 		bag = new ShuffleBag<Color>();
-		bag.Add(new Color(1, 0, 0), 3);
-		bag.Add(new Color(0, 1, 0), 2);
-		bag.Add(new Color(0, 0, 1), 1);
+		bag.Add(Color.red, 3);
+		bag.Add(Color.green, 2);
+		bag.Add(Color.blue, 1);
+		
+		// listen for mouse click
+		MouseManager.mouseClick += mouseClickHandler;
 	}
 	
 	void Start () {
@@ -28,18 +32,20 @@ public class Cannon : MonoBehaviour {
 		spawnPoint = transform.Find("spawnPoint");
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		if (Input.GetMouseButtonDown(0)) {
-			fire();
-		}
+	void OnGUI() {
+		GUILayout.Label("-- Ammo Pool --");
+		GUILayout.Label("    active: "+ammoPool.numActive);
+		GUILayout.Label("available: "+ammoPool.numAvailable);
 	}
 	
 	// ---- public methods ----
 	
 	public void fire() {
 		// spawn ball from pool
-		GameObject ball = balls.spawn(spawnPoint.position, spawnPoint.rotation);
+		GameObject ball = ammoPool.spawn(spawnPoint.position, spawnPoint.rotation);
+		
+		// set color: chance of 1/2 red, 1/3 green, 1/6 blue
+		ball.renderer.material.SetColor("_Color", bag.Next());
 		
 		// add initial velocity
 		ball.rigidbody.velocity = transform.up * 10;
@@ -59,7 +65,14 @@ public class Cannon : MonoBehaviour {
 		// parent to the cannon, or some other Transform as a test
 		target.transform.parent = transform;
 		
-		// set color: chance of 1/2 red, 1/3 green, 1/6 blue
-		target.renderer.material.SetColor("_Color", bag.Next());
+		// set pool so the ball can return to it on destuction
+		AutoDestruct ad = target.GetComponent<AutoDestruct>();
+		if (ad) ad.pool = ammoPool;
+	}
+	
+	// ---- event handlers ----
+	
+	protected void mouseClickHandler(int buttonID) {
+		if (buttonID == MouseButton.LEFT) fire();
 	}
 }

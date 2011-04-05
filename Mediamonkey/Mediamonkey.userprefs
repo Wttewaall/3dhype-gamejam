@@ -1,10 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\behaviors\Cannon.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\behaviors\Hover.cs">
     <Files>
-      <File FileName="Assets\Scripts\behaviors\Cannon.cs" Line="51" Column="3" />
-      <File FileName="Assets\Scripts\managers\DragManager.cs" Line="22" Column="39" />
-      <File FileName="Assets\Scripts\managers\MouseManager.cs" Line="32" Column="43" />
+      <File FileName="Assets\Scripts\behaviors\Hover.cs" Line="20" Column="20" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
