@@ -11,9 +11,9 @@ public static class DragManager {
 	
 	// drag properties
 	private static bool				_dragging;
-	private static GameObject		dragInitiator;
-	private static GameObject		dragSource;
-	private static Bounds			dragSourceBounds;
+	//private static GameObject		dragInitiator;
+	//private static GameObject		dragSource;
+	//private static Bounds			dragSourceBounds;
 	
 	// temporary properties
 	private static Ray				ray;
@@ -42,10 +42,10 @@ public static class DragManager {
 	public static void doDrag(GameObject dragInitiator, GameObject dragSource, Event mouseEvent, Texture2D dragImage, Vector2 offset, float imageAlpha, bool allowMove) {
 		_dragging = true;
 		
-		DragManager.dragInitiator = dragInitiator;
-		DragManager.dragSource = dragSource;
+		//DragManager.dragInitiator = dragInitiator;
+		//DragManager.dragSource = dragSource;
 		
-		dragSourceBounds = dragSource.collider.bounds;
+		//dragSourceBounds = dragSource.collider.bounds;
 		
 		// use to mouse events to drag and drop the dragSource
 		MouseManager.mouseDragMove += mouseMoveHandler;

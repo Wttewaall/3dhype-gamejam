@@ -1,16 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-public struct MouseButton {
-	
-	public const int LEFT		= 0;
-	public const int RIGHT		= 1;
-	public const int MIDDLE		= 2;
-	public const int BACK		= 3;
-	public const int FORWARD	= 4;
-	
-}
-
 public class MouseManager : MonoBehaviour {
 	
 	// ---- singleton & static methods ----
@@ -145,5 +135,15 @@ public class MouseState {
 		isDown = false;
 		downTime = 0.0f;
 	}
+	
+}
+
+public struct MouseButton {
+	
+	public const int LEFT		= 0;
+	public const int RIGHT		= 1;
+	public const int MIDDLE		= 2;
+	public const int BACK		= 3;
+	public const int FORWARD	= 4;
 	
 }
