@@ -1,41 +1,114 @@
-/*-----------------------------------------------------------------------------
- * Scoring.cs - Keeps track of the player's score and levels up as required.
- * Copyright (C) 2010 Justin Lloyd
- * http://www.otakunozoku.com/
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU lesser General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
- *
------------------------------------------------------------------------------*/
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
-using System;
-
-public class Achievements {
+public class Achievements : MonoBehaviour {
     
-    public static Achievement[] achievements;
+	public Texture2D background;
 	
-	public static Achievement[] getByTag(int tag) {
-		return achievements;
+    public List<Achievement> list = new List<Achievement>();
+	
+	// ---- inherited handlers ----
+	
+	void Start() {
+		
+		// add achievements to list
+		list.Add(new Achievement01());
+		list.Add(new Achievement02());
+		
+		// add event listener
+		Statistics.propertyChange += statisticsChangeHandler;
 	}
 	
-	public static void add(Achievement a) {
-		achievements[0] = a;
+	// ---- protected methods ----
+	
+	protected List<Achievement> getByTag(int tag) {
+		List<Achievement> result = new List<Achievement>();
+		
+		foreach (Achievement a in list) {
+			if (a.tags.Contains(tag)) result.Add(a);
+		}
+		
+		return result;
+	}
+	
+	// ---- event handlers ----
+	
+	protected void statisticsChangeHandler(int flag) {
+		List<Achievement> result = new List<Achievement>();
+		
+		bool change = false;
+		
+		foreach (Achievement a in list) {
+			
+			if (a.unlocked == false && a.tagInFlag(flag)) {
+				a.unlocked = a.validate();
+				if (a.unlocked) result.Add(a);
+				
+				change = change || a.unlocked;
+			}
+		}
+		
+		if (change) {
+			Debug.Log("achievements unlocked: "+result.Count);
+			foreach (Achievement a in result) Debug.Log(a.name);
+		}
 	}
 	
 }
 
-public struct Achievement {
+// ---- base Achievement class ----
+
+public class Achievement {
 	
-	public Action condition;
+	public string name;
+	public string description;
+	public Texture2D texture;
+	public List<int> tags = new List<int>();
+	public bool unlocked;
+	
+	public Achievement() {}
+	
+	public virtual bool validate() {
+		return false;
+	}
+	
+	public bool tagInFlag(int flag) {
+		for (int i=0; i<tags.Count; i++) {
+			int result = flag & tags[i];
+			if (result > 0) return true;
+		}
+		return false;
+	}
+	
+}
+
+// ---- Custom Achievements ----
+
+public class Achievement01 : Achievement {
+	
+	public Achievement01() {
+		name = "Ammo galore";
+		description = "Fire 10 bullets";
+		tags.Add(StatisticTag.BULLET_FIRED);
+	}
+	
+	override public bool validate() {
+		return (Statistics.bulletsFired >= 10);
+	}
+	
+}
+
+public class Achievement02 : Achievement {
+	
+	public Achievement02() {
+		name = "Punisher";
+		description = "Hit 20 targets";
+		tags.Add(StatisticTag.TARGET_HIT);
+	}
+	
+	override public bool validate() {
+		return (Statistics.targetsHit >= 20);
+	}
 	
 }

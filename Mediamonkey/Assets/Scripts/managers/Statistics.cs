@@ -1,8 +1,10 @@
+using UnityEngine;
 using System;
 using System.Collections;
 
 public class Statistics {
     
+	// use int: 32 bits means 32 possible flags (use long for 64 bits)
 	protected static int changeFlag;
 	
 	// ---- events ----
@@ -31,12 +33,15 @@ public class Statistics {
 	// ---- public methods ----
 	
 	// fill Statistics with encoded data from the server
-	public static void setStatistics(string encodedString) {
-		//..
+	public static void setData(string encodedString) {
+		// decode data
+		// set properties
+		// set achievements by firing a change event with flags
+		update(0);
 	}
 	
 	// return encoded statistics to send to the server
-	public static string getStatistics() {
+	public static string getData() {
 		//..
 		return "";
 	}
@@ -46,11 +51,8 @@ public class Statistics {
 	private static int _bulletsFired;
 	
     public static int bulletsFired {
-    	get {
-			return _bulletsFired;
-		}
-    	set {
-			_bulletsFired = value;
+    	get { return _bulletsFired; }
+    	set { _bulletsFired = value;
 			update(StatisticTag.BULLET_FIRED);
 		}
     }
@@ -58,21 +60,20 @@ public class Statistics {
 	private static int _targetsHit;
 	
     public static int targetsHit {
-    	get {
-			return _targetsHit;
-		}
-    	set {
-			_targetsHit = value;
+    	get { return _targetsHit; }
+    	set { _targetsHit = value;
 			update(StatisticTag.TARGET_HIT);
 		}
     }
+	
+	// more...
 	
 }
 
 public struct StatisticTag {
 	
-	public const byte BULLET_FIRED		= 1 << 0;
-	public const byte TARGET_HIT		= 1 << 1;
+	public const int BULLET_FIRED		= 1 << 0;
+	public const int TARGET_HIT			= 1 << 1;
 	// more...
 	
 }

@@ -56,6 +56,7 @@ public class Cannon : MonoBehaviour {
 		ball.rigidbody.angularVelocity = new Vector3(random.Next(-1, 1), random.Next(-1, 1), random.Next(-1, 1));
 		
 		audio.PlayOneShot(audio_fire);
+		Statistics.bulletsFired++;
 	}
 	
 	// ---- protected methods ----

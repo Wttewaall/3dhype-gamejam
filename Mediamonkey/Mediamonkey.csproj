@@ -56,6 +56,7 @@
      <Compile Include="Assets\Scripts\behaviors\Hover.cs" />
      <Compile Include="Assets\Scripts\GUI\MouseTest.cs" />
      <Compile Include="Assets\Scripts\managers\Achievements.cs" />
+     <None Include="Assets\Scripts\managers\CursorManager.js" />
      <Compile Include="Assets\Scripts\managers\DragManager.cs" />
      <Compile Include="Assets\Scripts\managers\GameObjectPool.cs" />
      <Compile Include="Assets\Scripts\managers\MouseManager.cs" />

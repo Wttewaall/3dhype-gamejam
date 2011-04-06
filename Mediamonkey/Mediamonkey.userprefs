@@ -1,11 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\managers\Statistics.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\managers\Achievements.cs">
     <Files>
-      <File FileName="Assets\Scripts\managers\Statistics.cs" Line="75" Column="31" />
-      <File FileName="Assets\Scripts\managers\Achievements.cs" Line="25" Column="46" />
-      <File FileName="Assets\Scripts\managers\MouseManager.cs" Line="19" Column="50" />
-      <File FileName="Assets\Scripts\managers\GameObjectPool.cs" Line="11" Column="40" />
+      <File FileName="Assets\Scripts\managers\Statistics.cs" Line="60" Column="32" />
+      <File FileName="Assets\Scripts\managers\Achievements.cs" Line="7" Column="30" />
+      <File FileName="Assets\Scripts\behaviors\Cannon.cs" Line="59" Column="14" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
