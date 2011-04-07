@@ -52,9 +52,10 @@ public class ShowFPS : MonoBehaviour {
 	protected void createLabel() {
 		if (!label) {
 			GameObject go = new GameObject("ShowFPS");
-			go.AddComponent("GUIText");
 			go.hideFlags = HideFlags.HideAndDontSave;
 			go.transform.position = new Vector3(0,0,0);
+			
+			go.AddComponent<GUIText>();
 			label = go.guiText;
 			label.pixelOffset = this.pixelOffset;
 		}

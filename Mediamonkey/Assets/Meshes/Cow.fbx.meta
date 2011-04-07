@@ -3,7 +3,7 @@ guid: 51571c562ee92054a8ec0974d6f5b9b4
 ModelImporter:
   importerVersion: 7
   meshes:
-    scaleFactor: 0.01
+    scaleFactor: 0.026
     useFileUnits: 1
     meshCompression: 0
     generateColliders: 1
@@ -14,9 +14,9 @@ ModelImporter:
     smoothingAngle: 60
     splitTangents: 1
   materials:
-    generation: 1
+    generation: 2
   animations:
-    generation: 3
+    generation: 0
     bakeAnimations: 0
     animationCompression: 1
     animationWrapMode: 0
@@ -27,19 +27,19 @@ ModelImporter:
     - 400000
     - 3300000
     - 2300000
-    - 6400004
+    - 6400002
     Mesh14:
     - 100002
     - 400002
     - 3300002
     - 2300002
-    - 6400010
+    - 6400026
     Mesh13:
     - 100004
     - 400004
     - 3300004
     - 2300004
-    - 6400006
+    - 6400000
     Object5_1:
     - 100006
     - 400006
@@ -48,7 +48,7 @@ ModelImporter:
     - 400008
     - 3300006
     - 2300006
-    - 6400000
+    - 6400004
     Object4_1:
     - 100010
     - 400010
@@ -57,19 +57,19 @@ ModelImporter:
     - 400012
     - 3300008
     - 2300008
-    - 6400002
+    - 6400020
     Mesh9:
     - 100014
     - 400014
     - 3300010
     - 2300010
-    - 6400026
+    - 6400008
     Mesh8:
     - 100016
     - 400016
     - 3300012
     - 2300012
-    - 6400022
+    - 6400010
     Object3_1:
     - 100018
     - 400018
@@ -78,25 +78,25 @@ ModelImporter:
     - 400020
     - 3300014
     - 2300014
-    - 6400018
+    - 6400014
     Mesh6:
     - 100022
     - 400022
     - 3300016
     - 2300016
-    - 6400008
+    - 6400012
     Mesh5:
     - 100024
     - 400024
     - 3300018
     - 2300018
-    - 6400024
+    - 6400016
     Mesh4:
     - 100026
     - 400026
     - 3300020
     - 2300020
-    - 6400012
+    - 6400018
     Object2_1:
     - 100028
     - 400028
@@ -105,13 +105,13 @@ ModelImporter:
     - 400030
     - 3300022
     - 2300022
-    - 6400016
+    - 6400006
     Mesh2:
     - 100032
     - 400032
     - 3300024
     - 2300024
-    - 6400020
+    - 6400022
     Object1_1:
     - 100034
     - 400034
@@ -120,7 +120,7 @@ ModelImporter:
     - 400036
     - 3300026
     - 2300026
-    - 6400014
+    - 6400024
     Object1:
     - 100038
     - 400038
@@ -130,7 +130,6 @@ ModelImporter:
     //RootNode:
     - 100042
     - 400042
-    - 11100000
 AssetImporter:
   importerVersion: 1
   fileIDToRecycleName:

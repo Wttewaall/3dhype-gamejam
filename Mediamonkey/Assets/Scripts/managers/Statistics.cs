@@ -2,9 +2,18 @@ using UnityEngine;
 using System;
 using System.Collections;
 
+/**
+ * This class dispatches a change event, carrying a bit flag composed of StatisticsTag bits
+ * 
+ * This can be used as a crude binding system:
+ * A class can listen to the change event and when a certain bit is set
+ * within the flag the corresponding property can be retrieved.
+ **/
+
 public class Statistics {
     
 	// use int: 32 bits means 32 possible flags (use long for 64 bits)
+	// if this is insufficient, use multiple flags! or specify different flags per property type
 	protected static int changeFlag;
 	
 	// ---- events ----
@@ -22,7 +31,7 @@ public class Statistics {
 		// collect tags
 		changeFlag |= tag;
 		
-		// notify every <time> ms?
+		// TODO: notify every <time> ms?
 		if (true) {
 			
 			if (propertyChange != null) propertyChange(changeFlag);

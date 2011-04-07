@@ -43,16 +43,63 @@ public class Achievements : MonoBehaviour {
 			
 			if (a.unlocked == false && a.tagInFlag(flag)) {
 				a.unlocked = a.validate();
-				if (a.unlocked) result.Add(a);
 				
 				change = change || a.unlocked;
+				if (change) result.Add(a);
 			}
 		}
 		
 		if (change) {
 			Debug.Log("achievements unlocked: "+result.Count);
 			foreach (Achievement a in result) Debug.Log(a.name);
+			show(result[0]);
 		}
+	}
+	
+	// ---- public methods ----
+	
+	protected GameObject go;
+	
+	public void show(Achievement a) {
+		createGO();
+		
+		go.guiText.text = a.name;
+		
+		// from position
+		float x = (Screen.width-background.width)/2;
+		float y = -background.height;
+		Vector3 v1 = Camera.main.ScreenToViewportPoint(new Vector3(x, y, 0));
+		
+		// to position
+		y = background.height + 50;
+		Vector3 v2 = Camera.main.ScreenToViewportPoint(new Vector3(x, y, 0));
+		
+		go.transform.position = v2;
+		//go.transform.position = v1;
+		//iTween.MoveTo(go, iTween.Hash("position", v2, "time", 4, "delay", 1));
+	}
+	
+	public void hide() {
+		if (go) DestroyImmediate(go);
+	}
+	
+	protected void createGO() {
+		if (!go) {
+			go = new GameObject("AchievementGO");
+			go.hideFlags = HideFlags.HideAndDontSave;
+			go.transform.position = Vector3.zero;
+			
+			GUITexture bg = go.AddComponent<GUITexture>();
+			bg.texture = background;
+			bg.pixelInset = new Rect(-bg.texture.width/2, -bg.texture.height/2, bg.texture.width, bg.texture.height);
+			
+			GUIText text = go.AddComponent<GUIText>();
+			text.pixelOffset = new Vector2(-50, 10);
+		}
+	}
+	
+	public void OnDisable () {
+		if (go) DestroyImmediate(go);
 	}
 	
 }

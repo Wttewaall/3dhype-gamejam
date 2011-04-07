@@ -54,9 +54,8 @@
      <Compile Include="Assets\Scripts\behaviors\AutoDestruct.cs" />
      <Compile Include="Assets\Scripts\behaviors\Cannon.cs" />
      <Compile Include="Assets\Scripts\behaviors\Hover.cs" />
-     <Compile Include="Assets\Scripts\GUI\MouseTest.cs" />
+     <Compile Include="Assets\Scripts\behaviors\MoveOverPath.cs" />
      <Compile Include="Assets\Scripts\managers\Achievements.cs" />
-     <None Include="Assets\Scripts\managers\CursorManager.js" />
      <Compile Include="Assets\Scripts\managers\DragManager.cs" />
      <Compile Include="Assets\Scripts\managers\GameObjectPool.cs" />
      <Compile Include="Assets\Scripts\managers\MouseManager.cs" />
@@ -65,6 +64,7 @@
      <Compile Include="Assets\Scripts\managers\Statistics.cs" />
      <Compile Include="Assets\Scripts\model\GameModel.cs" />
      <Compile Include="Assets\Scripts\model\GUIModel.cs" />
+     <Compile Include="Assets\Scripts\tests\MouseTest.cs" />
      <Compile Include="Assets\Scripts\utils\AntiPiracy.cs" />
      <Compile Include="Assets\Scripts\utils\ShowFPS.cs" />
      <None Include="Assets\Shaders\3DTextShader.shader" />
@@ -78,6 +78,12 @@
      <None Include="Assets\StrumpyShaderEditor\Editor\Resources\Internal\TextureCopy.shader" />
      <Compile Include="Assets\StrumpyShaderEditor\Editor\Scripts\NodeEditorWindow.cs" />
      <Compile Include="Assets\StrumpyShaderEditor\Editor\Scripts\StrumpyPreviewWindow.cs" />
+     <Compile Include="Assets\ThirdParty\Pixelplacement\Editor\iTweenPathEditor.cs" />
+     <Compile Include="Assets\ThirdParty\Pixelplacement\iTweenPath.cs" />
+     <Compile Include="Assets\ThirdParty\RigidbodySleepToggle\Editor\RigidbodySleepToggleInspector.cs" />
+     <Compile Include="Assets\ThirdParty\RigidbodySleepToggle\Editor\RigidbodySleepToggleMenu.cs" />
+     <None Include="Assets\ThirdParty\RigidbodySleepToggle\readme.txt" />
+     <Compile Include="Assets\ThirdParty\RigidbodySleepToggle\RigidbodySleepOnAwake.cs" />
  <Reference Include="StrumpyShaderEditor">
  <HintPath>Assets\StrumpyShaderEditor\Editor\StrumpyShaderEditor.dll</HintPath>
  </Reference>
