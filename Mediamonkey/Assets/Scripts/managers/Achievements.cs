@@ -35,6 +35,9 @@ public class Achievements : MonoBehaviour {
 	// ---- event handlers ----
 	
 	protected void statisticsChangeHandler(int flag) {
+		// unlocking multiple achievements at once,
+		// or when already showing a notification of one is possible
+		
 		List<Achievement> result = new List<Achievement>();
 		
 		bool change = false;
@@ -52,7 +55,7 @@ public class Achievements : MonoBehaviour {
 		if (change) {
 			Debug.Log("achievements unlocked: "+result.Count);
 			foreach (Achievement a in result) Debug.Log(a.name);
-			show(result[0]);
+			//show(result[0]);
 		}
 	}
 	

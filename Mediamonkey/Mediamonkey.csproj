@@ -55,7 +55,9 @@
      <Compile Include="Assets\Scripts\behaviors\Cannon.cs" />
      <Compile Include="Assets\Scripts\behaviors\Hover.cs" />
      <Compile Include="Assets\Scripts\behaviors\MoveOverPath.cs" />
+     <Compile Include="Assets\Scripts\control\KeyboardControl.cs" />
      <Compile Include="Assets\Scripts\managers\Achievements.cs" />
+     <Compile Include="Assets\Scripts\managers\CursorManager.cs" />
      <Compile Include="Assets\Scripts\managers\DragManager.cs" />
      <Compile Include="Assets\Scripts\managers\GameObjectPool.cs" />
      <Compile Include="Assets\Scripts\managers\MouseManager.cs" />

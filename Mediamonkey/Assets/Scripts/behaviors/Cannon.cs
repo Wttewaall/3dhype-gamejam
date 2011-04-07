@@ -64,9 +64,6 @@ public class Cannon : MonoBehaviour {
 	// this method will be called when the ball has been instantialized
 	protected void initBallAction(GameObject target) {
 		
-		// parent to the cannon, or some other Transform as a test
-		target.transform.parent = transform;
-		
 		// set pool so the ball can return to it on destuction
 		AutoDestruct ad = target.GetComponent<AutoDestruct>();
 		if (ad) ad.pool = ammoPool;
