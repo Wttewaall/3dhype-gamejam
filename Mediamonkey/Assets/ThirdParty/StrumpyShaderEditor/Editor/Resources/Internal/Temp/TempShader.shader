@@ -1,9 +1,9 @@
-Shader "Shaders/Test"
+Shader "ShaderEditor/EditorShaderCache"
 {
 	Properties 
 	{
-_Color("_Color", Color) = (0.090909,0,1,1)
-_MainTex("_MainTex", 2D) = "black" {}
+_DiffuseColor("_DiffuseColor", Color) = (1,0,0,1)
+_EditorSinTime("_EditorSinTime",Vector) = (0.0,0.0,0.0,0.0)
 
 	}
 	
@@ -31,8 +31,8 @@ Fog{
 #pragma target 2.0
 
 
-float4 _Color;
-sampler2D _MainTex;
+float4 _DiffuseColor;
+float4 _EditorSinTime;
 
 			struct EditorSurfaceOutput {
 				half3 Albedo;
@@ -72,15 +72,19 @@ return c;
 			}
 			
 			struct Input {
-				float2 uv_MainTex;
+				float4 color : COLOR;
 
 			};
 
 			void vert (inout appdata_full v, out Input o) {
-float4 VertexOutputMaster0_0_NoInput = float4(0,0,0,0);
+float4 Splat0=_EditorSinTime.w;
+float4 Abs0=abs(Splat0);
+float4 Multiply0=Abs0 * float4( v.normal.x, v.normal.y, v.normal.z, 1.0 );
+float4 Add0=Multiply0 + v.vertex;
 float4 VertexOutputMaster0_1_NoInput = float4(0,0,0,0);
 float4 VertexOutputMaster0_2_NoInput = float4(0,0,0,0);
 float4 VertexOutputMaster0_3_NoInput = float4(0,0,0,0);
+v.vertex = Add0;
 
 
 			}
@@ -95,15 +99,14 @@ float4 VertexOutputMaster0_3_NoInput = float4(0,0,0,0);
 				o.Specular = 0.0;
 				o.Custom = 0.0;
 				
-float4 Tex2D0=tex2D(_MainTex,(IN.uv_MainTex.xyxy).xy);
 float4 Master0_1_NoInput = float4(0,0,1,1);
 float4 Master0_2_NoInput = float4(0,0,0,0);
 float4 Master0_3_NoInput = float4(0,0,0,0);
 float4 Master0_4_NoInput = float4(0,0,0,0);
+float4 Master0_5_NoInput = float4(1,1,1,1);
 float4 Master0_7_NoInput = float4(0,0,0,0);
 float4 Master0_6_NoInput = float4(1,1,1,1);
-o.Albedo = Tex2D0;
-o.Alpha = Tex2D0.aaaa;
+o.Albedo = _DiffuseColor;
 
 				o.Normal = normalize(o.Normal);
 			}
