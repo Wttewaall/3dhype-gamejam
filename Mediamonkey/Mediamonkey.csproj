@@ -55,6 +55,7 @@
      <Compile Include="Assets\Scripts\behaviors\Cannon.cs" />
      <Compile Include="Assets\Scripts\behaviors\Hover.cs" />
      <Compile Include="Assets\Scripts\behaviors\MoveOverPath.cs" />
+     <Compile Include="Assets\Scripts\behaviors\SpringTrap.cs" />
      <Compile Include="Assets\Scripts\control\KeyboardControl.cs" />
      <Compile Include="Assets\Scripts\managers\Achievements.cs" />
      <Compile Include="Assets\Scripts\managers\CursorManager.cs" />
@@ -74,20 +75,39 @@
      <None Include="Assets\Shaders\Projector Light.shader" />
      <None Include="Assets\Shaders\Projector Multiply Offset.shader" />
      <None Include="Assets\Shaders\Projector Multiply.shader" />
-     <None Include="Assets\Shaders\test1.shader" />
      <None Include="Assets\Standard Assets\Projectors\Guidelines.txt" />
-     <None Include="Assets\StrumpyShaderEditor\Editor\Resources\Internal\Temp\TempShader.shader" />
-     <None Include="Assets\StrumpyShaderEditor\Editor\Resources\Internal\TextureCopy.shader" />
-     <Compile Include="Assets\StrumpyShaderEditor\Editor\Scripts\NodeEditorWindow.cs" />
-     <Compile Include="Assets\StrumpyShaderEditor\Editor\Scripts\StrumpyPreviewWindow.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\DemoScripts\BloodCollision.cs" />
+     <None Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\DemoScripts\FPS.js" />
+     <None Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\DemoScripts\FPSWalker.js" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\DemoScripts\InGameDecalTest.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\DemoScripts\MouseLook.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\DemoScripts\RobotBehave.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Editor\DecalMenu.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Editor\DecalTypeEditor.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Plugins\DecalCreator.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Plugins\DecalDestroyer.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Plugins\DecalExpeditor.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Plugins\DecalHolder.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Plugins\DecalType.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Plugins\DynamicDecalExpeditor.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Plugins\FlowDecalExpeditor.cs" />
+     <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Plugins\SkinnedDecalExpeditor.cs" />
+     <None Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Resources\Shaders\DecalBumpDiffuse.shader" />
+     <None Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Resources\Shaders\DecalBumpSpecular.shader" />
+     <None Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\Resources\Shaders\DecalParallaxSpecularSM3.0.shader" />
+     <None Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\License.txt" />
      <Compile Include="Assets\ThirdParty\Pixelplacement\Editor\iTweenPathEditor.cs" />
      <Compile Include="Assets\ThirdParty\Pixelplacement\iTweenPath.cs" />
      <Compile Include="Assets\ThirdParty\RigidbodySleepToggle\Editor\RigidbodySleepToggleInspector.cs" />
      <Compile Include="Assets\ThirdParty\RigidbodySleepToggle\Editor\RigidbodySleepToggleMenu.cs" />
      <None Include="Assets\ThirdParty\RigidbodySleepToggle\readme.txt" />
      <Compile Include="Assets\ThirdParty\RigidbodySleepToggle\RigidbodySleepOnAwake.cs" />
+     <None Include="Assets\ThirdParty\StrumpyShaderEditor\Editor\Resources\Internal\Temp\TempShader.shader" />
+     <None Include="Assets\ThirdParty\StrumpyShaderEditor\Editor\Resources\Internal\TextureCopy.shader" />
+     <Compile Include="Assets\ThirdParty\StrumpyShaderEditor\Editor\Scripts\NodeEditorWindow.cs" />
+     <Compile Include="Assets\ThirdParty\StrumpyShaderEditor\Editor\Scripts\StrumpyPreviewWindow.cs" />
  <Reference Include="StrumpyShaderEditor">
- <HintPath>Assets\StrumpyShaderEditor\Editor\StrumpyShaderEditor.dll</HintPath>
+ <HintPath>Assets\ThirdParty\StrumpyShaderEditor\Editor\StrumpyShaderEditor.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
