@@ -2,25 +2,68 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(AudioSource))]
 public class Achievements : MonoBehaviour {
     
 	public Texture2D background;
+	public AudioClip unlockedSound;
 	
-    public List<Achievement> list = new List<Achievement>();
+    protected List<Achievement> list = new List<Achievement>();
+	protected Queue<Achievement> queue = new Queue<Achievement>();
+	protected Achievement current;
+	
+	protected Rect backgroundRect;
+	protected Rect textRect;
+	protected bool showing = false;
+	protected Vector2 popupOffscreen;
+	protected Vector2 popupOnscreen;
+	protected Vector2 popupOffset;
 	
 	// ---- inherited handlers ----
+	
+	void Awake() {
+		setup();
+	}
 	
 	void Start() {
 		
 		// add achievements to list
 		list.Add(new Achievement01());
 		list.Add(new Achievement02());
+		list.Add(new Achievement03());
 		
 		// add event listener
 		Statistics.propertyChange += statisticsChangeHandler;
 	}
 	
+	void OnGUI() {
+		if (!showing) return;
+		
+		GUI.DrawTexture(new Rect(backgroundRect.x + popupOffset.x, backgroundRect.y + popupOffset.y, backgroundRect.width, backgroundRect.height), background);
+		GUI.Label(new Rect(textRect.x + popupOffset.x, textRect.y + popupOffset.y, textRect.width, textRect.height), "Achievement unlocked\n"+current.name+"\n"+current.description);
+	}
+	
 	// ---- protected methods ----
+	
+	// positions for the popup elements
+	protected void setup() {
+		
+		popupOffscreen = new Vector2(0, -background.height);
+		popupOnscreen = new Vector2(0, 0);
+		popupOffset = popupOffscreen;
+		
+		float x = (Screen.width-background.width)/2;
+		float y = 10;
+		float w = background.width;
+		float h = background.height;
+		backgroundRect = new Rect(x, y, w, h);
+		
+		x += 70;
+		y += 5;
+		w -= 90;
+		h -= 10;
+		textRect = new Rect(x, y, w, h);
+	}
 	
 	protected List<Achievement> getByTag(int tag) {
 		List<Achievement> result = new List<Achievement>();
@@ -30,6 +73,61 @@ public class Achievements : MonoBehaviour {
 		}
 		
 		return result;
+	}
+	
+	protected void show() {
+		if (queue.Count == 0 || showing) return;
+		
+		// set current Achievement
+		current = queue.Dequeue();
+		
+		// play animation
+		Hashtable valueHash = iTween.Hash(
+			"from", popupOffscreen,
+			"to", popupOnscreen,
+			"time", 2,
+			"onUpdate", "animatePopupOffset",
+			"onComplete", "animatePopupInComplete",
+			"easeType", iTween.EaseType.bounce
+		);
+		
+		showing = true;
+		iTween.ValueTo(gameObject, valueHash);
+		audio.PlayOneShot(unlockedSound);
+	}
+	
+	// animate back after some delay
+	protected void hide() {
+		
+		Hashtable valueHash = iTween.Hash(
+			"from", popupOnscreen,
+			"to", popupOffscreen,
+			"time", 2,
+			"delay", 2,
+			"onUpdate", "animatePopupOffset",
+			"onComplete", "animatePopupOutComplete",
+			"easeType", iTween.EaseType.easeInSine
+		);
+		
+		iTween.ValueTo(gameObject, valueHash);
+	}
+	
+	// ---- tween handlers ----
+	
+	protected void animatePopupOffset(Vector2 offset) {
+		popupOffset = offset;
+	}
+	
+	protected void animatePopupInComplete() {
+		hide();
+	}
+	
+	protected void animatePopupOutComplete() {
+		showing = false;
+		current = null;
+		
+		// if more in queue, show another achievement
+		if (queue.Count > 0) show();
 	}
 	
 	// ---- event handlers ----
@@ -53,56 +151,15 @@ public class Achievements : MonoBehaviour {
 		}
 		
 		if (change) {
-			Debug.Log("achievements unlocked: "+result.Count);
-			foreach (Achievement a in result) Debug.Log(a.name);
-			//show(result[0]);
-		}
-	}
-	
-	// ---- public methods ----
-	
-	protected GameObject go;
-	
-	public void show(Achievement a) {
-		createGO();
-		
-		go.guiText.text = a.name;
-		
-		// from position
-		float x = (Screen.width-background.width)/2;
-		float y = -background.height;
-		Vector3 v1 = Camera.main.ScreenToViewportPoint(new Vector3(x, y, 0));
-		
-		// to position
-		y = background.height + 50;
-		Vector3 v2 = Camera.main.ScreenToViewportPoint(new Vector3(x, y, 0));
-		
-		go.transform.position = v2;
-		//go.transform.position = v1;
-		//iTween.MoveTo(go, iTween.Hash("position", v2, "time", 4, "delay", 1));
-	}
-	
-	public void hide() {
-		if (go) DestroyImmediate(go);
-	}
-	
-	protected void createGO() {
-		if (!go) {
-			go = new GameObject("AchievementGO");
-			go.hideFlags = HideFlags.HideAndDontSave;
-			go.transform.position = Vector3.zero;
+			// add to queue
+			foreach (Achievement a in result) {
+				queue.Enqueue(a);
+			}
 			
-			GUITexture bg = go.AddComponent<GUITexture>();
-			bg.texture = background;
-			bg.pixelInset = new Rect(-bg.texture.width/2, -bg.texture.height/2, bg.texture.width, bg.texture.height);
-			
-			GUIText text = go.AddComponent<GUIText>();
-			text.pixelOffset = new Vector2(-50, 10);
+			// show until queue is empty (ofter just 1 item)
+			if (!showing) show();
 		}
-	}
-	
-	public void OnDisable () {
-		if (go) DestroyImmediate(go);
+		
 	}
 	
 }
@@ -159,6 +216,20 @@ public class Achievement02 : Achievement {
 	
 	override public bool validate() {
 		return (Statistics.targetsHit >= 20);
+	}
+	
+}
+
+public class Achievement03 : Achievement {
+	
+	public Achievement03() {
+		name = "Fire in the hole!";
+		description = "Fire 12 bullets";
+		tags.Add(StatisticTag.BULLET_FIRED);
+	}
+	
+	override public bool validate() {
+		return (Statistics.bulletsFired >= 12);
 	}
 	
 }
