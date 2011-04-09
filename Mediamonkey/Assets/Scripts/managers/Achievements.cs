@@ -145,8 +145,8 @@ public class Achievements : MonoBehaviour {
 			if (a.unlocked == false && a.tagInFlag(flag)) {
 				a.unlocked = a.validate();
 				
+				if (a.unlocked) result.Add(a);
 				change = change || a.unlocked;
-				if (change) result.Add(a);
 			}
 		}
 		

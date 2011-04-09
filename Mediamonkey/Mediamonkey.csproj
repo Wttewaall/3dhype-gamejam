@@ -75,6 +75,12 @@
      <None Include="Assets\Shaders\Projector Light.shader" />
      <None Include="Assets\Shaders\Projector Multiply Offset.shader" />
      <None Include="Assets\Shaders\Projector Multiply.shader" />
+     <None Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\CharacterMotor.js" />
+     <None Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\FPSInputController.js" />
+     <Compile Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\MouseLook.cs" />
+     <None Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\PlatformInputController.js" />
+     <None Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\ThirdPersonCamera.js" />
+     <None Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\ThirdPersonController.js" />
      <None Include="Assets\Standard Assets\Projectors\Guidelines.txt" />
      <Compile Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\DemoScripts\BloodCollision.cs" />
      <None Include="Assets\ThirdParty\Frameshift\DecalFramework 1.5\DemoScripts\FPS.js" />
