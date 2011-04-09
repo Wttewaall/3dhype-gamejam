@@ -1,0 +1,193 @@
+fileFormatVersion: 1
+guid: ce760543ae88e0f48ba0bb2c240abcc3
+ModelImporter:
+  importerVersion: 7
+  meshes:
+    scaleFactor: 0.03
+    useFileUnits: 1
+    meshCompression: 0
+    generateColliders: 0
+    swapUVs: 0
+  tangentSpace:
+    normalImportMode: 0
+    tangentImportMode: 1
+    smoothingAngle: 60
+    splitTangents: 1
+  materials:
+    generation: 1
+  animations:
+    generation: 3
+    bakeAnimations: 0
+    animationCompression: 1
+    animationWrapMode: 0
+    splitAnimations: 1
+  nodeInfo:
+    Carronade_Barrel1:
+    - 100000
+    - 400000
+    Turnbuckle_Slide1:
+    - 100002
+    - 400002
+    Carronade_Mount1:
+    - 100004
+    - 400004
+    Carronade_Lug_Assembly1:
+    - 100006
+    - 400006
+    Turnbuckle_Side1:
+    - 100008
+    - 400008
+    Carronade_Gudgeon1:
+    - 100010
+    - 400010
+    Carronade_Gudgeon2:
+    - 100012
+    - 400012
+    Turnbuckle_Side2:
+    - 100014
+    - 400014
+    Metal_Ring1:
+    - 100016
+    - 400016
+    Mesh4:
+    - 100018
+    - 400018
+    - 3300000
+    - 2300000
+    Turnbuckle1:
+    - 100020
+    - 400020
+    Mesh3:
+    - 100022
+    - 400022
+    - 3300002
+    - 2300002
+    Mounting_Plank1:
+    - 100024
+    - 400024
+    Mesh2:
+    - 100026
+    - 400026
+    - 3300004
+    - 2300004
+    Mesh1:
+    - 100028
+    - 400028
+    - 3300006
+    - 2300006
+    Iron_Rod1:
+    - 100030
+    - 400030
+    //RootNode:
+    - 100032
+    - 400032
+    - 11100000
+    Mesh17:
+    - 100034
+    - 400034
+    - 3300008
+    - 2300008
+    Mesh16:
+    - 100036
+    - 400036
+    - 3300010
+    - 2300010
+    Metal_Ring2:
+    - 100038
+    - 400038
+    Mesh15:
+    - 100040
+    - 400040
+    - 3300012
+    - 2300012
+    Carronade_Lug3:
+    - 100042
+    - 400042
+    Mesh14:
+    - 100044
+    - 400044
+    - 3300014
+    - 2300014
+    Carronade_Lug2:
+    - 100046
+    - 400046
+    Mesh13:
+    - 100048
+    - 400048
+    - 3300016
+    - 2300016
+    Carronade_Lug1:
+    - 100050
+    - 400050
+    Mesh12:
+    - 100052
+    - 400052
+    - 3300018
+    - 2300018
+    Group3:
+    - 100054
+    - 400054
+    Mesh11:
+    - 100056
+    - 400056
+    - 3300020
+    - 2300020
+    Mesh10:
+    - 100058
+    - 400058
+    - 3300022
+    - 2300022
+    Group2:
+    - 100060
+    - 400060
+    Group1:
+    - 100062
+    - 400062
+    Mesh9:
+    - 100064
+    - 400064
+    - 3300024
+    - 2300024
+    Mounting_Plank2:
+    - 100066
+    - 400066
+    Mesh8:
+    - 100068
+    - 400068
+    - 3300026
+    - 2300026
+    Mesh7:
+    - 100070
+    - 400070
+    - 3300028
+    - 2300028
+    Mesh6:
+    - 100072
+    - 400072
+    - 3300030
+    - 2300030
+    Mesh5:
+    - 100074
+    - 400074
+    - 3300032
+    - 2300032
+AssetImporter:
+  importerVersion: 1
+  fileIDToRecycleName:
+    4300000: Mesh1
+    4300002: Mesh2
+    4300004: Mesh3
+    4300006: Mesh4
+    4300008: Mesh5
+    4300010: Mesh6
+    4300012: Mesh7
+    4300014: Mesh8
+    4300016: Mesh9
+    4300018: Mesh10
+    4300020: Mesh11
+    4300022: Mesh12
+    4300024: Mesh13
+    4300026: Mesh14
+    4300028: Mesh15
+    4300030: Mesh16
+    4300032: Mesh17

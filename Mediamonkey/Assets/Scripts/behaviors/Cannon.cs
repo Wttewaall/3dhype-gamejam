@@ -6,6 +6,7 @@ public class Cannon : MonoBehaviour {
 	
 	public GameObject ballPrefab;
 	public Projector target;
+	public float force = 30;
 	public AudioClip audio_fire;
 	
 	protected GameObjectPool ammoPool;
@@ -49,7 +50,7 @@ public class Cannon : MonoBehaviour {
 		ball.renderer.material.SetColor("_Color", bag.Next());
 		
 		// add initial velocity
-		ball.rigidbody.velocity = transform.up * 10;
+		ball.rigidbody.velocity = transform.up * force;
 		
 		// add a bit of rotation
 		System.Random random = new System.Random();
