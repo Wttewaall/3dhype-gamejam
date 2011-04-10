@@ -6,7 +6,7 @@ public class Cannon : MonoBehaviour {
 	
 	public GameObject ballPrefab;
 	public Projector target;
-	public float force = 30;
+	public float force = 20;
 	public AudioClip audio_fire;
 	
 	protected GameObjectPool ammoPool;
@@ -56,7 +56,11 @@ public class Cannon : MonoBehaviour {
 		System.Random random = new System.Random();
 		ball.rigidbody.angularVelocity = new Vector3(random.Next(-1, 1), random.Next(-1, 1), random.Next(-1, 1));
 		
+		// play sound in random pitch
+		audio.pitch = Random.Range(0.9f, 1.1f);
 		audio.PlayOneShot(audio_fire);
+		
+		// update statistics
 		Statistics.bulletsFired++;
 	}
 	

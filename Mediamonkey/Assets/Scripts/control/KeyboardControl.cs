@@ -18,11 +18,12 @@ public class KeyboardControl : MonoBehaviour {
 		moveDown = Input.GetKey(KeyCode.DownArrow);
 		moveLeft = Input.GetKey(KeyCode.LeftArrow);
 		moveRight = Input.GetKey(KeyCode.RightArrow);
-		
 		if (moveUp || moveDown || moveLeft || moveRight) updateMove();
 		
 		fire = Input.GetKeyDown(KeyCode.Space);
 		if (fire) cannon.GetComponent<Cannon>().fire();
+		
+		if (Input.GetKeyDown(KeyCode.R)) Application.LoadLevel(0);
 	}
 	
 	protected void updateMove() {
