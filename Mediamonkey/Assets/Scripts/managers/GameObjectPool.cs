@@ -2,6 +2,21 @@ using UnityEngine;
 using System;
 using System.Collections;
 
+/**
+ * A general pool object for reusable game objects.
+ * 
+ * It supports spawning and unspawning game objects that are
+ * instantiated from a common prefab. Can be used preallocate
+ * objects to avoid calls to Instantiate during gameplay. Can
+ * also create objects on demand (which it does if no objects
+ * are available in the pool).
+ * 
+ * Converted JScript version to C#, original here:
+ * http://vonlehecreative.com/video-games/unity-resource-gameobjectpool/
+ * 
+ * C# version by Bart Wttewaall, www.Mediamonkey.nl
+ */
+
 public class GameObjectPool {
 
 	private GameObject _prefab;
@@ -12,6 +27,7 @@ public class GameObjectPool {
 	private bool setActiveRecursively;
 	
 	// ---- getters & setters ----
+	#region getters & setters
 	
 	// returns the prefab being used by the pool.
 	public GameObject prefab {
@@ -28,7 +44,9 @@ public class GameObjectPool {
 		get { return available.Count; }
 	}
 	
+	#endregion
 	// ---- constructor ----
+	#region constructor
 	
 	public GameObjectPool(GameObject prefab, uint initialCapacity, Action<GameObject> initAction, bool setActiveRecursively) {
 		this._prefab = prefab;
@@ -39,7 +57,9 @@ public class GameObjectPool {
 		all =		(initialCapacity > 0)	? new ArrayList((int) initialCapacity)	: new ArrayList();
 	}
 	
+	#endregion
 	// ---- public methods ----
+	#region public methods
 	
 	public GameObject spawn(Vector3 position, Quaternion rotation) {
 		GameObject result;
@@ -105,7 +125,9 @@ public class GameObjectPool {
 		}
 	}
 	
+	#endregion
 	// ---- protected methods ----
+	#region protected methods
 	
 	// Activates or deactivates the provided game object using the method
 	// specified by the setActiveRecursively flag.
@@ -114,4 +136,5 @@ public class GameObjectPool {
 		else target.active = value;
 	}
 	
+	#endregion
 }

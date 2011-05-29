@@ -69,7 +69,7 @@ public class Cannon : MonoBehaviour {
 	// this method will be called when the ball has been instantialized
 	protected void initBallAction(GameObject target) {
 		
-		// set pool so the ball can return to it on destuction
+		// set pool so the ball can return to it on destruction
 		AutoDestruct ad = target.GetComponent<AutoDestruct>();
 		if (ad) ad.pool = ammoPool;
 	}

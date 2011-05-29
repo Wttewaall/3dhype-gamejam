@@ -16,7 +16,7 @@ public class DecalMenu : EditorWindow
         CreateDecalAssetBase();
     }
     /// Show About
-    [MenuItem("Decal Framework/About")]
+    //[MenuItem("Decal Framework/About")]
     public static void FrameshiftAbout()
     {
         Init();
