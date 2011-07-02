@@ -1,5 +1,12 @@
+/**
+ * Copyright (c) 2011 Bart Wttewaall
+ * Website: http://www.mediamonkey.nl
+ */
+
 using UnityEngine;
 using System.Collections;
+
+[AddComponentMenu("Mediamonkey/Managers/MouseManager")]
 
 public class MouseManager : MonoBehaviour {
 	
@@ -37,8 +44,11 @@ public class MouseManager : MonoBehaviour {
 	/** If checked, the drag events will trigger. */
 	public bool		useDragging = true;
 	
+	/** If checked, the drag position difference will be calculated by Rays. */
+	public bool		useAngles = true;
+	
 	/** When you move the mouse beyond this range the dragging will be triggered. */
-	public float	dragRange = 2.0f;
+	public float	dragRange = 2.0f; // known issue: when raycasting with locked mouse, this must be set to 1.0f
 	
 	/** If checked, the double click event will trigger. */
 	public bool		useDoubleClick = true;
@@ -71,6 +81,11 @@ public class MouseManager : MonoBehaviour {
 		MouseState	state;
 		Vector3		diff;
 		
+		// TODO: get current ray at mouseposition
+		/*if (useAngles && states.Length > 0) {
+			Ray currentRay = new Ray(Camera.main.ScreenPointToRay(Input.mousePosition), Camera.main.transform.forward);
+		}*/
+		
 		for (int i=0; i<states.Length; i++) {
 			
 			state = states[i];
@@ -79,10 +94,16 @@ public class MouseManager : MonoBehaviour {
 			if (Input.GetMouseButton(i)) {
 				if (state.isDown == false) {
 					state.isDown = true;
+					
+					// TODO: store current ray in state
+					//if (useAngles) state.downRay = currentRay;
+					
 					state.downPosition = Input.mousePosition;
+					
 					if (mouseDown != null) mouseDown(state.buttonID);
 				}
 				
+				// TODO: calculate angle diff from currentRay - state.downRay
 				diff = Input.mousePosition - state.downPosition;
 				
 				if (useDragging && !state.dragging && diff.magnitude >= dragRange) {
@@ -127,6 +148,7 @@ public class MouseState {
 	public int		buttonID;
 	public bool		isDown;
 	public Vector3	downPosition;
+	//public Ray	downRay;
 	public float	downTime;
 	public bool		dragging;
 	

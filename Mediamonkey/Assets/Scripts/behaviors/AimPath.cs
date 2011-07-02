@@ -6,12 +6,20 @@ using System.Collections;
 public class AimPath : MonoBehaviour {
 	
 	public GameObject start;
-	public int iterations = 30;
 	public GameObject bullet;
+	public GameObject reticle;
+	
+	public float force;
+	public float groundLevel = 0;
+	public int maxIterations = 30;
 	public float framerate = 60;
 	
 	protected LineRenderer line;
+	protected Color lineColor = Color.blue;
 	protected Rigidbody rb;
+	protected Vector3 v1;
+	protected Vector3 v2;
+	
 	
 	// ---- inherited handlers ----
 	
@@ -20,47 +28,42 @@ public class AimPath : MonoBehaviour {
 		rb = bullet.GetComponent<Rigidbody>();
 	}
 	
-	void OnEnable() {
-		line.enabled = true;
-		rb.Sleep();
-	}
-	
-	void OnDisable() {
-		line.enabled = false;
-		rb.Sleep();
-	}
-	
-	
-	protected Vector3 v1;
-	protected Vector3 v2;
-	protected Color lineColor = Color.blue;
-	protected Vector3 gravity = Physics.gravity;
-	protected float bulletSpeed = 30;
 	
 	void Update () {
 		calc();
 	}
 	
 	protected void calc() {
-		Vector3 direction = start.transform.forward;
-		Vector3 velocity = direction * 3;
-		float dampening = 0.8f;
+		Vector3 velocity = start.transform.forward * force / 3;//rb.mass;
 		
 		v1 = start.transform.position;
 		v2 = start.transform.position;
 		
-		line.SetVertexCount(iterations);
+		line.SetVertexCount(maxIterations);
 		
-		for (int i=0; i<iterations; i++) {
+		for (int i=0; i<maxIterations; i++) {
 			v1 = v2;
 			line.SetPosition(i, v2);
 			
-			velocity *= dampening;
+			//velocity /= rb.drag;
 			velocity += Physics.gravity / framerate;
 			
 			v2 = v1 + velocity;
 			
-			Debug.DrawLine(v1, v2, Color.Lerp(Color.white, Color.red, (1/iterations) * i));
+			Debug.DrawLine(v1, v2, Color.Lerp(Color.white, Color.red, (1/maxIterations) * i));
+			
+			if (v2.y <= groundLevel) {
+				line.SetVertexCount(i+1);
+				
+				if (reticle) {
+					var pos = reticle.transform.position;
+					pos.x = v2.x;
+					pos.z = v2.z;
+					reticle.transform.position = pos;
+				}
+				
+				break;
+			}
 		}
 		
 		

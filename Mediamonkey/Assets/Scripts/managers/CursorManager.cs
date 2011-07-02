@@ -1,304 +1,349 @@
 using UnityEngine;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+
+[AddComponentMenu("Mediamonkey/Managers/CursorManager")]
 
 public class CursorManager : MonoBehaviour {
-
-	/**
-	 * TODO
-	 * . draw cursor as texture directly in screen instead of creating a GameObject:
-	 * 		public function OnGUI() {
-	 * 			GUI.DrawTexture(new Rect(Input.mousePosition.x, Screen.height - Input.mousePosition.y, cursorSize.x, cursorSize.y), cursorImage);
-	 * 		}
-	 * . add add/deleteCursor(name, texture)
-	 * . add new cursors to an asset bundle or something instead of defining them in setCursor()
-	 **/
 	
-	public Vector2 cursorSize = new Vector2(32, 32);
+	// public variables (serializable)
+	public List<Cursor> cursors;
+	public int defaultCursorIndex = -1;
 	
-	// cursor textures
-	public Texture2D noCursor;
-	public Texture2D defaultCursor;
-	public Texture2D busyCursor;
-	public Texture2D overCursor;
-	public Texture2D dragCursor;
-	public Texture2D dropValidCursor;
-	public Texture2D dropInvalidCursor;
+	// protected variables
+	protected Rect emptyOffsetRect = new Rect(0, 0, 1, 1);
+	protected List<CursorPriorityPair> priorityList = new List<CursorPriorityPair>();
 	
-	protected ArrayList priorityArray;
-	protected bool follow;
-	
-	// -- stored enabled flags
-	private bool _enabledReticleVisibility;
-	private bool _enabledScreenCursorVisibility;
+	// private flags
+	private bool _enabledReticleVisibility		= false;
+	private bool _enabledScreenCursorVisibility	= true;
 	
 	// ---- getters & setters ----
 	
 	private static CursorManager _instance;
-	private GUITexture _reticle;
-	private Texture2D _clearTexture;
 	
-	public static CursorManager getInstance() {
-		return _instance;
+	public static CursorManager instance {
+		get { return _instance; }
 	}
+	
+	private GUITexture _reticle;
 	
 	public GUITexture reticle {
 		get {
 			if (!_reticle) {
-				
 				GameObject go = new GameObject("reticle");
 				go.hideFlags = HideFlags.HideAndDontSave;
 				go.transform.position = Vector3.zero;
 				
 				_reticle = go.AddComponent<GUITexture>();
-				_reticle.pixelInset = new Rect(-cursorSize.x/2, -cursorSize.y/2, cursorSize.x, cursorSize.y);
 				_reticle.transform.position = Vector3.zero;
 				_reticle.transform.localScale = Vector3.zero;
-				
-				// init
-				if (_reticle.texture == null) {
-					setCursor("default");
-					_reticle.enabled = _enabledReticleVisibility = false;
-				}
+				_reticle.enabled = _enabledReticleVisibility;
 			}
 			return _reticle;
 		}
 	}
 	
-	// creates a filled transparent Texture2D
-	public Texture2D clearTexture {
+	private Texture2D _emptyTexture;
+	
+	public Texture2D emptyTexture {
 		get {
-			if (!_clearTexture) {
-				
-				if (noCursor) {
-					_clearTexture = noCursor;
-					
-				} else {
-					_clearTexture = new Texture2D((int) cursorSize.x, (int) cursorSize.y);
-					
-					int w = (int) cursorSize.x;
-					while (w-- > 0) {
-						
-						int h = (int) cursorSize.y;
-						while (h-- > 0) {
-							_clearTexture.SetPixel(w, h, Color.clear);
-						}
-					}
-				}
-				
+			if (!_emptyTexture) {
+				_emptyTexture = new Texture2D(1, 1);
 			}
-			return _clearTexture;
+			return _emptyTexture;
+		}
+	}	
+	
+	private int _selectedIndex = -1;
+	
+	public int selectedIndex {
+		get { return _selectedIndex; }
+		set {
+			if (_selectedIndex == value) return;
+			_selectedIndex = value;
+			
+			UpdateCursor();
+			DispatchChangeEvent();
+		}
+	}
+	
+	public Cursor selectedCursor {
+		get {
+			bool validIndex = (selectedIndex > -1 && selectedIndex < cursors.Count);
+			return validIndex ? cursors[selectedIndex] : null;
+		}
+		set {
+			if (value == null) selectedIndex = -1;
+			else selectedIndex = cursors.IndexOf(value);
 		}
 	}
 	
 	public bool reticleVisible {
-		get {
-			return _enabledReticleVisibility;
-		}
+		get { return _enabledReticleVisibility; }
 	}
 	
 	public bool screenCursorVisible {
-		get {
-			return _enabledScreenCursorVisibility;
+		get { return _enabledScreenCursorVisibility; }
+	}
+	
+	public Vector3 screenMousePosition {
+		get { return new Vector3(Input.mousePosition.x / Screen.width, Input.mousePosition.y / Screen.height, 0); }
+	}
+	
+	public Vector3 viewportMousePosition {
+		get { return new Vector3(Camera.current.pixelWidth / Input.mousePosition.x, Camera.current.pixelHeight / Input.mousePosition.y, 0); }
+	}
+	
+	public bool showingScreenCursor {
+		get { return Screen.showCursor; }
+	}
+	
+	private bool _followMouse = true;
+	
+	public bool followMouse {
+		get { return _followMouse; }
+		set {
+			if (_followMouse == value) return;
+			_followMouse = value;
 		}
 	}
 	
-	public Vector3 mouseScreenPosition {
-		get {
-			float x = Input.mousePosition.x / Screen.width;
-			float y = Input.mousePosition.y / Screen.height;
-			return new Vector3(x, y, 0);
-		}
-	}
-	
-	// ---- inherited handlers ----
+	// ---- default handlers ----
 	
 	void Awake() {
-		if (_instance != null) throw new UnityException("You can have only one instance of this component");
+		if (_instance != null)
+			throw new UnityException("You can have only one instance of this component");
 		else _instance = this;
 		
-		priorityArray = new ArrayList();
+		// begin with cursor at index defaultCursorIndex
+		if (defaultCursorIndex > -1 && defaultCursorIndex < cursors.Count) {
+			SetCursor(cursors[defaultCursorIndex]);
+			ShowReticle();
+		}
 	}
 	
 	void Update() {
-		if (follow && enabled) positionAt(mouseScreenPosition);
+		if (_followMouse && enabled) PositionAt(screenMousePosition);
 	}
 	
 	void OnEnable() {
 		reticle.enabled = _enabledReticleVisibility;
 		Screen.showCursor = _enabledScreenCursorVisibility;
+		UpdateCursor();
 	}
 	
 	void OnDisable () {
 		reticle.enabled = false;
 		Screen.showCursor = true;
+		UpdateCursor();
 	}
 	
-	/*public function OnApplicationQuit() {
+	void OnApplicationQuit() {
 		if (_reticle) DestroyImmediate(_reticle.gameObject);
-	}*/
+	}
 	
 	// ---- public methods ----
 	
-	public void setCursor(string cursorName) {
-		setCursor(cursorName, CursorPriority.LOW);
-	}
-	
-	public void setCursor(string cursorName, int priority) {
-		Texture2D cursor = null;
+	public Cursor GetCursorByName(string cursorName) {
+		if (name == null || name == "") return null;
 		
-		switch (cursorName) {
-			case "default":			cursor = defaultCursor;		break;
-			case "normal":			cursor = defaultCursor;		break;
-			case "busy":			cursor = busyCursor;		break;
-			case "over":			cursor = overCursor;		break;
-			case "drag":			cursor = dragCursor;		break;
-			case "dragValid":		cursor = dropValidCursor;	break;
-			case "dragInvalid":		cursor = dropInvalidCursor;	break;
-			case "none":			cursor = clearTexture;		break;
-			default:				cursor = null;				break;
+		foreach (Cursor cursor in cursors) {
+			if (cursor.name == cursorName) return cursor;
 		}
 		
-		if (cursor != null) {
-			PriorityItem item = getPriorityItem(priority);
+		return null;
+	}
+	
+	public void SetCursor(string cursorName) {
+		Cursor cursor = GetCursorByName(cursorName);
+		if (cursor != null) SetCursor(cursor, CursorPriority.LOW);
+	}
+	
+	public void SetCursor(string cursorName, int priority) {
+		Cursor cursor = GetCursorByName(cursorName);
+		if (cursor != null) SetCursor(cursor, priority);
+	}
+	
+	public void SetCursor(Cursor cursor) {
+		SetCursor(cursor, CursorPriority.LOW);
+	}
+	
+	public void SetCursor(Cursor cursor, int priority) {
+		
+		CursorPriorityPair pair = GetCursorPriorityPair(priority);
+		
+		if (pair == null) {
+			// add cursor with new priority
+			pair = new CursorPriorityPair(cursor, priority);
+			priorityList.Add(pair);
 			
-			if (item == null) {
-				// add cursor with new priority
-				item = new PriorityItem(cursorName, cursor, priority);
-				priorityArray.Add(item);
-				
-			} else {
-				// overwrite cursor with same priority
-				item.name = cursorName;
-				item.texture = cursor;
-			}
+		} else {
+			// overwrite cursor with same priority
+			pair.cursor = cursor;
+			pair.priority = priority;
 		}
 		
-		commitCursor();
+		UpdateCursor();
 	}
 	
-	public void removeCursor(string cursorName) {
-		PriorityItem item = getPriorityItem(cursorName);
-		if (item == null) return;
+	public void RemoveCursor(string cursorName) {
+		CursorPriorityPair pair = GetCursorPriorityPair(cursorName);
+		if (pair == null) return;
 		
-		priorityArray.Remove(item);
-		commitCursor();
+		priorityList.Remove(pair);
+		UpdateCursor();
 	}
 	
-	public void removeCursor(int priority) {
-		PriorityItem item = getPriorityItem(priority);
-		if (item == null) return;
+	public void RemoveCursor(int priority) {
+		CursorPriorityPair pair = GetCursorPriorityPair(priority);
+		if (pair == null) return;
 		
-		priorityArray.Remove(item);
-		commitCursor();
+		priorityList.Remove(pair);
+		UpdateCursor();
 	}
 	
-	public void removeAllCursors() {
-		priorityArray.Clear();
-		commitCursor();
+	public void RemoveAllCursors() {
+		priorityList.Clear();
+		UpdateCursor();
 	}
 	
-	public void setBusyCursor() {
-		setCursor("busy", CursorPriority.BUSY);
+	public void ShowReticle() {
+		ShowReticle(false);
 	}
 	
-	public void removeBusyCursor() {
-		removeCursor(CursorPriority.BUSY);
-	}
-	
-	public void showReticle() {
+	public void ShowReticle(bool withScreenCursor) {
 		_enabledReticleVisibility = true;
-		if (enabled) reticle.enabled = _enabledReticleVisibility;
-	}
-	
-	public void showReticle(bool withScreenCursor) {
-		showReticle();
 		
-		if (withScreenCursor) showScreenCursor();
-		else hideScreenCursor();
+		if (enabled) {
+			reticle.enabled = true;
+			
+			if (withScreenCursor) ShowScreenCursor();
+			else HideScreenCursor();
+		}
 	}
 	
-	public void hideCursor() {
+	public void HideReticle() {
 		_enabledReticleVisibility = false;
 		if (enabled) reticle.enabled = _enabledReticleVisibility;
 	}
 	
-	public void showScreenCursor() {
-		Screen.showCursor = _enabledScreenCursorVisibility = true;
+	public void ShowScreenCursor() {
+		if (enabled) Screen.showCursor = _enabledScreenCursorVisibility = true;
 	}
 	
-	public void hideScreenCursor() {
-		Screen.showCursor = _enabledScreenCursorVisibility = false;
+	public void HideScreenCursor() {
+		if (enabled) Screen.showCursor = _enabledScreenCursorVisibility = false;
 	}
 	
-	public void followMouse(bool value) {
-		follow = value;
+	public void FollowMouse(bool value) {
+		followMouse = value;
 	}
 	
-	public void positionAt(Vector3 position) {
+	public void PositionAt(Vector3 position) {
 		reticle.transform.position = position;
 	}
 	
-	public void positionAtCenter() {
-		follow = false;
-		positionAt(new Vector3(0.5f, 0.5f, 0));
+	public void PositionAtCenter() {
+		followMouse = false;
+		PositionAt(new Vector3(0.5f, 0.5f, 0));
 	}
 	
 	// ---- protected methods ----
 	
-	protected void commitCursor() {
-		PriorityItem item = getHighestPriorityItem();
-		reticle.texture = (item != null) ? item.texture : clearTexture;
+	protected void UpdateCursor() {
+		
+		// get most important cursor by priority
+		CursorPriorityPair pair = GetHighestCursorPriorityPair();
+		
+		// set cursorIndex without triggering another UpdateCursor
+		_selectedIndex = (pair != null) ? cursors.IndexOf(pair.cursor) : -1;
+		
+		if (selectedCursor != null) {
+			reticle.texture = selectedCursor.icon;
+			reticle.pixelInset = selectedCursor.offsetRect;
+			
+		} else {
+			reticle.texture = emptyTexture;
+			reticle.pixelInset = emptyOffsetRect;
+		}
 	}
 	
-	protected PriorityItem getHighestPriorityItem() {
-		PriorityItem highest = null;
+	protected CursorPriorityPair GetHighestCursorPriorityPair() {
+		CursorPriorityPair highest = null;
 		
-		foreach (PriorityItem item in priorityArray) {
-			highest = (highest == null || item.priority >= highest.priority) ? item : highest;
+		for (int i=0; i<priorityList.Count; i++) {
+			highest = (highest == null || priorityList[i].priority >= highest.priority) ? priorityList[i] : highest;
 		}
 		
 		return highest;
 	}
 	
-	protected PriorityItem getPriorityItem(int priority) {
-		foreach (PriorityItem item in priorityArray) {
-			if (item.priority == priority) return item;
+	protected CursorPriorityPair GetCursorPriorityPair(int priority) {
+		
+		for (int i=0; i<priorityList.Count; i++) {
+			if (priorityList[i].priority == priority) return priorityList[i];
 		}
+		
 		return null;
 	}
 	
-	protected PriorityItem getPriorityItem(string cursorName) {
-		foreach (PriorityItem item in priorityArray) {
-			if (item.name == cursorName) return item;
+	protected CursorPriorityPair GetCursorPriorityPair(string cursorName) {
+		
+		for (int i=0; i<priorityList.Count; i++) {
+			if (priorityList[i].cursor.name == cursorName) return priorityList[i];
 		}
+		
 		return null;
 	}
+	
+	protected void DispatchChangeEvent() {
+		//..
+	}
+	
+}
+
+[Serializable]
+public class Cursor {
+	
+	public string name;
+	public Texture icon;
+	public Vector2 offset;
+	public int priority = 1;
+	
+	public Cursor() {
+	}
+	
+	public Rect offsetRect {
+		get {
+			if (icon == null) return new Rect(offset.x, offset.y, 0, 0);
+			else return new Rect(offset.x, offset.y, icon.width, icon.height);
+		}
+	}
+	
 }
 
 public struct CursorPriority {
 	
-	public const int LOW = 1;
-	public const int MEDIUM	 = 2;
-	public const int HIGH = 3;
-	public const int BUSY = 99;
+	public const int LOW		= 1;
+	public const int MEDIUM		= 2;
+	public const int HIGH		= 3;
+	public const int BUSY		= 99;
 	
 }
 
-public class PriorityItem {
+public class CursorPriorityPair {
 	
-	public string name;
-	public Texture2D texture;
-	public int priority;
+	public Cursor cursor;
+	public int priority = 1;
 	
-	public PriorityItem(string name, Texture2D texture) {
-		this.name = name;
-		this.texture = texture;
-		this.priority = 0;
+	public CursorPriorityPair(Cursor cursor) {
+		this.cursor = cursor;
 	}
 	
-	public PriorityItem(string name, Texture2D texture, int priority) {
-		this.name = name;
-		this.texture = texture;
+	public CursorPriorityPair(Cursor cursor, int priority) {
+		this.cursor = cursor;
 		this.priority = priority;
 	}
 	

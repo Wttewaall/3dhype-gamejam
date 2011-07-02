@@ -50,7 +50,9 @@ public class Cannon : MonoBehaviour {
 		ball.renderer.material.SetColor("_Color", bag.Next());
 		
 		// add initial velocity
-		ball.rigidbody.velocity = transform.up * force;
+		//ball.rigidbody.velocity = transform.up * force;
+		//ball.rigidbody.AddForce(transform.up * force, ForceMode.Impulse);
+		ball.rigidbody.AddForce(transform.up * force, ForceMode.VelocityChange);
 		
 		// add a bit of rotation
 		System.Random random = new System.Random();

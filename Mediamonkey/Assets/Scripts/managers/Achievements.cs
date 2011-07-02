@@ -156,7 +156,7 @@ public class Achievements : MonoBehaviour {
 				queue.Enqueue(a);
 			}
 			
-			// show until queue is empty (ofter just 1 item)
+			// show until queue is empty (often just 1 item)
 			if (!showing) show();
 		}
 		
