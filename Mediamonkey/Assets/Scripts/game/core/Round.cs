@@ -9,13 +9,24 @@ using System.Collections.Generic;
 
 public class Round {
 	
+	public delegate void RoundEvent(Round target);
+	public event RoundEvent roundStart;
+	//public event RoundEvent roundPaused;
+	//public event RoundEvent roundUnpaused;
+	//public event RoundEvent roundFailed;
+	public event RoundEvent roundComplete;
+	
 	public string name;
+	public ISpawner spawner;
+	public Quaternion spawnDirection;
+	
 	public List<Wave> waves;
+	public List<Wave> liveWaves;
+	public List<Enemy> liveEnemies;
+	
 	public float startTime;
 	public float stopTime;
 	public RoundState state;
-	
-	protected List<Enemy> liveEnemies;
 	
 	// ---- getters & setters ----
 	
@@ -50,56 +61,78 @@ public class Round {
 		this.name = name;
 		
 		waves = new List<Wave>();
+		liveWaves = new List<Wave>();
 		liveEnemies = new List<Enemy>();
+		
 		state = RoundState.IDLE;
 	}
-	
+
 	// ---- public methods ----
 	
-	public void start() {
-		Utils.trace(name, "start");
+	public void CreateWave(GameObjectPool pool, int amount) {
+		Wave wave = new Wave(pool, amount);
+		AddWave(wave);
+	}
+	
+	public void CreateWave(GameObjectPool pool, int amount, float spawnInterval) {
+		Wave wave = new Wave(pool, amount, spawnInterval);
+		AddWave(wave);
+	}
+	
+	public void AddWave(Wave wave) {
+		waves.Add(wave);
+	}
+	
+	public void Start() {
 		startTime = Time.time;
 		state = RoundState.RUNNING;
 	}
 	
-	public void pause() {
-		Utils.trace(name, "pause");
-		stopTime = Time.time;
-		state = RoundState.PAUSED;
-	}
-	
-	public void stop() {
-		Utils.trace(name, "stop");
+	public void Stop() {
 		stopTime = Time.time;
 		state = RoundState.IDLE;
 	}
 	
-	public void restart() {
-		Utils.trace(name, "restart");
-		stop();
-		reset();
-		start();
-	}
-	
-	public void reset() {
-		//..
-	}
-	
-	public void nextWave() {
-		if (currentWaveIndex + 1 < waves.Count) {
-			currentWaveIndex++;
-			Utils.trace("next wave:", currentWaveIndex);
-			currentWave.spawnTime = Time.time; // immediately
-			//currentWave.spawnTime = Time.time + currentWave.spawnInterval; // after interval
+	public void Update() {
+		if (state == RoundState.RUNNING) {
 			
-		} else {
-			Utils.trace("all waves complete");
-			stop();
-			Game.instance.nextRound();
+			// trigger first wave
+			if (currentWaveIndex < 0) NextWave();
+			
+			if (Time.time >= currentWave.spawnTime) {
+				currentWave.spawnTime = Time.time + currentWave.spawnInterval;
+				
+				// only start a next wave after all enemies are cleared
+				if (!currentWave.hasEnemies) {
+					NextWave();
+					
+				} else {
+					currentWave.spawn(spawner.GetSpawnPosition(), spawnDirection);
+				}
+			}
+			
+			// update all live waves
+			//foreach (Wave w in liveWaves) w.Update();
 		}
 	}
 	
-	public void update() {
+	public void NextWave() {
+		if (currentWaveIndex + 1 < waves.Count) {
+			currentWaveIndex++;
+			Utils.trace("next wave:", currentWaveIndex);
+			
+			currentWave.spawnTime = Time.time; // immediately
+			SetWaveHandlers(currentWave, true);
+			liveWaves.Add(currentWave);
+			
+		} else {
+			Utils.trace("all waves complete");
+			Stop();
+			dispatchRoundEvent(roundComplete);
+		}
+	}
+	
+	/*public void update() {
 		
 		if (state == RoundState.RUNNING) {
 			
@@ -109,7 +142,7 @@ public class Round {
 			if (Time.time >= currentWave.spawnTime) {
 				currentWave.spawnTime = Time.time + currentWave.spawnInterval;
 				
-				/*if (currentWave.numEnemies == 0) {
+				if (currentWave.numEnemies == 0) {
 					nextWave();
 					
 				} else {
@@ -120,11 +153,52 @@ public class Round {
 					enemy.y = -20;
 					liveEnemies.push(enemy);
 					PlayScreen(Game.instance.screen).addChild( enemy );
-				}*/
+				}
 			}
 			
 			//foreach (Enemy e in liveEnemies) e.update();
 		}
+	}*/
+	
+	// ---- protected methods ----
+	
+	protected void SetWaveHandlers(Wave target, bool adding) {
+		if (adding) {
+			target.waveDepleted += waveDepletedHandler;
+			target.waveCleared += waveClearedHandler;
+			target.enemySpawned += enemySpawnedHandler;
+			target.enemyDestroyed += enemyDestroyedHandler;
+			
+		} else {
+			target.waveDepleted -= waveDepletedHandler;
+			target.waveCleared -= waveClearedHandler;
+			target.enemySpawned -= enemySpawnedHandler;
+			target.enemyDestroyed -= enemyDestroyedHandler;
+		}
+	}
+	
+	protected void dispatchRoundEvent(RoundEvent evt) {
+		if (evt != null) evt(this);
+	}
+	
+	// ---- event handlers ----
+	
+	private void waveDepletedHandler(Wave target) {
+		Utils.trace("waveDepleted", target);
+	}
+	
+	private void waveClearedHandler(Wave target) {
+		Utils.trace("waveCleared", target);
+		liveWaves.Remove(target);
+		SetWaveHandlers(target, false);
+	}
+	
+	private void enemySpawnedHandler(Wave target, Enemy enemy) {
+		liveEnemies.Add(enemy);
+	}
+	
+	private void enemyDestroyedHandler(Wave target, Enemy enemy) {
+		liveEnemies.Remove(enemy);
 	}
 	
 }

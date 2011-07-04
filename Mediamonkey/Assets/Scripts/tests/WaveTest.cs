@@ -21,47 +21,57 @@ public class WaveTest : MonoBehaviour {
 		}
 	}
 	
-	protected Wave currentWave;
+	protected Round currentRound;
 	
 	void Start() {
-		currentWave = new Wave(pools[enemies[0]], 4, 1);
-		setWaveHandlers(currentWave, true);
-		
-		InvokeRepeating("Spawn", 1, currentWave.spawnInterval);
 		
 		// create a round with multiple waves of enemies
+		currentRound = new Round("Round 1");
+		currentRound.spawner = spawnBox;
+		currentRound.spawnDirection = spawnDirection;
+		
+		SetRoundHandlers(currentRound, true);
+		
 		// play round & handle states
+		currentRound.CreateWave(pools[enemies[0]], 4, 1);
+		currentRound.CreateWave(pools[enemies[0]], 3, 1);
+		currentRound.CreateWave(pools[enemies[0]], 2, 0.5f);
+		currentRound.CreateWave(pools[enemies[0]], 1, 0.5f);
+		
+		Invoke("StartRound", 1);
 	}
 	
-	// ---- public methods ----
+	void Update() {
+		currentRound.Update();
+	}
 	
-	public void Spawn() {
-		currentWave.spawn(spawnBox.GetSpawnPosition(), spawnDirection);
+	public void StartRound() {
+		currentRound.Start();
 	}
 	
 	// ---- protected methods ----
 	
-	protected void setWaveHandlers(Wave target, bool adding) {
+	protected void SetRoundHandlers(Round target, bool adding) {
 		if (adding) {
-			target.waveDepleted += waveDepletedHandler;
-			target.waveCleared += waveClearedHandler;
+			target.roundStart += roundStartHandler;
+			target.roundComplete += roundCompleteHandler;
 			
 		} else {
-			target.waveDepleted -= waveDepletedHandler;
-			target.waveCleared -= waveClearedHandler;
+			target.roundStart -= roundStartHandler;
+			target.roundComplete -= roundCompleteHandler;
 		}
 	}
 	
 	// ---- event handlers ----
 	
-	private void waveDepletedHandler(Wave target) {
-		Utils.trace("waveDepleted", target);
+	private void roundStartHandler(Round target) {
+		Utils.trace("roundStart", target);
 		CancelInvoke("Spawn");
 	}
 	
-	private void waveClearedHandler(Wave target) {
-		Utils.trace("waveCleared", target);
-		setWaveHandlers(target, false);
+	private void roundCompleteHandler(Round target) {
+		Utils.trace("roundComplete", target);
+		SetRoundHandlers(target, false);
 	}
 	
 }

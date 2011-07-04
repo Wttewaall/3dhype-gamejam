@@ -12,6 +12,10 @@ public class Wave {
 	public event WaveEvent waveDepleted;
 	public event WaveEvent waveCleared;
 	
+	public delegate void SpawnEvent(Wave target, Enemy enemy);
+	public event SpawnEvent enemySpawned;
+	public event SpawnEvent enemyDestroyed;
+	
 	public float spawnInterval = 0.3f;
 	public float spawnTime; // depricate?
 	
@@ -19,9 +23,13 @@ public class Wave {
 	protected Vector3 offset;
 	
 	// stats
-	protected int initialAmount;
-	protected int spawnAmount;
-	protected int destroyAmount;
+	public int initialAmount;
+	public int spawnAmount;
+	public int destroyAmount;
+	
+	public bool hasEnemies {
+		get { return (destroyAmount < initialAmount); }
+	}
 	
 	// ---- constructor ----
 	
@@ -39,17 +47,19 @@ public class Wave {
 	
 	// ---- public methods ----
 	
-	public GameObject spawn(SpawnBox spawner, Quaternion rotation) {
+	public GameObject spawn(ISpawner spawner, Quaternion rotation) {
 		return spawn(spawner.GetSpawnPosition(offset), rotation);
 	}
 	
 	public GameObject spawn(Vector3 position, Quaternion rotation) {
 		if (spawnAmount == initialAmount) return null;
-		if (++spawnAmount == initialAmount) dispatchEvent(waveDepleted);
+		if (++spawnAmount == initialAmount) dispatchWaveEvent(waveDepleted);
 		
 		GameObject go = pool.spawn(position + offset, rotation);
 		Enemy script = go.GetComponent<Enemy>();
 		script.death += enemyDeathHandler;
+		
+		dispatchSpawnEvent(enemySpawned, script);
 		
 		return go;
 	}
@@ -57,13 +67,18 @@ public class Wave {
 	// ---- event handlers ----
 	
 	protected void enemyDeathHandler(Enemy target) {
-		if (++destroyAmount == initialAmount) dispatchEvent(waveCleared);
+		dispatchSpawnEvent(enemyDestroyed, target);
+		if (++destroyAmount == initialAmount) dispatchWaveEvent(waveCleared);
 	}
 	
 	// ---- protected methods ----
 	
-	protected void dispatchEvent(WaveEvent evt) {
+	protected void dispatchWaveEvent(WaveEvent evt) {
 		if (evt != null) evt(this);
+	}
+	
+	protected void dispatchSpawnEvent(SpawnEvent evt, Enemy enemy) {
+		if (evt != null) evt(this, enemy);
 	}
 	
 }

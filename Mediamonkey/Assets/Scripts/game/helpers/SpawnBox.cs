@@ -1,9 +1,8 @@
 using UnityEngine;
-using System.Collections;
 
 [AddComponentMenu("King's Ruby/Helpers/SpawnBox")]
 
-public class SpawnBox : MonoBehaviour {
+public class SpawnBox : MonoBehaviour, ISpawner {
 	
 	protected Bounds bounds;
 	protected Transform tf;
