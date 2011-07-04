@@ -4,8 +4,8 @@ using System.Collections;
 public class KeyboardControl : MonoBehaviour {
 	
 	public GameObject cannon;
-	public float panSpeed = 1;
 	public float yawSpeed = 1;
+	public float pitchSpeed = 1;
 	
 	protected bool moveUp;
 	protected bool moveDown;
@@ -28,8 +28,8 @@ public class KeyboardControl : MonoBehaviour {
 	
 	protected void updateMove() {
 		Vector3 euler = cannon.transform.rotation.eulerAngles;
-		euler.y += (moveLeft) ? -panSpeed : (moveRight) ? panSpeed : 0;
-		euler.z += (moveUp) ? -yawSpeed : (moveDown) ? yawSpeed : 0;
+		euler.y += (moveLeft) ? -yawSpeed : (moveRight) ? yawSpeed : 0;
+		euler.z += (moveUp) ? -pitchSpeed : (moveDown) ? pitchSpeed : 0;
 		
 		cannon.transform.rotation = Quaternion.Euler(euler);
 	}

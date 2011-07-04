@@ -16,8 +16,9 @@ public class Wave {
 	public event SpawnEvent enemySpawned;
 	public event SpawnEvent enemyDestroyed;
 	
-	public float spawnInterval = 0.3f;
-	public float spawnTime; // depricate?
+	public float startTime = 0;
+	public float spawnTime = 0;
+	public float waitTime = 0;
 	
 	protected GameObjectPool pool;
 	protected Vector3 offset;
@@ -27,22 +28,36 @@ public class Wave {
 	public int spawnAmount;
 	public int destroyAmount;
 	
+	// ---- getters & setters ----
+	
+	private float _spawnInterval = 0.3f;
+	
+	public float spawnInterval {
+		get { return _spawnInterval; }
+		set { _spawnInterval = value; }
+	}
+	
+	public bool timeUp {
+		get {
+			if (startTime == 0) return false;
+			else return (Time.time >= startTime + spawnInterval * initialAmount + waitTime);
+		}
+	}
+	
 	public bool hasEnemies {
 		get { return (destroyAmount < initialAmount); }
 	}
 	
 	// ---- constructor ----
 	
-	public Wave(GameObjectPool pool, int amount) {
+	public Wave(GameObjectPool pool, int amount, float spawnInterval, float waitTime) {
 		if (pool == null) throw new UnityException("pool cannot be null");
 		this.pool = pool;
 		this.initialAmount = amount;
+		this.spawnInterval = spawnInterval;
+		this.waitTime = waitTime;
 		
 		offset = pool.prefab.GetComponent<Enemy>().offset;
-	}
-	
-	public Wave(GameObjectPool pool, int amount, float spawnInterval) : this(pool, amount) {
-		this.spawnInterval = spawnInterval;
 	}
 	
 	// ---- public methods ----
@@ -54,6 +69,8 @@ public class Wave {
 	public GameObject spawn(Vector3 position, Quaternion rotation) {
 		if (spawnAmount == initialAmount) return null;
 		if (++spawnAmount == initialAmount) dispatchWaveEvent(waveDepleted);
+		
+		if (startTime == 0) startTime = Time.time;
 		
 		GameObject go = pool.spawn(position + offset, rotation);
 		Enemy script = go.GetComponent<Enemy>();

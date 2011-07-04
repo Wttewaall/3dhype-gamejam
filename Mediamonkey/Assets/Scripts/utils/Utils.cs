@@ -59,7 +59,7 @@ public sealed class Utils {
 	/// A <see cref="System.Object[]"/>
 	/// </param>
 	public static void trace(params object[] args) {
-		if (!verbose) return;
+		if (!verbose || args.Length == 0) return;
 		
 		// ignore caller?
 		string caller = new StackFrame(1).GetMethod().DeclaringType.FullName;

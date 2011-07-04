@@ -33,15 +33,21 @@ public class WaveTest : MonoBehaviour {
 		SetRoundHandlers(currentRound, true);
 		
 		// play round & handle states
-		currentRound.CreateWave(pools[enemies[0]], 4, 1);
-		currentRound.CreateWave(pools[enemies[0]], 3, 1);
-		currentRound.CreateWave(pools[enemies[0]], 2, 0.5f);
-		currentRound.CreateWave(pools[enemies[0]], 1, 0.5f);
+		currentRound.CreateWave(pools[enemies[0]], 4, 0.5f, 0);
+		currentRound.CreateWave(pools[enemies[1]], 3, 0.5f, 0);
+		currentRound.CreateWave(pools[enemies[0]], 2, 0.5f, 0);
+		currentRound.CreateWave(pools[enemies[1]], 1, 0.5f, 0);
 		
 		Invoke("StartRound", 1);
 	}
 	
+	protected int frame = 0;
+	protected int interval = 5;
+	
 	void Update() {
+		if (++frame % interval > 0) return;
+		else frame = 0;
+		
 		currentRound.Update();
 	}
 	
@@ -66,7 +72,6 @@ public class WaveTest : MonoBehaviour {
 	
 	private void roundStartHandler(Round target) {
 		Utils.trace("roundStart", target);
-		CancelInvoke("Spawn");
 	}
 	
 	private void roundCompleteHandler(Round target) {

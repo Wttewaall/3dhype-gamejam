@@ -24,9 +24,17 @@ public class Enemy : MonoBehaviour {
 	void Update() {
 		// simplest behavior: move forward
 		tf.Translate(tf.TransformDirection(tf.forward)*0.05f);
+		
+		if (tf.position.z < -20) Die();
 	}
 	
 	void OnMouseOver() {
+		Die();
+	}
+	
+	// ---- public methods ----
+	
+	public void Die() {
 		dispatchEvent(death);
 		Destroy(gameObject);
 	}

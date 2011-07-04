@@ -69,13 +69,8 @@ public class Round {
 
 	// ---- public methods ----
 	
-	public void CreateWave(GameObjectPool pool, int amount) {
-		Wave wave = new Wave(pool, amount);
-		AddWave(wave);
-	}
-	
-	public void CreateWave(GameObjectPool pool, int amount, float spawnInterval) {
-		Wave wave = new Wave(pool, amount, spawnInterval);
+	public void CreateWave(GameObjectPool pool, int amount, float spawnInterval, float waitTime) {
+		Wave wave = new Wave(pool, amount, spawnInterval, waitTime);
 		AddWave(wave);
 	}
 	
@@ -86,6 +81,7 @@ public class Round {
 	public void Start() {
 		startTime = Time.time;
 		state = RoundState.RUNNING;
+		dispatchRoundEvent(roundStart);
 	}
 	
 	public void Stop() {
@@ -103,16 +99,13 @@ public class Round {
 				currentWave.spawnTime = Time.time + currentWave.spawnInterval;
 				
 				// only start a next wave after all enemies are cleared
-				if (!currentWave.hasEnemies) {
+				if (!currentWave.hasEnemies || currentWave.timeUp) {
 					NextWave();
 					
 				} else {
 					currentWave.spawn(spawner.GetSpawnPosition(), spawnDirection);
 				}
 			}
-			
-			// update all live waves
-			//foreach (Wave w in liveWaves) w.Update();
 		}
 	}
 	
@@ -121,44 +114,15 @@ public class Round {
 			currentWaveIndex++;
 			Utils.trace("next wave:", currentWaveIndex);
 			
-			currentWave.spawnTime = Time.time; // immediately
 			SetWaveHandlers(currentWave, true);
+			currentWave.startTime = Time.time;
 			liveWaves.Add(currentWave);
 			
-		} else {
-			Utils.trace("all waves complete");
-			Stop();
+		} else if (liveWaves.Count == 0) {
 			dispatchRoundEvent(roundComplete);
+			Stop();
 		}
 	}
-	
-	/*public void update() {
-		
-		if (state == RoundState.RUNNING) {
-			
-			// trigger first wave
-			if (currentWaveIndex < 0) nextWave();
-			
-			if (Time.time >= currentWave.spawnTime) {
-				currentWave.spawnTime = Time.time + currentWave.spawnInterval;
-				
-				if (currentWave.numEnemies == 0) {
-					nextWave();
-					
-				} else {
-					Utils.trace("spawn @", currentWave.spawnTime, "("+(currentWave.spawnTime - Time.time)+")");
-					
-					var enemy:Enemy = currentWave.spawn();
-					enemy.x = Math.random() * Game.width;
-					enemy.y = -20;
-					liveEnemies.push(enemy);
-					PlayScreen(Game.instance.screen).addChild( enemy );
-				}
-			}
-			
-			//foreach (Enemy e in liveEnemies) e.update();
-		}
-	}*/
 	
 	// ---- protected methods ----
 	
@@ -184,13 +148,15 @@ public class Round {
 	// ---- event handlers ----
 	
 	private void waveDepletedHandler(Wave target) {
-		Utils.trace("waveDepleted", target);
+		Utils.trace("waveDepleted", waves.IndexOf(target));
 	}
 	
 	private void waveClearedHandler(Wave target) {
-		Utils.trace("waveCleared", target);
+		Utils.trace("waveCleared", waves.IndexOf(target));
 		liveWaves.Remove(target);
 		SetWaveHandlers(target, false);
+		
+		if (liveWaves.Count == 0) dispatchRoundEvent(roundComplete);
 	}
 	
 	private void enemySpawnedHandler(Wave target, Enemy enemy) {
