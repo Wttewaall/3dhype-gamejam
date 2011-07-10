@@ -15,7 +15,7 @@ public class AutoDestruct : MonoBehaviour {
 		if (detachChildren) transform.DetachChildren ();
 		
 		// destroy the gameobject through the pool, if available
-		if (pool != null) pool.destroy(gameObject);
+		if (pool != null) pool.Destroy(gameObject);
 		else DestroyObject(gameObject);
 	}
 }

@@ -22,7 +22,7 @@ public class Achievements : MonoBehaviour {
 	// ---- inherited handlers ----
 	
 	void Awake() {
-		setup();
+		Setup();
 	}
 	
 	void Start() {
@@ -46,7 +46,7 @@ public class Achievements : MonoBehaviour {
 	// ---- protected methods ----
 	
 	// positions for the popup elements
-	protected void setup() {
+	protected void Setup() {
 		
 		popupOffscreen = new Vector2(0, -background.height);
 		popupOnscreen = new Vector2(0, 0);
@@ -65,7 +65,7 @@ public class Achievements : MonoBehaviour {
 		textRect = new Rect(x, y, w, h);
 	}
 	
-	protected List<Achievement> getByTag(int tag) {
+	protected List<Achievement> GetByTag(int tag) {
 		List<Achievement> result = new List<Achievement>();
 		
 		foreach (Achievement a in list) {
@@ -75,7 +75,7 @@ public class Achievements : MonoBehaviour {
 		return result;
 	}
 	
-	protected void show() {
+	protected void Show() {
 		if (queue.Count == 0 || showing) return;
 		
 		// set current Achievement
@@ -97,7 +97,7 @@ public class Achievements : MonoBehaviour {
 	}
 	
 	// animate back after some delay
-	protected void hide() {
+	protected void Hide() {
 		
 		Hashtable valueHash = iTween.Hash(
 			"from", popupOnscreen,
@@ -119,7 +119,7 @@ public class Achievements : MonoBehaviour {
 	}
 	
 	protected void animatePopupInComplete() {
-		hide();
+		Hide();
 	}
 	
 	protected void animatePopupOutComplete() {
@@ -127,7 +127,7 @@ public class Achievements : MonoBehaviour {
 		current = null;
 		
 		// if more in queue, show another achievement
-		if (queue.Count > 0) show();
+		if (queue.Count > 0) Show();
 	}
 	
 	// ---- event handlers ----
@@ -157,7 +157,7 @@ public class Achievements : MonoBehaviour {
 			}
 			
 			// show until queue is empty (often just 1 item)
-			if (!showing) show();
+			if (!showing) Show();
 		}
 		
 	}

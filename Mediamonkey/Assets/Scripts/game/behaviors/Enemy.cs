@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-[AddComponentMenu("King's Ruby/Core/Enemy")]
+[AddComponentMenu("King's Ruby/Behaviors/Enemy")]
 
 public class Enemy : MonoBehaviour {
 	
@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour {
 	public event EnemyEvent death;
 	
 	public Vector3 offset;
-	public EnemyStats stats;
+	public EnemyStats characterStats;
 	
 	protected Transform tf;
 	
@@ -35,13 +35,13 @@ public class Enemy : MonoBehaviour {
 	// ---- public methods ----
 	
 	public void Die() {
-		dispatchEvent(death);
+		DispatchEnemyEvent(death);
 		Destroy(gameObject);
 	}
 	
 	// ---- protected methods ----
 	
-	protected void dispatchEvent(EnemyEvent evt) {
+	protected void DispatchEnemyEvent(EnemyEvent evt) {
 		if (evt != null) evt(this);
 	}
 }
@@ -50,18 +50,22 @@ public class Enemy : MonoBehaviour {
 public class EnemyStats {
 	
 	// standard
-	public float health;
-	public float healthDamage;
-	public float armor;
-	public float armorDamage;
+	public float health			= 200;
+	public float armor			= 200;
+	
+	[NonSerializedAttribute]
+	public float healthDamage	= 0;
+	
+	[NonSerializedAttribute]
+	public float armorDamage	= 0;
 	
 	// resistance to certain attacks
-	public float direct;
-	public float splash;
-	public float knockdown;
+	public float resistDirectHit;
+	public float resistSplashDamage;
+	public float resistKnockdown;
 	
 	// mental state
-	public float courage; // -courage = fear
-	public float rage; // -rage = happiness/joy
+	public float courage		= 50; // -courage = fear
+	public float rage			= 0; // -rage = happiness/joy
 	
 }

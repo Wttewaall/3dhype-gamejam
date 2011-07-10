@@ -6,8 +6,6 @@ public class TrailBullet : MonoBehaviour {
 	public Material[] materials;
 	
 	void OnEnable() {
-		Utils.trace(name, "enabled");
-		
 		TrailRenderer trail = GetComponent<TrailRenderer>();
 		if (!trail) trail = gameObject.AddComponent<TrailRenderer>();
 		
@@ -20,8 +18,6 @@ public class TrailBullet : MonoBehaviour {
 	}
 	
 	void OnDisable() {
-		Utils.trace(name, "disabled");
-		
 		TrailRenderer trail = GetComponent<TrailRenderer>();
 		if (trail) Destroy(trail);
 	}

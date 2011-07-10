@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-[AddComponentMenu("King's Ruby/Core/Item")]
+[AddComponentMenu("King's Ruby/Behaviors/Item")]
 
 public class Item : MonoBehaviour {
 	

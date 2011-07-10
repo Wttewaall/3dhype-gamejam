@@ -4,7 +4,7 @@
  */
 
 using UnityEngine;
-using System.Collections;
+using System;
 
 [AddComponentMenu("Mediamonkey/Managers/MouseManager")]
 
@@ -35,29 +35,14 @@ public class MouseManager : MonoBehaviour {
 	
 	// ---- public settings ----
 	
-	public bool		useLeftButton = true;
-	public bool		useRightButton = true;
-	public bool		useMiddleButton = true;
-	public bool		useBackButton = true;
-	public bool		useForwardButton = true;
+	public bool useLeftButton		= true;
+	public bool useRightButton		= false;
+	public bool useMiddleButton		= false;
+	public bool useBackButton		= false;
+	public bool useForwardButton	= false;
 	
-	/** If checked, the drag events will trigger. */
-	public bool		useDragging = true;
-	
-	/** If checked, the drag position difference will be calculated by Rays. */
-	public bool		useAngles = true;
-	
-	/** When you move the mouse beyond this range the dragging will be triggered. */
-	public float	dragRange = 2.0f; // known issue: when raycasting with locked mouse, this must be set to 1.0f
-	
-	/** If checked, the double click event will trigger. */
-	public bool		useDoubleClick = true;
-	
-	/** Value in seconds for triggering a doubleclick event. Default value is 250ms. */
-	public float	doubleClickTime = 0.25f;
-	
-	/** While doubleclicking, if you move the mouse beyond this value, the double click will not trigger. */
-	public float	doubleClickRange = 2.0f;
+	public Dragging dragging = new Dragging();
+	public DoubleClicking doubleClicking = new DoubleClicking();
 	
 	// ---- class members ----
 	
@@ -106,7 +91,7 @@ public class MouseManager : MonoBehaviour {
 				// TODO: calculate angle diff from currentRay - state.downRay
 				diff = Input.mousePosition - state.downPosition;
 				
-				if (useDragging && !state.dragging && diff.magnitude >= dragRange) {
+				if (dragging.enabled && !state.dragging && diff.magnitude >= dragging.range) {
 					state.dragging = true;
 					if (mouseDragStart != null) mouseDragStart(state.buttonID);
 				}
@@ -116,7 +101,7 @@ public class MouseManager : MonoBehaviour {
 				state.isDown = false;
 				if (mouseUp != null) mouseUp(state.buttonID);
 				
-				if (useDragging && state.dragging) {
+				if (dragging.enabled && state.dragging) {
 					state.dragging = false;
 					if (mouseDragStop != null) mouseDragStop(state.buttonID);
 					
@@ -126,9 +111,9 @@ public class MouseManager : MonoBehaviour {
 				
 				diff = Input.mousePosition - state.downPosition;
 				
-				if (useDoubleClick && Time.time-state.downTime <= doubleClickTime && diff.magnitude < doubleClickRange) {
+				if (doubleClicking.enabled && Time.time-state.downTime <= doubleClicking.time && diff.magnitude < doubleClicking.range) {
 					if (mouseDoubleClick != null) mouseDoubleClick(state.buttonID);
-					state.downTime = Time.time - doubleClickTime;
+					state.downTime = Time.time - doubleClicking.time;
 					
 				} else {
 					state.downTime = Time.time;
@@ -136,11 +121,39 @@ public class MouseManager : MonoBehaviour {
 				
 			}
 			
-			if (useDragging && state.dragging) {
+			if (dragging.enabled && state.dragging) {
 				if (mouseDragMove != null) mouseDragMove(state.buttonID);
 			}
 		}
 	}
+}
+
+[Serializable]
+public class Dragging {
+	
+	/** If checked, the drag events will trigger. */
+	public bool		enabled = false;
+	
+	/** When you move the mouse beyond this range the dragging will be triggered. */
+	public float	range = 2.0f; // known issue: when raycasting with locked mouse, this must be set to 1.0f
+	
+	/** If checked, the drag position difference will be calculated by Rays. */
+	public bool		useAngles = false;
+	
+}
+
+[Serializable]
+public class DoubleClicking {
+	
+	/** If checked, the drag events will trigger. */
+	public bool		enabled = false;
+	
+	/** Value in seconds for triggering a doubleclick event. Default value is 250ms. */
+	public float	time = 0.25f;
+	
+	/** While doubleclicking, if you move the mouse beyond this value, the double click will not trigger. */
+	public float	range = 2.0f;
+	
 }
 
 public class MouseState {

@@ -2,30 +2,33 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[AddComponentMenu("King's Ruby/Core/Game")]
+
 public class Game : MonoBehaviour {
 	
+	public float timeScale = 1;
+	public GameObject[] enemies;
+	
+	protected PlayState playState = PlayState.STOPPED;
+	protected GameState gameState = GameState.MENU;
+	
+	protected Dictionary<GameObject, GameObjectPool> pools;
+	protected List<Round> rounds = new List<Round>();
+	
+	protected SpawnBox spawnBox;
+	protected Quaternion spawnDirection;
+	protected int frame = 0;
+	protected int interval = 5;
+	
+	// ---- getters & setters ----
+	
 	private static Game _instance;
+	private int _currentRoundIndex = -1;
+	private Round _currentRound;
 	
 	public static Game instance {
 		get { return _instance; }
 	}
-	
-	public static GameObjectPool poolManager;
-	
-	public float timeScale = 1;
-	
-	protected GameState gameState;
-	
-	protected GameObjectPool pool1;
-	protected GameObjectPool pool2;
-	protected GameObjectPool pool3;
-	
-	protected List<Round> rounds;
-	
-	// ---- getters & setters ----
-	
-	private int _currentRoundIndex = -1;
-	private Round _currentRound;
 	
 	public int currentRoundIndex {
 		get { return _currentRoundIndex; }
@@ -43,11 +46,22 @@ public class Game : MonoBehaviour {
 	public Round currentRound {
 		get { return _currentRound; }
 		set {
+			if (value == currentRound) return;
+			
+			if (value == null) {
+				currentRoundIndex = -1;
+				return;
+			}
+			
 			int index = rounds.IndexOf(value);
 			
-			// set currentRound through setting currentRoundIndex
-			if (value != null && index > -1) currentRoundIndex = index;
-			else throw new UnityException("value not found in collection");
+			if (index > -1) {
+				currentRoundIndex = index;
+				
+			} else {
+				rounds.Add(value);
+				currentRoundIndex = rounds.Count-1;
+			}
 		}
 	}
 	
@@ -56,107 +70,100 @@ public class Game : MonoBehaviour {
 	void Awake() {
 		_instance = this;
 		
-		//poolManager = new ObjectPoolManager();
-		fillPools();
+		spawnBox = GameObject.Find("Spawnbox").GetComponent<SpawnBox>();
+		spawnDirection = Quaternion.LookRotation(Vector3.back);
 		
-		rounds = new List<Round>();
-		//rounds.Add( createRound("Round 1", [Enemy1Clip, Enemy2Clip]) );
-		//rounds.Add( createRound("Round 2", [Enemy2Clip, Enemy3Clip]) );
-		//rounds.Add( createRound("Round 3", [Enemy1Clip, Enemy3Clip]) );
-		
-		setGameState(GameState.MENU);
-		//addEventListener(Event.ENTER_FRAME, enterFrameHandler);
+		FillPools();
+		CreateRounds();
 	}
 	
-	protected void fillPools() {
-		/*pool1 = new ObjectPool(Enemy1Clip, 5, true);
-		pool2 = new ObjectPool(Enemy2Clip, 5, true);
-		pool3 = new ObjectPool(Enemy3Clip, 5, true);
-		
-		poolManager.register(pool1);
-		poolManager.register(pool2);
-		poolManager.register(pool3);*/
+	void Start() {
+		Invoke("NextRound", 1);
 	}
 	
-	protected Round createRound(string name, object[] types) {
-		Round round = new Round(name);
+	void Update() {
+		if (++frame % interval > 1) return;
+		else frame = 0;
 		
-		/*for (int i=0; i<types.Length; i++) {
-			round.waves.Add( new Wave(types[i], 2) );
-		}*/
-		
-		return round;
-	}
-	
-	public void nextRound() {
-		Utils.trace("currentRoundIndex:", currentRoundIndex);
-		currentRoundIndex = (currentRoundIndex + 1 < rounds.Count) ? currentRoundIndex + 1 : -1;
-		Utils.trace("next currentRoundIndex:", currentRoundIndex);
-		
-		if (currentRound != null) {
-			//var playScreen:PlayScreen = screen as PlayScreen;
-			//if (!playScreen) throw new Error("cannot play next round: you're not in a game");
-			
-			//playScreen.reset();
-			//playScreen.round = currentRound;
-			//playScreen.start();
-			
-		} else {
-			setGameState(GameState.GAMEOVER);
+		if (playState == PlayState.PLAYING) {
+			currentRound.Update();
 		}
 	}
 	
-	public void setGameState(GameState state) {
-		if (gameState == state) return;
+	// ---- public methods ----
+	
+	public void NextRound() {
+		currentRoundIndex = (currentRoundIndex + 1 < rounds.Count)
+			? currentRoundIndex + 1
+			: -1;
 		
-		/*if (gameState != null) {
-			screen.destroy();
-			removeChild(screen);
-		}*/
-		
-		gameState = state;
-		
-		/*switch (gameState) {
-			case GameState.MENU: {
-				screen = addChild(new MenuScreenClip()) as MenuScreen;
-				break;
-			}
-			case GameState.LEVEL_START: {
-				var playScreen:PlayScreen;
-				screen = playScreen = addChild(new PlayScreenClip()) as PlayScreen;
-				playScreen.start();
-				break;
-			}
-			case GameState.LEVEL_PAUSE: {
-				playScreen = screen as PlayScreen;
-				if (!playScreen) throw new Error("cannot switch to this state");
-				playScreen.pause();
-				break;
-			}
-			case GameState.LEVEL_WIN: {
-				playScreen = screen as PlayScreen;
-				if (!playScreen) throw new Error("cannot switch to this state");
-				playScreen.win();
-				break;
-			}
-			case GameState.LEVEL_LOSE: {
-				playScreen = screen as PlayScreen;
-				if (!playScreen) throw new Error("cannot switch to this state");
-				playScreen.lose();
-				break;
-			}
-			case GameState.GAMEOVER: {
-				screen = addChild(new ScoreScreenClip()) as ScoreScreen;
-				break;
-			}
-		}*/
+		if (currentRound != null) {
+			gameState = GameState.LEVEL_START;
+			playState = PlayState.PLAYING;
+			currentRound.Start();
+			
+		} else {
+			gameState = GameState.GAMEOVER;
+			playState = PlayState.STOPPED;
+		}
 	}
 	
-	/*protected void enterFrameHandler(event:Event) {
-		if (screen) screen.update();
-		else throw new Error("nothing to update");
-	}*/
+	// ---- protected methods ----
 	
+	protected void FillPools() {
+		// create pools per enemy prefab and store in a dictionary with the prefab as key
+		pools = new Dictionary<GameObject, GameObjectPool>();
+		
+		foreach (GameObject enemy in enemies) {
+			pools.Add(enemy, new GameObjectPool(enemy, 5, null, true));
+		}
+	}
+	
+	protected void CreateRounds() {
+		// create a round with multiple waves of enemies
+		Round round = new Round("Round 1");
+		round.spawner = spawnBox;
+		round.spawnDirection = spawnDirection;
+		
+		SetRoundHandlers(round, true);
+		
+		// play round & handle states
+		round.CreateWave(pools[enemies[0]], 4, 0.5f, 0);
+		round.CreateWave(pools[enemies[1]], 3, 0.5f, 0);
+		round.CreateWave(pools[enemies[2]], 4, 0.5f, 0);
+		round.CreateWave(pools[enemies[3]], 3, 0.5f, 0);
+		
+		rounds.Add(round);
+	}
+	
+	protected void SetRoundHandlers(Round target, bool adding) {
+		if (adding) {
+			target.roundStart += roundStartHandler;
+			target.roundComplete += roundCompleteHandler;
+			
+		} else {
+			target.roundStart -= roundStartHandler;
+			target.roundComplete -= roundCompleteHandler;
+		}
+	}
+	
+	// ---- event handlers ----
+	
+	private void roundStartHandler(Round target) {
+		//Utils.trace("roundStart", target);
+	}
+	
+	private void roundCompleteHandler(Round target) {
+		//Utils.trace("roundComplete", target);
+		SetRoundHandlers(target, false);
+	}
+	
+}
+
+public enum PlayState {
+	PLAYING,
+	PAUSED,
+	STOPPED
 }
 
 public enum GameState {

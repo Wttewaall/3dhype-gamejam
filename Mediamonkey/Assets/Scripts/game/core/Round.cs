@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 /**
@@ -81,7 +80,7 @@ public class Round {
 	public void Start() {
 		startTime = Time.time;
 		state = RoundState.RUNNING;
-		dispatchRoundEvent(roundStart);
+		DispatchRoundEvent(roundStart);
 	}
 	
 	public void Stop() {
@@ -103,7 +102,7 @@ public class Round {
 					NextWave();
 					
 				} else {
-					currentWave.spawn(spawner.GetSpawnPosition(), spawnDirection);
+					currentWave.Spawn(spawner.GetSpawnPosition(), spawnDirection);
 				}
 			}
 		}
@@ -112,14 +111,14 @@ public class Round {
 	public void NextWave() {
 		if (currentWaveIndex + 1 < waves.Count) {
 			currentWaveIndex++;
-			Utils.trace("next wave:", currentWaveIndex);
+			//Utils.trace("next wave:", currentWaveIndex);
 			
 			SetWaveHandlers(currentWave, true);
 			currentWave.startTime = Time.time;
 			liveWaves.Add(currentWave);
 			
 		} else if (liveWaves.Count == 0) {
-			dispatchRoundEvent(roundComplete);
+			DispatchRoundEvent(roundComplete);
 			Stop();
 		}
 	}
@@ -141,22 +140,22 @@ public class Round {
 		}
 	}
 	
-	protected void dispatchRoundEvent(RoundEvent evt) {
+	protected void DispatchRoundEvent(RoundEvent evt) {
 		if (evt != null) evt(this);
 	}
 	
 	// ---- event handlers ----
 	
 	private void waveDepletedHandler(Wave target) {
-		Utils.trace("waveDepleted", waves.IndexOf(target));
+		//Utils.trace("waveDepleted", waves.IndexOf(target));
 	}
 	
 	private void waveClearedHandler(Wave target) {
-		Utils.trace("waveCleared", waves.IndexOf(target));
+		//Utils.trace("waveCleared", waves.IndexOf(target));
 		liveWaves.Remove(target);
 		SetWaveHandlers(target, false);
 		
-		if (liveWaves.Count == 0) dispatchRoundEvent(roundComplete);
+		if (liveWaves.Count == 0) DispatchRoundEvent(roundComplete);
 	}
 	
 	private void enemySpawnedHandler(Wave target, Enemy enemy) {

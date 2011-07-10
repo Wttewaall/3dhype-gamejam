@@ -62,17 +62,17 @@ public class Raycaster : MonoBehaviour {
 	void Update () {
 		
 		// only continue every n-th frame
-		if (interval > 1 && ++frame % interval > 0) return;
+		if (interval > 1 && ++frame % interval > 1) return;
 		else frame = 0;
 		
-		castRay();
+		CastRay();
 	}
 	
-	protected void castRay() {
+	protected void CastRay() {
 		if (castType == RaycastType.Mouse) {
 			ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			
-		} else if (castType == RaycastType.ScreenCenter) {
+		} else if (castType == RaycastType.Center) {
 			ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width/2, Screen.height/2, 0));
 			//ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 			
@@ -93,14 +93,14 @@ public class Raycaster : MonoBehaviour {
 	
 	// ---- public methods ----
 	
-	public void useMouse() {
+	public void UseMouse() {
 		castType = RaycastType.Mouse;
-		castRay();
+		CastRay();
 	}
 	
-	public void useCenter() {
-		castType = RaycastType.ScreenCenter;
-		castRay();
+	public void UseCenter() {
+		castType = RaycastType.Center;
+		CastRay();
 	}
 	
 	// ---- public static methods ----
@@ -117,7 +117,7 @@ public class Raycaster : MonoBehaviour {
 }
 
 public enum RaycastType {
-	Mouse, ScreenCenter
+	Mouse, Center
 }
 
 // class for comparing the distance between two RaycastHit objects

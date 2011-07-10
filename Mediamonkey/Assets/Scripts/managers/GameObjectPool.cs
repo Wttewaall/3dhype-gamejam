@@ -61,7 +61,7 @@ public class GameObjectPool {
 	// ---- public methods ----
 	#region public methods
 	
-	public GameObject spawn(Vector3 position, Quaternion rotation) {
+	public GameObject Spawn(Vector3 position, Quaternion rotation) {
 		GameObject result;
 		
 		if (available.Count == 0){
@@ -83,17 +83,17 @@ public class GameObjectPool {
 			resultTrans.position = position;
 			resultTrans.rotation = rotation;
 			
-			setActive(result, true);
+			SetActive(result, true);
 		}
 		
 		return result;
 	}
 	
-	public bool destroy(GameObject target) {
+	public bool Destroy(GameObject target) {
 		if (!available.Contains(target)) {
 			available.Push(target);
 			
-			setActive(target, false);
+			SetActive(target, false);
 			return true;
 		}
 		
@@ -101,23 +101,23 @@ public class GameObjectPool {
 	}
 	
 	// Unspawns all the game objects created by the pool.
-	public void destroyAll() {
+	public void DestroyAll() {
 		for (int i=0; i<all.Count; i++) {
 			GameObject target = all[i] as GameObject;
 			
-			if (target.active) destroy(target);
+			if (target.active) Destroy(target);
 		}
 	}
 	
 	// Unspawns all the game objects and clears the pool.
-	public void clear() {
-		destroyAll();
+	public void Clear() {
+		DestroyAll();
 		available.Clear();
 		all.Clear();
 	}
 	
 	// Applies the provided function to some or all of the pool's game objects.
-	public void forEach(Action<GameObject> action, bool activeOnly) {
+	public void ForEach(Action<GameObject> action, bool activeOnly) {
 		for (int i=0; i<all.Count; i++){
 			GameObject target  = all[i] as GameObject;
 			
@@ -131,7 +131,7 @@ public class GameObjectPool {
 	
 	// Activates or deactivates the provided game object using the method
 	// specified by the setActiveRecursively flag.
-	protected void setActive(GameObject target, bool value) {
+	protected void SetActive(GameObject target, bool value) {
 		if (setActiveRecursively) target.SetActiveRecursively(value);
 		else target.active = value;
 	}

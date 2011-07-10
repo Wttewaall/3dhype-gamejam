@@ -4,11 +4,11 @@ using System.Collections;
 [RequireComponent(typeof(AudioSource))]
 public class Cannon : MonoBehaviour {
 	
-	public GameObject ballPrefab;
-	public Projector target;
-	public float force = 20;
+	public GameObject ammoPrefab;
+	public float force = 200;
 	public AudioClip audio_fire;
 	
+	protected float mass;
 	protected GameObjectPool ammoPool;
 	protected Transform spawnPoint;
 	protected ShuffleBag<Color> bag;
@@ -16,8 +16,11 @@ public class Cannon : MonoBehaviour {
 	// ---- inherited handlers ----
 	
 	void Awake() {
+		// get ammo mass
+		mass = ammoPrefab.GetComponent<Rigidbody>().mass;
+		
 		// create cannonball pool
-		ammoPool = new GameObjectPool(ballPrefab, 5, initBallAction, false);
+		ammoPool = new GameObjectPool(ammoPrefab, 5, InitBallAction, false);
 		
 		// shufflebag of colors: chance of 1/2 red, 1/3 green, 1/6 blue
 		bag = new ShuffleBag<Color>();
@@ -42,17 +45,15 @@ public class Cannon : MonoBehaviour {
 	
 	// ---- public methods ----
 	
-	public void fire() {
+	public void Fire() {
 		// spawn ball from pool
-		GameObject ball = ammoPool.spawn(spawnPoint.position, spawnPoint.rotation);
+		GameObject ball = ammoPool.Spawn(spawnPoint.position, spawnPoint.rotation);
 		
 		// set color: chance of 1/2 red, 1/3 green, 1/6 blue
 		ball.renderer.material.SetColor("_Color", bag.Next());
 		
 		// add initial velocity
-		//ball.rigidbody.velocity = transform.up * force;
-		//ball.rigidbody.AddForce(transform.up * force, ForceMode.Impulse);
-		ball.rigidbody.AddForce(transform.up * force, ForceMode.VelocityChange);
+		ball.rigidbody.velocity = transform.up * (force/mass);
 		
 		// add a bit of rotation
 		System.Random random = new System.Random();
@@ -69,7 +70,7 @@ public class Cannon : MonoBehaviour {
 	// ---- protected methods ----
 	
 	// this method will be called when the ball has been instantialized
-	protected void initBallAction(GameObject target) {
+	protected void InitBallAction(GameObject target) {
 		
 		// set pool so the ball can return to it on destruction
 		AutoDestruct ad = target.GetComponent<AutoDestruct>();
@@ -79,6 +80,6 @@ public class Cannon : MonoBehaviour {
 	// ---- event handlers ----
 	
 	protected void mouseClickHandler(int buttonID) {
-		if (buttonID == MouseButton.LEFT) fire();
+		if (buttonID == MouseButton.LEFT) Fire();
 	}
 }

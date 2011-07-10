@@ -62,21 +62,21 @@ public class Wave {
 	
 	// ---- public methods ----
 	
-	public GameObject spawn(ISpawner spawner, Quaternion rotation) {
-		return spawn(spawner.GetSpawnPosition(offset), rotation);
+	public GameObject Spawn(ISpawner spawner, Quaternion rotation) {
+		return Spawn(spawner.GetSpawnPosition(offset), rotation);
 	}
 	
-	public GameObject spawn(Vector3 position, Quaternion rotation) {
+	public GameObject Spawn(Vector3 position, Quaternion rotation) {
 		if (spawnAmount == initialAmount) return null;
-		if (++spawnAmount == initialAmount) dispatchWaveEvent(waveDepleted);
+		if (++spawnAmount == initialAmount) DispatchWaveEvent(waveDepleted);
 		
 		if (startTime == 0) startTime = Time.time;
 		
-		GameObject go = pool.spawn(position + offset, rotation);
+		GameObject go = pool.Spawn(position + offset, rotation);
 		Enemy script = go.GetComponent<Enemy>();
 		script.death += enemyDeathHandler;
 		
-		dispatchSpawnEvent(enemySpawned, script);
+		DispatchSpawnEvent(enemySpawned, script);
 		
 		return go;
 	}
@@ -84,17 +84,17 @@ public class Wave {
 	// ---- event handlers ----
 	
 	protected void enemyDeathHandler(Enemy target) {
-		dispatchSpawnEvent(enemyDestroyed, target);
-		if (++destroyAmount == initialAmount) dispatchWaveEvent(waveCleared);
+		DispatchSpawnEvent(enemyDestroyed, target);
+		if (++destroyAmount == initialAmount) DispatchWaveEvent(waveCleared);
 	}
 	
 	// ---- protected methods ----
 	
-	protected void dispatchWaveEvent(WaveEvent evt) {
+	protected void DispatchWaveEvent(WaveEvent evt) {
 		if (evt != null) evt(this);
 	}
 	
-	protected void dispatchSpawnEvent(SpawnEvent evt, Enemy enemy) {
+	protected void DispatchSpawnEvent(SpawnEvent evt, Enemy enemy) {
 		if (evt != null) evt(this, enemy);
 	}
 	

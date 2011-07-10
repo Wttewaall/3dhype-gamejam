@@ -14,45 +14,51 @@ public class Statistics {
     
 	// use int: 32 bits means 32 possible flags (use long for 64 bits)
 	// if this is insufficient, use multiple flags! or specify different flags per property type
-	protected static int changeFlag;
+	protected static int changeFlags;
 	
 	// ---- events ----
 	
-	public delegate void EventHandler(int flags);
+	public delegate void PropertyChangeEvent(int flags);
 	
-	public static event EventHandler propertyChange;
+	public static event PropertyChangeEvent propertyChange;
 	
 	// ---- protected methods ----
     
 	// collect changes by tag and dispatch event in time
 	// the listener is responsible for getting the changed values
-	protected static void update(int tag) {
+	protected static void Update(int tag) {
 		
 		// collect tags
-		changeFlag |= tag;
+		changeFlags |= tag;
 		
 		// TODO: notify every <time> ms?
 		if (true) {
 			
-			if (propertyChange != null) propertyChange(changeFlag);
-			changeFlag = 0; // reset
+			DispatchPropertyChangeEvent(propertyChange);
+			changeFlags = 0; // reset
 		}
 	}
 	
 	// ---- public methods ----
 	
 	// fill Statistics with encoded data from the server
-	public static void setData(string encodedString) {
+	public static void SetData(string encodedString) {
 		// decode data
 		// set properties
 		// set achievements by firing a change event with flags
-		update(0);
+		Update(0);
 	}
 	
 	// return encoded statistics to send to the server
-	public static string getData() {
+	public static string GetData() {
 		//..
 		return "";
+	}
+	
+	// ---- private methods ----
+	
+	private static void DispatchPropertyChangeEvent(PropertyChangeEvent evt) {
+		if (evt != null) evt(changeFlags);
 	}
 	
 	// ---- getters & setters ----
@@ -62,7 +68,7 @@ public class Statistics {
     public static int bulletsFired {
     	get { return _bulletsFired; }
     	set { _bulletsFired = value;
-			update(StatisticTag.BULLET_FIRED);
+			Update(StatisticTag.BULLET_FIRED);
 		}
     }
 	
@@ -71,7 +77,7 @@ public class Statistics {
     public static int targetsHit {
     	get { return _targetsHit; }
     	set { _targetsHit = value;
-			update(StatisticTag.TARGET_HIT);
+			Update(StatisticTag.TARGET_HIT);
 		}
     }
 	
