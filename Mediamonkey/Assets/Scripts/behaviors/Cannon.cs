@@ -16,6 +16,9 @@ public class Cannon : MonoBehaviour {
 	// ---- inherited handlers ----
 	
 	void Awake() {
+		// get references
+		spawnPoint = transform.Find("spawnPoint");
+		
 		// get ammo mass
 		mass = ammoPrefab.GetComponent<Rigidbody>().mass;
 		
@@ -27,14 +30,14 @@ public class Cannon : MonoBehaviour {
 		bag.Add(Color.red, 3);
 		bag.Add(Color.green, 2);
 		bag.Add(Color.blue, 1);
-		
-		// listen for mouse click
+	}
+	
+	void OnEnabled() {
 		MouseManager.mouseClick += mouseClickHandler;
 	}
 	
-	void Start () {
-		// get references
-		spawnPoint = transform.Find("spawnPoint");
+	void OnDisabled() {
+		MouseManager.mouseClick -= mouseClickHandler;
 	}
 	
 	void OnGUI() {
@@ -56,8 +59,8 @@ public class Cannon : MonoBehaviour {
 		ball.rigidbody.velocity = transform.up * (force/mass);
 		
 		// add a bit of rotation
-		System.Random random = new System.Random();
-		ball.rigidbody.angularVelocity = new Vector3(random.Next(-1, 1), random.Next(-1, 1), random.Next(-1, 1));
+		//System.Random random = new System.Random();
+		//ball.rigidbody.angularVelocity = new Vector3(random.Next(-1, 1), random.Next(-1, 1), random.Next(-1, 1));
 		
 		// play sound in random pitch
 		audio.pitch = Random.Range(0.9f, 1.1f);

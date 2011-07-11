@@ -50,7 +50,7 @@ public class AimPath : MonoBehaviour {
 		float angleYaw = GetYawAngle();
 		
 		float initialHeight = originTransform.position.y - groundHeight;
-		float distance = Trajectory.distanceAtAngle(anglePitch, velocity, initialHeight, -Physics.gravity.y);
+		float distance = Trajectory.DistanceAtAngle(anglePitch, velocity, initialHeight, -Physics.gravity.y);
 		
 		float x = Mathf.Sin(angleYaw) * distance;
 		float y = groundHeight - originTransform.position.y + 5;
@@ -61,7 +61,7 @@ public class AimPath : MonoBehaviour {
 		reticleTransform.position = originTransform.position + impactLocation;
 		
 		// get time of flight
-		float flight = Trajectory.timeOfFlight(anglePitch, velocity, distance);
+		float flight = Trajectory.TimeOfFlight(anglePitch, velocity, distance);
 		iterations = (int) Mathf.Round(flight*10);
 		
 		// draw line positions
@@ -70,7 +70,7 @@ public class AimPath : MonoBehaviour {
 		
 		for (int i=1; i<iterations; i++) {
 			float t = (float)i / (float)iterations;
-			y = Trajectory.heightAtDistance(distance*t, anglePitch, velocity, initialHeight, -Physics.gravity.y);
+			y = Trajectory.HeightAtDistance(distance*t, anglePitch, velocity, initialHeight, -Physics.gravity.y);
 			
 			Vector3 mid = Vector3.Lerp(originTransform.position, originTransform.position + impactLocation, t);
 			Vector3 pos = new Vector3(mid.x, y, mid.z);
