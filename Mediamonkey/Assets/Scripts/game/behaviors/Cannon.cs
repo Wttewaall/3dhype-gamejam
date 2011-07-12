@@ -2,6 +2,9 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(AudioSource))]
+
+[AddComponentMenu("King's Ruby/Behaviors/Cannon")]
+
 public class Cannon : MonoBehaviour {
 	
 	public GameObject ammoPrefab;
@@ -23,7 +26,9 @@ public class Cannon : MonoBehaviour {
 		mass = ammoPrefab.GetComponent<Rigidbody>().mass;
 		
 		// create cannonball pool
-		ammoPool = new GameObjectPool(ammoPrefab, 5, InitBallAction, false);
+		ammoPool = new GameObjectPool(ammoPrefab, 5, false);
+		ammoPool.initAction = initBallHandler;
+		ammoPool.spawnAction = spawnBallHandler;
 		
 		// shufflebag of colors: chance of 1/2 red, 1/3 green, 1/6 blue
 		bag = new ShuffleBag<Color>();
@@ -52,11 +57,11 @@ public class Cannon : MonoBehaviour {
 		// spawn ball from pool
 		GameObject ball = ammoPool.Spawn(spawnPoint.position, spawnPoint.rotation);
 		
-		// set color: chance of 1/2 red, 1/3 green, 1/6 blue
-		ball.renderer.material.SetColor("_Color", bag.Next());
-		
 		// add initial velocity
 		ball.rigidbody.velocity = transform.up * (force/mass);
+		
+		// set color: chance of 1/2 red, 1/3 green, 1/6 blue
+		ball.renderer.material.SetColor("_Color", bag.Next());
 		
 		// add a bit of rotation
 		//System.Random random = new System.Random();
@@ -73,11 +78,17 @@ public class Cannon : MonoBehaviour {
 	// ---- protected methods ----
 	
 	// this method will be called when the ball has been instantialized
-	protected void InitBallAction(GameObject target) {
-		
+	protected void initBallHandler(GameObject target) {
 		// set pool so the ball can return to it on destruction
 		AutoDestruct ad = target.GetComponent<AutoDestruct>();
 		if (ad) ad.pool = ammoPool;
+	}
+	
+	protected void spawnBallHandler(GameObject target) {
+		Bullet bullet = target.GetComponent<Bullet>();
+		if (bullet != null) bullet.exploded = false;
+		
+		target.renderer.enabled = true;
 	}
 	
 	// ---- event handlers ----

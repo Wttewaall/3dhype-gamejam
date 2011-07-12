@@ -5,7 +5,7 @@ public class MouseControl : MonoBehaviour {
 	
 	public Cannon cannon;
 	public GameObject ground;
-	public GameObject explosion;
+	public Transform target;
 	
 	protected Transform cannonTransform;
 	
@@ -26,6 +26,17 @@ public class MouseControl : MonoBehaviour {
 		MouseManager.mouseClick -= mouseClickHandler;
 	}
 	
+	void Update() {
+		if (Raycaster.instance != null) {
+			RaycastHit[] hits = Raycaster.instance.lastHits;
+			
+			if (hits.Length > 0) {
+				target.position = hits[0].point + Vector3.up * 5;
+				cannon.GetComponent<AimPath>().AimAtPosition(hits[0].point);
+			}
+		}
+	}
+	
 	// ---- event handlers ----
 	
 	protected void mouseClickHandler(int buttonID) {
@@ -33,14 +44,11 @@ public class MouseControl : MonoBehaviour {
 			
 			if (cannon) cannon.Fire();
 			
-			var hits = Raycaster.instance.lastHits;
-			
+			/*RaycastHit[] hits = Raycaster.instance.lastHits;
 			foreach (RaycastHit hit in hits) {
-				
-				if (hit.transform.gameObject == ground) {
+				if (hit.transform.gameObject == ground)
 					GameObject.Instantiate(explosion, hit.point, Quaternion.identity);
-				}
-			}
+			}*/
 		}
 	}
 }

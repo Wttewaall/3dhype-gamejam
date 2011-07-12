@@ -1,11 +1,13 @@
 using UnityEngine;
 using System.Collections;
 
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 [RequireComponent(typeof(LineRenderer))]
+[AddComponentMenu("King's Ruby/Behaviors/AimPath")]
 
 public class AimPath : MonoBehaviour {
 	
+	public Transform cannonTransform;
 	public Transform originTransform;
 	public Rigidbody bulletRigidbody;
 	public Transform reticleTransform;
@@ -35,19 +37,38 @@ public class AimPath : MonoBehaviour {
 	
 	// ---- public methods ----
 	
-	public float GetPitchAngle() {
-		return (GetVector3AxisValue(originTransform.eulerAngles, pitchAxis) + pitchOffset) * Mathf.Deg2Rad;
+	public float GetPitchAngle(Transform tf) {
+		return (GetVector3AxisValue(tf.eulerAngles, pitchAxis) + pitchOffset) * Mathf.Deg2Rad;
 	}
 	
-	public float GetYawAngle() {
-		return (GetVector3AxisValue(originTransform.eulerAngles, yawAxis) + yawOffset) * Mathf.Deg2Rad;
+	public float GetYawAngle(Transform tf) {
+		return (GetVector3AxisValue(tf.eulerAngles, yawAxis) + yawOffset) * Mathf.Deg2Rad;
+	}
+	
+	public void AimAtPosition(Vector3 position) {
+		float distance = Vector3.Distance(originTransform.position, position);
+		float initialHeight = originTransform.position.y - groundHeight;
+		float targetHeight = groundHeight;
+		
+		float angle = Trajectory.AngleOfReach(distance, velocity, initialHeight, targetHeight, -Physics.gravity.y);
+		if (float.IsNaN(angle)) return;
+		
+		Vector3 pos = cannonTransform.eulerAngles;
+		SetVector3AxisValue(ref pos, angle * Mathf.Rad2Deg - pitchOffset, pitchAxis);
+		
+		Vector3 diff = position - cannonTransform.position;
+		angle = Mathf.Atan2(diff.x, diff.z);
+		
+		SetVector3AxisValue(ref pos, angle * Mathf.Rad2Deg - yawOffset, yawAxis);
+		
+		cannonTransform.eulerAngles = pos;
 	}
 	
 	// ---- protected methods ----
 	
 	protected void CalculatePath() {
-		float anglePitch = GetPitchAngle();
-		float angleYaw = GetYawAngle();
+		float anglePitch = GetPitchAngle(originTransform);
+		float angleYaw = GetYawAngle(originTransform);
 		
 		float initialHeight = originTransform.position.y - groundHeight;
 		float distance = Trajectory.DistanceAtAngle(anglePitch, velocity, initialHeight, -Physics.gravity.y);
@@ -93,6 +114,17 @@ public class AimPath : MonoBehaviour {
 			case Axis.iZ: val = -vector.z; break;
 		}
 		return val;
+	}
+	
+	protected void SetVector3AxisValue(ref Vector3 vector, float val, Axis axis) {
+		switch(axis) {
+			case Axis.X: vector.x = val; break;
+			case Axis.Y: vector.y = val; break;
+			case Axis.Z: vector.z = val; break;
+			case Axis.iX: vector.x = -val; break;
+			case Axis.iY: vector.y = -val; break;
+			case Axis.iZ: vector.z = -val; break;
+		}
 	}
 	
 }

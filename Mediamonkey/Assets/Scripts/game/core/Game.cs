@@ -115,7 +115,7 @@ public class Game : MonoBehaviour {
 		pools = new Dictionary<GameObject, GameObjectPool>();
 		
 		foreach (GameObject enemy in enemies) {
-			pools.Add(enemy, new GameObjectPool(enemy, 5, null, true));
+			pools.Add(enemy, new GameObjectPool(enemy, 5, true));
 		}
 	}
 	

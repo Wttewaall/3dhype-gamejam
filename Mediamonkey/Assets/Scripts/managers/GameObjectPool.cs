@@ -18,12 +18,15 @@ using System.Collections;
  */
 
 public class GameObjectPool {
-
+	
+	public Action<GameObject> initAction;
+	public Action<GameObject> spawnAction;
+	public Action<GameObject> destroyAction;
+	
 	private GameObject _prefab;
 	private Stack available;
 	private ArrayList all;
 	
-	private Action<GameObject> initAction;
 	private bool setActiveRecursively;
 	
 	// ---- getters & setters ----
@@ -48,9 +51,8 @@ public class GameObjectPool {
 	// ---- constructor ----
 	#region constructor
 	
-	public GameObjectPool(GameObject prefab, uint initialCapacity, Action<GameObject> initAction, bool setActiveRecursively) {
+	public GameObjectPool(GameObject prefab, uint initialCapacity, bool setActiveRecursively) {
 		this._prefab = prefab;
-		this.initAction = initAction;
 		this.setActiveRecursively = setActiveRecursively;
 		
 		available =	(initialCapacity > 0)	? new Stack((int) initialCapacity)		: new Stack();
@@ -69,13 +71,16 @@ public class GameObjectPool {
 			// create an object and initialize it.
 			result = GameObject.Instantiate(prefab, position, rotation) as GameObject;
 			
-			// run optional initialization method on the object
+			// call optional init action
 			if (initAction != null) initAction(result);
 			
 			all.Add(result);
 			
 		} else {
 			result = available.Pop() as GameObject;
+			
+			// call optional spawn action
+			if (spawnAction != null) spawnAction(result);
 			
 			// get the result's transform and reuse for efficiency.
 			// calling gameObject.transform is expensive.
@@ -92,6 +97,9 @@ public class GameObjectPool {
 	public bool Destroy(GameObject target) {
 		if (!available.Contains(target)) {
 			available.Push(target);
+			
+			// call optional destroy action
+			if (destroyAction != null) destroyAction(target);
 			
 			SetActive(target, false);
 			return true;

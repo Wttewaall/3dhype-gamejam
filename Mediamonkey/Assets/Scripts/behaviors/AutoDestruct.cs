@@ -11,8 +11,15 @@ public class AutoDestruct : MonoBehaviour {
 		Invoke("DestroyNow", timeOut);
 	}
 	
-	public void DestroyNow () {
+	public void DestroyTimed(float delay) {
+		renderer.enabled = false;
+		Invoke("DestroyNow", delay);
+	}
+	
+	public void DestroyNow() {
 		if (detachChildren) transform.DetachChildren ();
+		
+		CancelInvoke();
 		
 		// destroy the gameobject through the pool, if available
 		if (pool != null) pool.Destroy(gameObject);
