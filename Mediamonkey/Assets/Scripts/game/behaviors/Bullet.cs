@@ -16,10 +16,6 @@ public class Bullet : MonoBehaviour {
 	[NonSerialized]
 	public bool exploded = false;
 	
-	void Start() {
-		rigidbody.detectCollisions = true;
-	}
-	
 	/*void FixedUpdate() {
 		//..
 	}*/
@@ -59,7 +55,7 @@ public class Bullet : MonoBehaviour {
 		audio.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
 		audio.PlayOneShot(explosionSound);
 		
-		GetComponent<AutoDestruct>().DestroyTimed(1);
+		GetComponent<AutoDestruct>().DestroyTimed(2);
 	}
 	
 }

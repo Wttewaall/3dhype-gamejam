@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
-public class TrailBullet : MonoBehaviour {
+[AddComponentMenu("King's Ruby/Behaviors/BulletTrail")]
+
+public class BulletTrail : MonoBehaviour {
 	
 	public Material[] materials;
 	

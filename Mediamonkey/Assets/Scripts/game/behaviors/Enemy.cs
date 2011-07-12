@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour {
 	public delegate void EnemyEvent(Enemy target);
 	public event EnemyEvent death;
 	
+	public bool move = true;
 	public Vector3 offset;
 	public EnemyStats characterStats;
 	
@@ -23,13 +24,20 @@ public class Enemy : MonoBehaviour {
 	
 	void Update() {
 		// simplest behavior: move forward
-		tf.Translate(tf.TransformDirection(tf.forward)*0.05f);
-		
-		if (tf.position.z < -20) Die();
+		if (move) {
+			tf.Translate(tf.TransformDirection(tf.forward)*0.05f);
+			if (tf.position.z < -20) Die();
+		}
+	}
+	
+	void OnCollisionEnter(Collision collision) {
+		if (collision.gameObject.GetComponent<Bullet>() != null) {
+			Statistics.targetsHit++;
+		}
 	}
 	
 	void OnMouseOver() {
-		Die();
+		//Die();
 	}
 	
 	// ---- public methods ----

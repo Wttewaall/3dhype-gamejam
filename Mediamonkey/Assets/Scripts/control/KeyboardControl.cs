@@ -13,8 +13,6 @@ public class KeyboardControl : MonoBehaviour {
 	protected bool moveLeft;
 	protected bool moveRight;
 	protected bool fire;
-	protected bool mute;
-	protected float volume;
 	
 	void Awake() {
 		if (cannon) cannonTransform = cannon.transform;
@@ -32,16 +30,6 @@ public class KeyboardControl : MonoBehaviour {
 		// fire
 		fire = Input.GetKeyDown(KeyCode.Space);
 		if (fire) cannon.Fire();
-		
-		// mute
-		if (Input.GetKeyDown(KeyCode.M)) {
-			if (!mute) volume = Camera.current.audio.volume;
-			mute = !mute;
-			Camera.current.audio.volume = (mute)? 0 : volume;
-		}
-		
-		// restart
-		if (Input.GetKeyDown(KeyCode.R)) Application.LoadLevel(0);
 	}
 	
 	protected void updateMove() {

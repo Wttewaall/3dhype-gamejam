@@ -3,9 +3,9 @@ using System.Collections;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(LineRenderer))]
-[AddComponentMenu("King's Ruby/Behaviors/AimPath")]
+[AddComponentMenu("King's Ruby/Behaviors/CannonAim")]
 
-public class AimPath : MonoBehaviour {
+public class CannonAim : MonoBehaviour {
 	
 	public Transform cannonTransform;
 	public Transform originTransform;
@@ -22,6 +22,8 @@ public class AimPath : MonoBehaviour {
 	protected int iterations;
 	protected LineRenderer line;
 	protected float velocity;
+	protected float anglePitch;
+	protected float angleYaw;
 	
 	// ---- inherited handlers ----
 	
@@ -62,6 +64,9 @@ public class AimPath : MonoBehaviour {
 		SetVector3AxisValue(ref pos, angle * Mathf.Rad2Deg - yawOffset, yawAxis);
 		
 		cannonTransform.eulerAngles = pos;
+		
+		// and once again
+		CalculatePath();
 	}
 	
 	// ---- protected methods ----

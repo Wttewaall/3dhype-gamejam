@@ -5,7 +5,6 @@ public class MouseControl : MonoBehaviour {
 	
 	public Cannon cannon;
 	public GameObject ground;
-	public Transform target;
 	
 	protected Transform cannonTransform;
 	
@@ -31,8 +30,7 @@ public class MouseControl : MonoBehaviour {
 			RaycastHit[] hits = Raycaster.instance.lastHits;
 			
 			if (hits.Length > 0) {
-				target.position = hits[0].point + Vector3.up * 5;
-				cannon.GetComponent<AimPath>().AimAtPosition(hits[0].point);
+				cannon.GetComponent<CannonAim>().AimAtPosition(hits[0].point);
 			}
 		}
 	}

@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+[AddComponentMenu("King's Ruby/Behaviors/AutoDestruct")]
+
 public class AutoDestruct : MonoBehaviour {
 	
 	public float timeOut = 1.0f;

@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(AudioSource))]
+
+[AddComponentMenu("King's Ruby/Behaviors/Achievements")]
+
 public class Achievements : MonoBehaviour {
     
 	public Texture2D background;
@@ -210,12 +213,12 @@ public class Achievement02 : Achievement {
 	
 	public Achievement02() {
 		name = "Punisher";
-		description = "Hit 20 targets";
+		description = "Hit a target";
 		tags.Add(StatisticTag.TARGET_HIT);
 	}
 	
 	override public bool validate() {
-		return (Statistics.targetsHit >= 20);
+		return (Statistics.targetsHit >= 1);
 	}
 	
 }
@@ -224,12 +227,12 @@ public class Achievement03 : Achievement {
 	
 	public Achievement03() {
 		name = "Fire in the hole!";
-		description = "Fire 12 bullets";
+		description = "Fire 20 bullets";
 		tags.Add(StatisticTag.BULLET_FIRED);
 	}
 	
 	override public bool validate() {
-		return (Statistics.bulletsFired >= 12);
+		return (Statistics.bulletsFired >= 20);
 	}
 	
 }

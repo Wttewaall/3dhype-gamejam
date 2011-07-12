@@ -45,12 +45,6 @@ public class Cannon : MonoBehaviour {
 		MouseManager.mouseClick -= mouseClickHandler;
 	}
 	
-	void OnGUI() {
-		GUILayout.Label("-- Ammo Pool --");
-		GUILayout.Label("    active: "+ammoPool.numActive);
-		GUILayout.Label("available: "+ammoPool.numAvailable);
-	}
-	
 	// ---- public methods ----
 	
 	public void Fire() {
