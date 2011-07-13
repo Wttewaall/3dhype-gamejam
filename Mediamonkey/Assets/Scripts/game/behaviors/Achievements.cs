@@ -79,7 +79,7 @@ public class Achievements : MonoBehaviour {
 	}
 	
 	protected void Show() {
-		if (queue.Count == 0 || showing) return;
+		if (queue.Count == 0 || showing || gameObject == null) return;
 		
 		// set current Achievement
 		current = queue.Dequeue();

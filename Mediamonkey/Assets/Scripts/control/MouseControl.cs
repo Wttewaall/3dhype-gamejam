@@ -7,10 +7,11 @@ public class MouseControl : MonoBehaviour {
 	public GameObject ground;
 	
 	protected Transform cannonTransform;
+	protected Vector3 aimPosition;
 	
 	void Awake() {
 		if (cannon) cannonTransform = cannon.transform;
-		//else throw new UnityException("cannon reference needed");
+		else throw new UnityException("cannon reference needed");
 	}
 	
 	void Start() {
@@ -30,7 +31,9 @@ public class MouseControl : MonoBehaviour {
 			RaycastHit[] hits = Raycaster.instance.lastHits;
 			
 			if (hits.Length > 0) {
-				cannon.GetComponent<CannonAim>().AimAtPosition(hits[0].point);
+				float dist = Vector3.Distance(aimPosition, hits[0].point);
+				aimPosition = Vector3.Lerp(aimPosition, hits[0].point, dist/50); // ease
+				cannon.GetComponent<CannonAim>().AimAtPosition(aimPosition);
 			}
 		}
 	}

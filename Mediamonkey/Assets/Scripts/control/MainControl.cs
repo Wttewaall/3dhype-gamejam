@@ -3,6 +3,8 @@ using System.Collections;
 
 public class MainControl : MonoBehaviour {
 	
+	public bool startWithMouseControls = true;
+	
 	protected bool mute;
 	protected float volume;
 	
@@ -13,8 +15,8 @@ public class MainControl : MonoBehaviour {
 		kc = GetComponent<KeyboardControl>();
 		mc = GetComponent<MouseControl>();
 		
-		kc.enabled = false;
-		mc.enabled = true;
+		kc.enabled = !startWithMouseControls;
+		mc.enabled = startWithMouseControls;
 	}
 	
 	void Update() {

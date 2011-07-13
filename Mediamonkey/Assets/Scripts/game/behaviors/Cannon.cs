@@ -7,20 +7,19 @@ using System.Collections;
 
 public class Cannon : MonoBehaviour {
 	
+	public Transform spawnPoint;
 	public GameObject ammoPrefab;
 	public float force = 200;
-	public AudioClip audio_fire;
+	public GameObject muzzleFlare;
+	public AudioClip fireSound;
 	
 	protected float mass;
 	protected GameObjectPool ammoPool;
-	protected Transform spawnPoint;
 	protected ShuffleBag<Color> bag;
 	
 	// ---- inherited handlers ----
 	
 	void Awake() {
-		// get references
-		spawnPoint = transform.Find("spawnPoint");
 		
 		// get ammo mass
 		mass = ammoPrefab.GetComponent<Rigidbody>().mass;
@@ -63,7 +62,10 @@ public class Cannon : MonoBehaviour {
 		
 		// play sound in random pitch
 		audio.pitch = Random.Range(0.9f, 1.1f);
-		audio.PlayOneShot(audio_fire);
+		audio.PlayOneShot(fireSound);
+		
+		// add muzzle effect
+		Instantiate(muzzleFlare, spawnPoint.position, spawnPoint.rotation);
 		
 		// update statistics
 		Statistics.bulletsFired++;
