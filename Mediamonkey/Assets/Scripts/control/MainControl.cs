@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 
 public class MainControl : MonoBehaviour {
@@ -11,12 +12,24 @@ public class MainControl : MonoBehaviour {
 	protected KeyboardControl kc;
 	protected MouseControl mc;
 	
+	[NonSerializedAttribute]
+	public string controlsText = "" +
+		"C = toggle keyboard/mouse controls\n" +
+		"M = toggle mute\n" +
+		"R = reset level";
+	
 	protected void Start () {
 		kc = GetComponent<KeyboardControl>();
 		mc = GetComponent<MouseControl>();
 		
 		kc.enabled = !startWithMouseControls;
 		mc.enabled = startWithMouseControls;
+	}
+	
+	void OnGUI() {
+		GUILayout.TextArea(controlsText);
+		if (kc.enabled) GUILayout.TextArea(kc.controlsText);
+		if (mc.enabled) GUILayout.TextArea(mc.controlsText);
 	}
 	
 	void Update() {
@@ -28,9 +41,9 @@ public class MainControl : MonoBehaviour {
 		
 		// mute
 		if (Input.GetKeyDown(KeyCode.M)) {
-			if (!mute) volume = Camera.current.audio.volume;
+			if (!mute) volume = AudioListener.volume;
 			mute = !mute;
-			Camera.current.audio.volume = (mute)? 0 : volume;
+			AudioListener.volume = (mute)? 0 : volume;
 		}
 		
 		// restart

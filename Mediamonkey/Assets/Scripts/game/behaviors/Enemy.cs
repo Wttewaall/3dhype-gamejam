@@ -37,7 +37,11 @@ public class Enemy : MonoBehaviour {
 	}
 	
 	void OnMouseOver() {
-		//Die();
+		Healthbar hb = GetComponentInChildren<Healthbar>();
+		if (hb != null && Input.GetMouseButtonDown(0)) {
+			hb.health -= UnityEngine.Random.value * 0.2f + 0.2f;
+			if (hb.health <=0) Die();
+		}
 	}
 	
 	// ---- public methods ----

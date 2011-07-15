@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 
 public class MouseControl : MonoBehaviour {
@@ -8,6 +9,13 @@ public class MouseControl : MonoBehaviour {
 	
 	protected Transform cannonTransform;
 	protected Vector3 aimPosition;
+	
+	[NonSerializedAttribute]
+	public string controlsText = "" +
+		"Aim with the mouse\n" +
+		"Press left mouse button to fire";
+	
+	// ---- inherited handlers ----
 	
 	void Awake() {
 		if (cannon) cannonTransform = cannon.transform;
@@ -42,14 +50,7 @@ public class MouseControl : MonoBehaviour {
 	
 	protected void mouseClickHandler(int buttonID) {
 		if (buttonID == MouseButton.LEFT) {
-			
 			if (cannon) cannon.Fire();
-			
-			/*RaycastHit[] hits = Raycaster.instance.lastHits;
-			foreach (RaycastHit hit in hits) {
-				if (hit.transform.gameObject == ground)
-					GameObject.Instantiate(explosion, hit.point, Quaternion.identity);
-			}*/
 		}
 	}
 }

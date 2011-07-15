@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 
 public class KeyboardControl : MonoBehaviour {
@@ -13,6 +14,13 @@ public class KeyboardControl : MonoBehaviour {
 	protected bool moveLeft;
 	protected bool moveRight;
 	protected bool fire;
+	
+	[NonSerializedAttribute]
+	public string controlsText = "" +
+		"Aim with the arrow buttons\n" +
+		"Press SPACE key to fire";
+	
+	// ---- inherited handlers ----
 	
 	void Awake() {
 		if (cannon) cannonTransform = cannon.transform;
@@ -31,6 +39,8 @@ public class KeyboardControl : MonoBehaviour {
 		fire = Input.GetKeyDown(KeyCode.Space);
 		if (fire) cannon.Fire();
 	}
+	
+	// ---- protected methods ----
 	
 	protected void updateMove() {
 		Vector3 euler = cannonTransform.rotation.eulerAngles;
