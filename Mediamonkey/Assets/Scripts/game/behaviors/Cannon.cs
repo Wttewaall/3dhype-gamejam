@@ -82,7 +82,7 @@ public class Cannon : MonoBehaviour {
 	
 	protected void spawnBallHandler(GameObject target) {
 		Bullet bullet = target.GetComponent<Bullet>();
-		if (bullet != null) bullet.exploded = false;
+		if (bullet != null) bullet.Reset();
 		
 		target.renderer.enabled = true;
 	}

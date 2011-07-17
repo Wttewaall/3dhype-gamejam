@@ -7,7 +7,7 @@ labels:
 ModelImporter:
   importerVersion: 7
   meshes:
-    scaleFactor: 1
+    scaleFactor: 0.1
     useFileUnits: 1
     meshCompression: 0
     generateColliders: 1

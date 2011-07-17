@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,16 +10,35 @@ public class Enemy : MonoBehaviour {
 	public delegate void EnemyEvent(Enemy target);
 	public event EnemyEvent death;
 	
+	public string type;
 	public bool move = true;
 	public Vector3 offset;
-	public EnemyStats characterStats;
+	public EnemyStats charStats;
 	
 	protected Transform tf;
+	protected Healthbar healthbar;
+	
+	// ---- getters & setters ----
+	
+	public float health {
+		get {
+			return charStats.health;
+		}
+		set {
+			// if already out of health, return
+			if (charStats.health <=0) return;
+			
+			charStats.health = value;
+			if (healthbar != null) healthbar.health = charStats.health / charStats.startHealth;
+			if (charStats.startHealth > 0 && charStats.health <= 0) Die();
+		}
+	}
 	
 	// ---- inherited handlers ----
 	
 	void Awake() {
 		tf = transform;
+		healthbar = GetComponentInChildren<Healthbar>();
 	}
 	
 	void Update() {
@@ -30,17 +49,17 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 	
-	void OnCollisionEnter(Collision collision) {
-		if (collision.gameObject.GetComponent<Bullet>() != null) {
+	void OnTriggerEnter(Collider other) {
+		Bullet bullet = other.GetComponent<Bullet>();
+		if (bullet != null) {
+			health -= bullet.CalculateDamage(this);
 			Statistics.targetsHit++;
 		}
 	}
 	
-	void OnMouseOver() {
-		Healthbar hb = GetComponentInChildren<Healthbar>();
-		if (hb != null && Input.GetMouseButtonDown(0)) {
-			hb.health -= UnityEngine.Random.value * 0.2f + 0.2f;
-			if (hb.health <=0) Die();
+	void OnCollisionEnter(Collision collision) {
+		if (collision.gameObject.GetComponent<Bullet>() != null) {
+			Statistics.targetsHit++;
 		}
 	}
 	
@@ -48,6 +67,8 @@ public class Enemy : MonoBehaviour {
 	
 	public void Die() {
 		DispatchEnemyEvent(death);
+		
+		// TODO: return to pool
 		Destroy(gameObject);
 	}
 	
@@ -66,12 +87,12 @@ public class EnemyStats {
 	public float armor			= 200;
 	
 	[NonSerializedAttribute]
-	public float healthDamage	= 0;
+	public float startHealth;
 	
 	[NonSerializedAttribute]
-	public float armorDamage	= 0;
+	public float startArmor;
 	
-	// resistance to certain attacks
+	// scalar resistance to certain attacks
 	public float resistDirectHit;
 	public float resistSplashDamage;
 	public float resistKnockdown;
@@ -79,5 +100,10 @@ public class EnemyStats {
 	// mental state
 	public float courage		= 50; // -courage = fear
 	public float rage			= 0; // -rage = happiness/joy
+	
+	public EnemyStats() {
+		startHealth = health;
+		startArmor = armor;
+	}
 	
 }

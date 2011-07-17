@@ -18,10 +18,10 @@ using System.Collections;
 public class Raycaster : MonoBehaviour {
 	
 	public delegate void HitEventHandler(Ray ray, RaycastHit[] hits);
-	
 	public static event HitEventHandler hitUpdate;
 	
 	public static Raycaster instance;
+	private static RaycastDistanceSorter sorter;
 	
 	// raycast properties
 	public int				interval = 1;
@@ -33,8 +33,6 @@ public class Raycaster : MonoBehaviour {
 	private Ray				ray;
 	private RaycastHit[]	hits;
 	private RaycastHit		hit;
-	
-	private RaycastDistanceSorter sorter;
 	
 	private byte			frame = 0; // max 255
 	
@@ -56,6 +54,9 @@ public class Raycaster : MonoBehaviour {
 		
 		// quick and easy singleton
 		Raycaster.instance = this;
+		
+		if (Raycaster.sorter == null)
+			Raycaster.sorter = new RaycastDistanceSorter();
 	}
 	
 	// Update is called once per frame
@@ -82,10 +83,7 @@ public class Raycaster : MonoBehaviour {
 		hits = Physics.RaycastAll(ray, maxDistance, layer);
 		
 		// sort the result on distance
-		if (hits.Length > 1) {
-			if (sorter == null) sorter = new RaycastDistanceSorter();
-			System.Array.Sort(hits, sorter);
-		}
+		if (hits.Length > 1) System.Array.Sort(hits, Raycaster.sorter);
 		
 		// dispatch event to any listeners
 		if (hitUpdate != null) hitUpdate(ray, hits);

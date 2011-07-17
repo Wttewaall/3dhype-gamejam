@@ -78,7 +78,7 @@ public class Game : MonoBehaviour {
 	}
 	
 	void Start() {
-		Invoke("NextRound", 1);
+		//Invoke("NextRound", 1);
 	}
 	
 	void Update() {

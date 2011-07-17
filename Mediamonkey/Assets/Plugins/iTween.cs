@@ -3449,7 +3449,7 @@ public class iTween : MonoBehaviour{
 		}
 		
 		//shortest distance:
-		vector3s[1]=new Vector3(clerp(vector3s[0].x,vector3s[1].x,1),clerp(vector3s[0].y,vector3s[1].y,1),clerp(vector3s[0].z,vector3s[1].z,1));
+		vector3s[1]=new Vector3(EasingEquations.clerp(vector3s[0].x,vector3s[1].x,1), EasingEquations.clerp(vector3s[0].y,vector3s[1].y,1), EasingEquations.clerp(vector3s[0].z,vector3s[1].z,1));
 		
 		//need for speed?
 		if(tweenArguments.Contains("speed")){
@@ -3746,7 +3746,7 @@ public class iTween : MonoBehaviour{
 		}
 		
 		//shortest distance:
-		vector3s[1]=new Vector3(clerp(vector3s[0].x,vector3s[1].x,1),clerp(vector3s[0].y,vector3s[1].y,1),clerp(vector3s[0].z,vector3s[1].z,1));
+		vector3s[1]=new Vector3(EasingEquations.clerp(vector3s[0].x,vector3s[1].x,1), EasingEquations.clerp(vector3s[0].y,vector3s[1].y,1), EasingEquations.clerp(vector3s[0].z,vector3s[1].z,1));
 		
 		//need for speed?
 		if(tweenArguments.Contains("speed")){
@@ -4407,19 +4407,19 @@ public class iTween : MonoBehaviour{
 		
 		//calculate:
 		if(vector3s[1].x>0){
-			vector3s[2].x = punch(vector3s[1].x,percentage);
+			vector3s[2].x = EasingEquations.punch(vector3s[1].x,percentage);
 		}else if(vector3s[1].x<0){
-			vector3s[2].x=-punch(Mathf.Abs(vector3s[1].x),percentage); 
+			vector3s[2].x=-EasingEquations.punch(Mathf.Abs(vector3s[1].x),percentage); 
 		}
 		if(vector3s[1].y>0){
-			vector3s[2].y=punch(vector3s[1].y,percentage);
+			vector3s[2].y=EasingEquations.punch(vector3s[1].y,percentage);
 		}else if(vector3s[1].y<0){
-			vector3s[2].y=-punch(Mathf.Abs(vector3s[1].y),percentage); 
+			vector3s[2].y=-EasingEquations.punch(Mathf.Abs(vector3s[1].y),percentage); 
 		}
 		if(vector3s[1].z>0){
-			vector3s[2].z=punch(vector3s[1].z,percentage);
+			vector3s[2].z=EasingEquations.punch(vector3s[1].z,percentage);
 		}else if(vector3s[1].z<0){
-			vector3s[2].z=-punch(Mathf.Abs(vector3s[1].z),percentage); 
+			vector3s[2].z=-EasingEquations.punch(Mathf.Abs(vector3s[1].z),percentage); 
 		}
 		
 		//apply:
@@ -4453,19 +4453,19 @@ public class iTween : MonoBehaviour{
 		
 		//calculate:
 		if(vector3s[1].x>0){
-			vector3s[2].x = punch(vector3s[1].x,percentage);
+			vector3s[2].x = EasingEquations.punch(vector3s[1].x,percentage);
 		}else if(vector3s[1].x<0){
-			vector3s[2].x=-punch(Mathf.Abs(vector3s[1].x),percentage); 
+			vector3s[2].x=-EasingEquations.punch(Mathf.Abs(vector3s[1].x),percentage); 
 		}
 		if(vector3s[1].y>0){
-			vector3s[2].y=punch(vector3s[1].y,percentage);
+			vector3s[2].y=EasingEquations.punch(vector3s[1].y,percentage);
 		}else if(vector3s[1].y<0){
-			vector3s[2].y=-punch(Mathf.Abs(vector3s[1].y),percentage); 
+			vector3s[2].y=-EasingEquations.punch(Mathf.Abs(vector3s[1].y),percentage); 
 		}
 		if(vector3s[1].z>0){
-			vector3s[2].z=punch(vector3s[1].z,percentage);
+			vector3s[2].z=EasingEquations.punch(vector3s[1].z,percentage);
 		}else if(vector3s[1].z<0){
-			vector3s[2].z=-punch(Mathf.Abs(vector3s[1].z),percentage); 
+			vector3s[2].z=-EasingEquations.punch(Mathf.Abs(vector3s[1].z),percentage); 
 		}
 		
 		//apply:
@@ -4492,19 +4492,19 @@ public class iTween : MonoBehaviour{
 	void ApplyPunchScaleTargets(){
 		//calculate:
 		if(vector3s[1].x>0){
-			vector3s[2].x = punch(vector3s[1].x,percentage);
+			vector3s[2].x = EasingEquations.punch(vector3s[1].x,percentage);
 		}else if(vector3s[1].x<0){
-			vector3s[2].x=-punch(Mathf.Abs(vector3s[1].x),percentage); 
+			vector3s[2].x=-EasingEquations.punch(Mathf.Abs(vector3s[1].x),percentage); 
 		}
 		if(vector3s[1].y>0){
-			vector3s[2].y=punch(vector3s[1].y,percentage);
+			vector3s[2].y=EasingEquations.punch(vector3s[1].y,percentage);
 		}else if(vector3s[1].y<0){
-			vector3s[2].y=-punch(Mathf.Abs(vector3s[1].y),percentage); 
+			vector3s[2].y=-EasingEquations.punch(Mathf.Abs(vector3s[1].y),percentage); 
 		}
 		if(vector3s[1].z>0){
-			vector3s[2].z=punch(vector3s[1].z,percentage);
+			vector3s[2].z=EasingEquations.punch(vector3s[1].z,percentage);
 		}else if(vector3s[1].z<0){
-			vector3s[2].z=-punch(Mathf.Abs(vector3s[1].z),percentage); 
+			vector3s[2].z=-EasingEquations.punch(Mathf.Abs(vector3s[1].z),percentage); 
 		}
 		
 		//apply:
@@ -6403,88 +6403,88 @@ public class iTween : MonoBehaviour{
 	void GetEasingFunction(){
 		switch (easeType){
 		case EaseType.easeInQuad:
-			ease  = new EasingFunction(easeInQuad);
+			ease  = new EasingFunction(EasingEquations.easeInQuad);
 			break;
 		case EaseType.easeOutQuad:
-			ease = new EasingFunction(easeOutQuad);
+			ease = new EasingFunction(EasingEquations.easeOutQuad);
 			break;
 		case EaseType.easeInOutQuad:
-			ease = new EasingFunction(easeInOutQuad);
+			ease = new EasingFunction(EasingEquations.easeInOutQuad);
 			break;
 		case EaseType.easeInCubic:
-			ease = new EasingFunction(easeInCubic);
+			ease = new EasingFunction(EasingEquations.easeInCubic);
 			break;
 		case EaseType.easeOutCubic:
-			ease = new EasingFunction(easeOutCubic);
+			ease = new EasingFunction(EasingEquations.easeOutCubic);
 			break;
 		case EaseType.easeInOutCubic:
-			ease = new EasingFunction(easeInOutCubic);
+			ease = new EasingFunction(EasingEquations.easeInOutCubic);
 			break;
 		case EaseType.easeInQuart:
-			ease = new EasingFunction(easeInQuart);
+			ease = new EasingFunction(EasingEquations.easeInQuart);
 			break;
 		case EaseType.easeOutQuart:
-			ease = new EasingFunction(easeOutQuart);
+			ease = new EasingFunction(EasingEquations.easeOutQuart);
 			break;
 		case EaseType.easeInOutQuart:
-			ease = new EasingFunction(easeInOutQuart);
+			ease = new EasingFunction(EasingEquations.easeInOutQuart);
 			break;
 		case EaseType.easeInQuint:
-			ease = new EasingFunction(easeInQuint);
+			ease = new EasingFunction(EasingEquations.easeInQuint);
 			break;
 		case EaseType.easeOutQuint:
-			ease = new EasingFunction(easeOutQuint);
+			ease = new EasingFunction(EasingEquations.easeOutQuint);
 			break;
 		case EaseType.easeInOutQuint:
-			ease = new EasingFunction(easeInOutQuint);
+			ease = new EasingFunction(EasingEquations.easeInOutQuint);
 			break;
 		case EaseType.easeInSine:
-			ease = new EasingFunction(easeInSine);
+			ease = new EasingFunction(EasingEquations.easeInSine);
 			break;
 		case EaseType.easeOutSine:
-			ease = new EasingFunction(easeOutSine);
+			ease = new EasingFunction(EasingEquations.easeOutSine);
 			break;
 		case EaseType.easeInOutSine:
-			ease = new EasingFunction(easeInOutSine);
+			ease = new EasingFunction(EasingEquations.easeInOutSine);
 			break;
 		case EaseType.easeInExpo:
-			ease = new EasingFunction(easeInExpo);
+			ease = new EasingFunction(EasingEquations.easeInExpo);
 			break;
 		case EaseType.easeOutExpo:
-			ease = new EasingFunction(easeOutExpo);
+			ease = new EasingFunction(EasingEquations.easeOutExpo);
 			break;
 		case EaseType.easeInOutExpo:
-			ease = new EasingFunction(easeInOutExpo);
+			ease = new EasingFunction(EasingEquations.easeInOutExpo);
 			break;
 		case EaseType.easeInCirc:
-			ease = new EasingFunction(easeInCirc);
+			ease = new EasingFunction(EasingEquations.easeInCirc);
 			break;
 		case EaseType.easeOutCirc:
-			ease = new EasingFunction(easeOutCirc);
+			ease = new EasingFunction(EasingEquations.easeOutCirc);
 			break;
 		case EaseType.easeInOutCirc:
-			ease = new EasingFunction(easeInOutCirc);
+			ease = new EasingFunction(EasingEquations.easeInOutCirc);
 			break;
 		case EaseType.linear:
-			ease = new EasingFunction(linear);
+			ease = new EasingFunction(EasingEquations.linear);
 			break;
 		case EaseType.spring:
-			ease = new EasingFunction(spring);
+			ease = new EasingFunction(EasingEquations.spring);
 			break;
 		case EaseType.bounce:
-			ease = new EasingFunction(bounce);
+			ease = new EasingFunction(EasingEquations.bounce);
 			break;
 		case EaseType.easeInBack:
-			ease = new EasingFunction(easeInBack);
+			ease = new EasingFunction(EasingEquations.easeInBack);
 			break;
 		case EaseType.easeOutBack:
-			ease = new EasingFunction(easeOutBack);
+			ease = new EasingFunction(EasingEquations.easeOutBack);
 			break;
 		case EaseType.easeInOutBack:
-			ease = new EasingFunction(easeInOutBack);
+			ease = new EasingFunction(EasingEquations.easeInOutBack);
 			break;
 		case EaseType.elastic:
-			ease = new EasingFunction(elastic);
+			ease = new EasingFunction(EasingEquations.elastic);
 			break;
 		}
 	}
@@ -6596,237 +6596,6 @@ public class iTween : MonoBehaviour{
 	
 	#endregion	
 	
-	#region Easing Curves
-	
-	private float linear(float start, float end, float value){
-		return Mathf.Lerp(start, end, value);
-	}
-	
-	private float clerp(float start, float end, float value){
-		float min = 0.0f;
-		float max = 360.0f;
-		float half = Mathf.Abs((max - min) / 2.0f);
-		float retval = 0.0f;
-		float diff = 0.0f;
-		if ((end - start) < -half){
-			diff = ((max - start) + end) * value;
-			retval = start + diff;
-		}else if ((end - start) > half){
-			diff = -((max - end) + start) * value;
-			retval = start + diff;
-		}else retval = start + (end - start) * value;
-		return retval;
-    }
-
-	private float spring(float start, float end, float value){
-		value = Mathf.Clamp01(value);
-		value = (Mathf.Sin(value * Mathf.PI * (0.2f + 2.5f * value * value * value)) * Mathf.Pow(1f - value, 2.2f) + value) * (1f + (1.2f * (1f - value)));
-		return start + (end - start) * value;
-	}
-
-	private float easeInQuad(float start, float end, float value){
-		end -= start;
-		return end * value * value + start;
-	}
-
-	private float easeOutQuad(float start, float end, float value){
-		end -= start;
-		return -end * value * (value - 2) + start;
-	}
-
-	private float easeInOutQuad(float start, float end, float value){
-		value /= .5f;
-		end -= start;
-		if (value < 1) return end / 2 * value * value + start;
-		value--;
-		return -end / 2 * (value * (value - 2) - 1) + start;
-	}
-
-	private float easeInCubic(float start, float end, float value){
-		end -= start;
-		return end * value * value * value + start;
-	}
-
-	private float easeOutCubic(float start, float end, float value){
-		value--;
-		end -= start;
-		return end * (value * value * value + 1) + start;
-	}
-
-	private float easeInOutCubic(float start, float end, float value){
-		value /= .5f;
-		end -= start;
-		if (value < 1) return end / 2 * value * value * value + start;
-		value -= 2;
-		return end / 2 * (value * value * value + 2) + start;
-	}
-
-	private float easeInQuart(float start, float end, float value){
-		end -= start;
-		return end * value * value * value * value + start;
-	}
-
-	private float easeOutQuart(float start, float end, float value){
-		value--;
-		end -= start;
-		return -end * (value * value * value * value - 1) + start;
-	}
-
-	private float easeInOutQuart(float start, float end, float value){
-		value /= .5f;
-		end -= start;
-		if (value < 1) return end / 2 * value * value * value * value + start;
-		value -= 2;
-		return -end / 2 * (value * value * value * value - 2) + start;
-	}
-
-	private float easeInQuint(float start, float end, float value){
-		end -= start;
-		return end * value * value * value * value * value + start;
-	}
-
-	private float easeOutQuint(float start, float end, float value){
-		value--;
-		end -= start;
-		return end * (value * value * value * value * value + 1) + start;
-	}
-
-	private float easeInOutQuint(float start, float end, float value){
-		value /= .5f;
-		end -= start;
-		if (value < 1) return end / 2 * value * value * value * value * value + start;
-		value -= 2;
-		return end / 2 * (value * value * value * value * value + 2) + start;
-	}
-
-	private float easeInSine(float start, float end, float value){
-		end -= start;
-		return -end * Mathf.Cos(value / 1 * (Mathf.PI / 2)) + end + start;
-	}
-
-	private float easeOutSine(float start, float end, float value){
-		end -= start;
-		return end * Mathf.Sin(value / 1 * (Mathf.PI / 2)) + start;
-	}
-
-	private float easeInOutSine(float start, float end, float value){
-		end -= start;
-		return -end / 2 * (Mathf.Cos(Mathf.PI * value / 1) - 1) + start;
-	}
-
-	private float easeInExpo(float start, float end, float value){
-		end -= start;
-		return end * Mathf.Pow(2, 10 * (value / 1 - 1)) + start;
-	}
-
-	private float easeOutExpo(float start, float end, float value){
-		end -= start;
-		return end * (-Mathf.Pow(2, -10 * value / 1) + 1) + start;
-	}
-
-	private float easeInOutExpo(float start, float end, float value){
-		value /= .5f;
-		end -= start;
-		if (value < 1) return end / 2 * Mathf.Pow(2, 10 * (value - 1)) + start;
-		value--;
-		return end / 2 * (-Mathf.Pow(2, -10 * value) + 2) + start;
-	}
-
-	private float easeInCirc(float start, float end, float value){
-		end -= start;
-		return -end * (Mathf.Sqrt(1 - value * value) - 1) + start;
-	}
-
-	private float easeOutCirc(float start, float end, float value){
-		value--;
-		end -= start;
-		return end * Mathf.Sqrt(1 - value * value) + start;
-	}
-
-	private float easeInOutCirc(float start, float end, float value){
-		value /= .5f;
-		end -= start;
-		if (value < 1) return -end / 2 * (Mathf.Sqrt(1 - value * value) - 1) + start;
-		value -= 2;
-		return end / 2 * (Mathf.Sqrt(1 - value * value) + 1) + start;
-	}
-
-	private float bounce(float start, float end, float value){
-		value /= 1f;
-		end -= start;
-		if (value < (1 / 2.75f)){
-			return end * (7.5625f * value * value) + start;
-		}else if (value < (2 / 2.75f)){
-			value -= (1.5f / 2.75f);
-			return end * (7.5625f * (value) * value + .75f) + start;
-		}else if (value < (2.5 / 2.75)){
-			value -= (2.25f / 2.75f);
-			return end * (7.5625f * (value) * value + .9375f) + start;
-		}else{
-			value -= (2.625f / 2.75f);
-			return end * (7.5625f * (value) * value + .984375f) + start;
-		}
-	}
-
-	private float easeInBack(float start, float end, float value){
-		end -= start;
-		value /= 1;
-		float s = 1.70158f;
-		return end * (value) * value * ((s + 1) * value - s) + start;
-	}
-
-	private float easeOutBack(float start, float end, float value){
-		float s = 1.70158f;
-		end -= start;
-		value = (value / 1) - 1;
-		return end * ((value) * value * ((s + 1) * value + s) + 1) + start;
-	}
-
-	private float easeInOutBack(float start, float end, float value){
-		float s = 1.70158f;
-		end -= start;
-		value /= .5f;
-		if ((value) < 1){
-			s *= (1.525f);
-			return end / 2 * (value * value * (((s) + 1) * value - s)) + start;
-		}
-		value -= 2;
-		s *= (1.525f);
-		return end / 2 * ((value) * value * (((s) + 1) * value + s) + 2) + start;
-	}
-
-	private float punch(float amplitude, float value){
-		float s = 9;
-		if (value == 0){
-			return 0;
-		}
-		if (value == 1){
-			return 0;
-		}
-		float period = 1 * 0.3f;
-		s = period / (2 * Mathf.PI) * Mathf.Asin(0);
-		return (amplitude * Mathf.Pow(2, -10 * value) * Mathf.Sin((value * 1 - s) * (2 * Mathf.PI) / period));
-    }
-	
-	private float elastic(float start, float end, float value){
-		float d = 1;
-		float a = 0;
-		float p = 0;
-		float s = 0;
-		
-		if (value==0) return start;  
-		if ((value/=d)==1) return start+end;  
-		if (p==0) p=d*.3f;
-		if (a==0 || a < Mathf.Abs(end)) { 
-			a=end; 
-			s=p/4; 
-		}
-		else s = p/(2*Mathf.PI) * Mathf.Asin (end/a);
-		return (a*Mathf.Pow(2,-10*value) * Mathf.Sin( (value*d-s)*(2*Mathf.PI)/p ) + end + start);
-	}
-	
-	#endregion	
-	
 	#region Deprecated and Renamed
 	/*
 	public static void audioFrom(GameObject target, Hashtable args){Debug.LogError("iTween Error: audioFrom() has been renamed to AudioFrom().");}
@@ -6875,3 +6644,234 @@ public class iTween : MonoBehaviour{
 	*/
 	#endregion
 } 
+
+public struct EasingEquations {
+
+	public static float linear(float start, float end, float value){
+		return Mathf.Lerp(start, end, value);
+	}
+	
+	public static float clerp(float start, float end, float value){
+		float min = 0.0f;
+		float max = 360.0f;
+		float half = Mathf.Abs((max - min) / 2.0f);
+		float retval = 0.0f;
+		float diff = 0.0f;
+		if ((end - start) < -half){
+			diff = ((max - start) + end) * value;
+			retval = start + diff;
+		}else if ((end - start) > half){
+			diff = -((max - end) + start) * value;
+			retval = start + diff;
+		}else retval = start + (end - start) * value;
+		return retval;
+    }
+
+	public static float spring(float start, float end, float value){
+		value = Mathf.Clamp01(value);
+		value = (Mathf.Sin(value * Mathf.PI * (0.2f + 2.5f * value * value * value)) * Mathf.Pow(1f - value, 2.2f) + value) * (1f + (1.2f * (1f - value)));
+		return start + (end - start) * value;
+	}
+
+	public static float easeInQuad(float start, float end, float value){
+		end -= start;
+		return end * value * value + start;
+	}
+
+	public static float easeOutQuad(float start, float end, float value){
+		end -= start;
+		return -end * value * (value - 2) + start;
+	}
+
+	public static float easeInOutQuad(float start, float end, float value){
+		value /= .5f;
+		end -= start;
+		if (value < 1) return end / 2 * value * value + start;
+		value--;
+		return -end / 2 * (value * (value - 2) - 1) + start;
+	}
+
+	public static float easeInCubic(float start, float end, float value){
+		end -= start;
+		return end * value * value * value + start;
+	}
+
+	public static float easeOutCubic(float start, float end, float value){
+		value--;
+		end -= start;
+		return end * (value * value * value + 1) + start;
+	}
+
+	public static float easeInOutCubic(float start, float end, float value){
+		value /= .5f;
+		end -= start;
+		if (value < 1) return end / 2 * value * value * value + start;
+		value -= 2;
+		return end / 2 * (value * value * value + 2) + start;
+	}
+
+	public static float easeInQuart(float start, float end, float value){
+		end -= start;
+		return end * value * value * value * value + start;
+	}
+
+	public static float easeOutQuart(float start, float end, float value){
+		value--;
+		end -= start;
+		return -end * (value * value * value * value - 1) + start;
+	}
+
+	public static float easeInOutQuart(float start, float end, float value){
+		value /= .5f;
+		end -= start;
+		if (value < 1) return end / 2 * value * value * value * value + start;
+		value -= 2;
+		return -end / 2 * (value * value * value * value - 2) + start;
+	}
+
+	public static float easeInQuint(float start, float end, float value){
+		end -= start;
+		return end * value * value * value * value * value + start;
+	}
+
+	public static float easeOutQuint(float start, float end, float value){
+		value--;
+		end -= start;
+		return end * (value * value * value * value * value + 1) + start;
+	}
+
+	public static float easeInOutQuint(float start, float end, float value){
+		value /= .5f;
+		end -= start;
+		if (value < 1) return end / 2 * value * value * value * value * value + start;
+		value -= 2;
+		return end / 2 * (value * value * value * value * value + 2) + start;
+	}
+
+	public static float easeInSine(float start, float end, float value){
+		end -= start;
+		return -end * Mathf.Cos(value / 1 * (Mathf.PI / 2)) + end + start;
+	}
+
+	public static float easeOutSine(float start, float end, float value){
+		end -= start;
+		return end * Mathf.Sin(value / 1 * (Mathf.PI / 2)) + start;
+	}
+
+	public static float easeInOutSine(float start, float end, float value){
+		end -= start;
+		return -end / 2 * (Mathf.Cos(Mathf.PI * value / 1) - 1) + start;
+	}
+
+	public static float easeInExpo(float start, float end, float value){
+		end -= start;
+		return end * Mathf.Pow(2, 10 * (value / 1 - 1)) + start;
+	}
+
+	public static float easeOutExpo(float start, float end, float value){
+		end -= start;
+		return end * (-Mathf.Pow(2, -10 * value / 1) + 1) + start;
+	}
+
+	public static float easeInOutExpo(float start, float end, float value){
+		value /= .5f;
+		end -= start;
+		if (value < 1) return end / 2 * Mathf.Pow(2, 10 * (value - 1)) + start;
+		value--;
+		return end / 2 * (-Mathf.Pow(2, -10 * value) + 2) + start;
+	}
+
+	public static float easeInCirc(float start, float end, float value){
+		end -= start;
+		return -end * (Mathf.Sqrt(1 - value * value) - 1) + start;
+	}
+
+	public static float easeOutCirc(float start, float end, float value){
+		value--;
+		end -= start;
+		return end * Mathf.Sqrt(1 - value * value) + start;
+	}
+
+	public static float easeInOutCirc(float start, float end, float value){
+		value /= .5f;
+		end -= start;
+		if (value < 1) return -end / 2 * (Mathf.Sqrt(1 - value * value) - 1) + start;
+		value -= 2;
+		return end / 2 * (Mathf.Sqrt(1 - value * value) + 1) + start;
+	}
+
+	public static float bounce(float start, float end, float value){
+		value /= 1f;
+		end -= start;
+		if (value < (1 / 2.75f)){
+			return end * (7.5625f * value * value) + start;
+		}else if (value < (2 / 2.75f)){
+			value -= (1.5f / 2.75f);
+			return end * (7.5625f * (value) * value + .75f) + start;
+		}else if (value < (2.5 / 2.75)){
+			value -= (2.25f / 2.75f);
+			return end * (7.5625f * (value) * value + .9375f) + start;
+		}else{
+			value -= (2.625f / 2.75f);
+			return end * (7.5625f * (value) * value + .984375f) + start;
+		}
+	}
+
+	public static float easeInBack(float start, float end, float value){
+		end -= start;
+		value /= 1;
+		float s = 1.70158f;
+		return end * (value) * value * ((s + 1) * value - s) + start;
+	}
+
+	public static float easeOutBack(float start, float end, float value){
+		float s = 1.70158f;
+		end -= start;
+		value = (value / 1) - 1;
+		return end * ((value) * value * ((s + 1) * value + s) + 1) + start;
+	}
+
+	public static float easeInOutBack(float start, float end, float value){
+		float s = 1.70158f;
+		end -= start;
+		value /= .5f;
+		if ((value) < 1){
+			s *= (1.525f);
+			return end / 2 * (value * value * (((s) + 1) * value - s)) + start;
+		}
+		value -= 2;
+		s *= (1.525f);
+		return end / 2 * ((value) * value * (((s) + 1) * value + s) + 2) + start;
+	}
+
+	public static float punch(float amplitude, float value){
+		float s = 9;
+		if (value == 0){
+			return 0;
+		}
+		if (value == 1){
+			return 0;
+		}
+		float period = 1 * 0.3f;
+		s = period / (2 * Mathf.PI) * Mathf.Asin(0);
+		return (amplitude * Mathf.Pow(2, -10 * value) * Mathf.Sin((value * 1 - s) * (2 * Mathf.PI) / period));
+    }
+	
+	public static float elastic(float start, float end, float value){
+		float d = 1;
+		float a = 0;
+		float p = 0;
+		float s = 0;
+		
+		if (value==0) return start;  
+		if ((value/=d)==1) return start+end;  
+		if (p==0) p=d*.3f;
+		if (a==0 || a < Mathf.Abs(end)) { 
+			a=end; 
+			s=p/4; 
+		}
+		else s = p/(2*Mathf.PI) * Mathf.Asin (end/a);
+		return (a*Mathf.Pow(2,-10*value) * Mathf.Sin( (value*d-s)*(2*Mathf.PI)/p ) + end + start);
+	}
+	
+}
