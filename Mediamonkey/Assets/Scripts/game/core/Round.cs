@@ -123,6 +123,10 @@ public class Round {
 		}
 	}
 	
+	override public string ToString() {
+		return name;
+	}
+	
 	// ---- protected methods ----
 	
 	protected void SetWaveHandlers(Wave target, bool adding) {

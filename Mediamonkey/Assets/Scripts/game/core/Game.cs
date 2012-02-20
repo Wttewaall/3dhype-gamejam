@@ -78,7 +78,7 @@ public class Game : MonoBehaviour {
 	}
 	
 	void Start() {
-		//Invoke("NextRound", 1);
+		Invoke("NextRound", 1);
 	}
 	
 	void Update() {
@@ -150,11 +150,11 @@ public class Game : MonoBehaviour {
 	// ---- event handlers ----
 	
 	private void roundStartHandler(Round target) {
-		//Utils.trace("roundStart", target);
+		Utils.trace(target, "roundStart");
 	}
 	
 	private void roundCompleteHandler(Round target) {
-		//Utils.trace("roundComplete", target);
+		Utils.trace(target, "roundComplete");
 		SetRoundHandlers(target, false);
 	}
 	
