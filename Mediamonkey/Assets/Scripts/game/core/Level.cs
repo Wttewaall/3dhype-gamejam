@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
+[AddComponentMenu("King's Ruby/Core/Level")]
+
 [Serializable]
 public class LevelSettings {
 	
