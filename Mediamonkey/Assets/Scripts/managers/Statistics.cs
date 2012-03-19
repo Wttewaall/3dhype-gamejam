@@ -10,6 +10,7 @@ using System.Collections;
  * within the flag the corresponding property can be retrieved.
  **/
 
+[Serializable]
 public class Statistics {
     
 	// use int: 32 bits means 32 possible flags (use long for 64 bits)
@@ -60,35 +61,5 @@ public class Statistics {
 	private static void DispatchPropertyChangeEvent(PropertyChangeEvent evt) {
 		if (evt != null) evt(changeFlags);
 	}
-	
-	// ---- getters & setters ----
-	
-	private static int _bulletsFired;
-	
-    public static int bulletsFired {
-    	get { return _bulletsFired; }
-    	set { _bulletsFired = value;
-			Update(StatisticTag.BULLET_FIRED);
-		}
-    }
-	
-	private static int _targetsHit;
-	
-    public static int targetsHit {
-    	get { return _targetsHit; }
-    	set { _targetsHit = value;
-			Update(StatisticTag.TARGET_HIT);
-		}
-    }
-	
-	// more...
-	
-}
-
-public struct StatisticTag {
-	
-	public const int BULLET_FIRED		= 1 << 0;
-	public const int TARGET_HIT			= 1 << 1;
-	// more...
 	
 }

@@ -36,7 +36,7 @@ public class Achievements : MonoBehaviour {
 		list.Add(new Achievement03());
 		
 		// add event listener
-		Statistics.propertyChange += statisticsChangeHandler;
+		GameStatistics.propertyChange += statisticsChangeHandler;
 	}
 	
 	void OnGUI() {
@@ -204,7 +204,7 @@ public class Achievement01 : Achievement {
 	}
 	
 	override public bool validate() {
-		return (Statistics.bulletsFired >= 10);
+		return (GameStatistics.bulletsFired >= 10);
 	}
 	
 }
@@ -218,7 +218,7 @@ public class Achievement02 : Achievement {
 	}
 	
 	override public bool validate() {
-		return (Statistics.targetsHit >= 1);
+		return (GameStatistics.targetsHit >= 1);
 	}
 	
 }
@@ -232,7 +232,7 @@ public class Achievement03 : Achievement {
 	}
 	
 	override public bool validate() {
-		return (Statistics.bulletsFired >= 20);
+		return (GameStatistics.bulletsFired >= 20);
 	}
 	
 }

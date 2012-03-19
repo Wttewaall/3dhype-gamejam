@@ -29,8 +29,7 @@ public class GameObjectPool {
 	
 	private bool setActiveRecursively;
 	
-	// ---- getters & setters ----
-	#region getters & setters
+	#region - getters & setters -
 	
 	// returns the prefab being used by the pool.
 	public GameObject prefab {
@@ -48,8 +47,7 @@ public class GameObjectPool {
 	}
 	
 	#endregion
-	// ---- constructor ----
-	#region constructor
+	#region - constructor -
 	
 	public GameObjectPool(GameObject prefab, uint initialCapacity, bool setActiveRecursively) {
 		this._prefab = prefab;
@@ -60,8 +58,7 @@ public class GameObjectPool {
 	}
 	
 	#endregion
-	// ---- public methods ----
-	#region public methods
+	#region - public methods -
 	
 	public GameObject Spawn(Vector3 position, Quaternion rotation) {
 		GameObject result;
@@ -134,8 +131,7 @@ public class GameObjectPool {
 	}
 	
 	#endregion
-	// ---- protected methods ----
-	#region protected methods
+	#region - protected methods -
 	
 	// Activates or deactivates the provided game object using the method
 	// specified by the setActiveRecursively flag.

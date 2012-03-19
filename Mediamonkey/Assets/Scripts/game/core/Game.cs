@@ -6,156 +6,120 @@ using System.Collections.Generic;
 
 public class Game : MonoBehaviour {
 	
-	public float timeScale = 1;
-	public GameObject[] enemies;
+	// visible public members
+	public List<Level> levels;
 	
-	protected PlayState playState = PlayState.STOPPED;
-	protected GameState gameState = GameState.MENU;
+	// invisible public members
+	public DataProvider<Level> dataProvider;
+	public PoolManager poolManager = new PoolManager();
 	
-	protected Dictionary<GameObject, GameObjectPool> pools;
-	protected List<Round> rounds = new List<Round>();
-	
-	protected SpawnBox spawnBox;
-	protected Quaternion spawnDirection;
+	// settings
 	protected int frame = 0;
 	protected int interval = 5;
+	
+	// states
+	private PlayState playState = PlayState.STOPPED;
+	private GameState gameState = GameState.MENU;
+	
+	// depricated
+	protected List<Spawner> spawners;
+	protected List<Transform> goals;
 	
 	// ---- getters & setters ----
 	
 	private static Game _instance;
-	private int _currentRoundIndex = -1;
-	private Round _currentRound;
 	
 	public static Game instance {
 		get { return _instance; }
-	}
-	
-	public int currentRoundIndex {
-		get { return _currentRoundIndex; }
-		set {
-			if (_currentRoundIndex != value) {
-				_currentRoundIndex = value;
-				
-				_currentRound = (value >= 0 && value < rounds.Count)
-					? rounds[value]
-					: null;
-			}
-		}
-	}
-	
-	public Round currentRound {
-		get { return _currentRound; }
-		set {
-			if (value == currentRound) return;
-			
-			if (value == null) {
-				currentRoundIndex = -1;
-				return;
-			}
-			
-			int index = rounds.IndexOf(value);
-			
-			if (index > -1) {
-				currentRoundIndex = index;
-				
-			} else {
-				rounds.Add(value);
-				currentRoundIndex = rounds.Count-1;
-			}
-		}
 	}
 	
 	// ---- inherited handlers ----
 	
 	void Awake() {
 		_instance = this;
-		
-		spawnBox = GameObject.Find("Spawnbox").GetComponent<SpawnBox>();
-		spawnDirection = Quaternion.LookRotation(Vector3.back);
-		
-		FillPools();
-		CreateRounds();
 	}
 	
 	void Start() {
-		Invoke("NextRound", 1);
+		// add levels to our dataprovider
+		dataProvider = new DataProvider<Level>(levels);
+		dataProvider.OnIndexChange += indexChangeHandler;
+		
+		// setting the index to 0 will trigger te startup
+		dataProvider.selectedIndex = 0;
 	}
-	
+
 	void Update() {
 		if (++frame % interval > 1) return;
 		else frame = 0;
 		
 		if (playState == PlayState.PLAYING) {
-			currentRound.Update();
-		}
-	}
-	
-	// ---- public methods ----
-	
-	public void NextRound() {
-		currentRoundIndex = (currentRoundIndex + 1 < rounds.Count)
-			? currentRoundIndex + 1
-			: -1;
-		
-		if (currentRound != null) {
-			gameState = GameState.LEVEL_START;
-			playState = PlayState.PLAYING;
-			currentRound.Start();
-			
-		} else {
-			gameState = GameState.GAMEOVER;
-			playState = PlayState.STOPPED;
+			//dataProvider.selectedItem.Update();
 		}
 	}
 	
 	// ---- protected methods ----
 	
-	protected void FillPools() {
-		// create pools per enemy prefab and store in a dictionary with the prefab as key
-		pools = new Dictionary<GameObject, GameObjectPool>();
-		
-		foreach (GameObject enemy in enemies) {
-			pools.Add(enemy, new GameObjectPool(enemy, 5, true));
-		}
-	}
+	/*
+	protected Level CreateLevel() {
 	
-	protected void CreateRounds() {
-		// create a round with multiple waves of enemies
-		Round round = new Round("Round 1");
-		round.spawner = spawnBox;
-		round.spawnDirection = spawnDirection;
+		var spawner = GameObject.Find("Spawnbox").GetComponent<SpawnBox>();
+		spawners.Add(spawner);
 		
-		SetRoundHandlers(round, true);
+		var level = new Level();
+		SetLevelHandlers(level, true);
+		level.spawners = spawners;
+		level.goals = goals;
 		
-		// play round & handle states
-		round.CreateWave(pools[enemies[0]], 4, 0.5f, 0);
-		round.CreateWave(pools[enemies[1]], 3, 0.5f, 0);
-		round.CreateWave(pools[enemies[2]], 4, 0.5f, 0);
-		round.CreateWave(pools[enemies[3]], 3, 0.5f, 0);
+		var round1 = level.CreateRound();
 		
-		rounds.Add(round);
+		var wave1 = round1.CreateWave(spawners[0], goals[0]);
+		wave1.CreateGroup(EnemyType.RUNNER, 4, 0);
+		wave1.CreateGroup(EnemyType.ORC, 4, 0);
+		wave1.CreateGroup(EnemyType.ARCHER, 4, 0);
+		
+		var wave2 = round1.CreateWave(spawners[1], goals[1]);
+		wave2.CreateGroup(EnemyType.ORC, 4, 0);
+		wave2.CreateGroup(EnemyType.ARCHER, 4, 0);
+		wave2.CreateGroup(EnemyType.TROLL, 4, 0);
+		wave2.CreateGroup(EnemyType.OGRE, 4, 0);
+		
+		return level;
 	}
+	*/
 	
-	protected void SetRoundHandlers(Round target, bool adding) {
+	// ---- protected methods ----
+	
+	protected void SetLevelHandlers(Level target, bool adding) {
 		if (adding) {
-			target.roundStart += roundStartHandler;
-			target.roundComplete += roundCompleteHandler;
+			target.OnStart += levelStartHandler;
+			target.OnComplete += levelCompleteHandler;
 			
 		} else {
-			target.roundStart -= roundStartHandler;
-			target.roundComplete -= roundCompleteHandler;
+			target.OnStart -= levelStartHandler;
+			target.OnComplete -= levelCompleteHandler;
 		}
 	}
 	
 	// ---- event handlers ----
 	
-	private void roundStartHandler(Round target) {
-		Utils.trace(target, "roundStart");
+	private void indexChangeHandler(IndexChangeEventType type, DataProvider<Level> currentTarget, int oldIndex, int newIndex) {
+		if (currentTarget.selectedItem == null) {
+			Debug.LogWarning("Cannot start: selected level is null");
+			
+		} else {
+			Debug.Log("Starting level: "+currentTarget.selectedItem);
+			SetLevelHandlers(currentTarget.selectedItem, true);
+			playState = PlayState.PLAYING;
+		}
 	}
 	
-	private void roundCompleteHandler(Round target) {
-		Utils.trace(target, "roundComplete");
-		SetRoundHandlers(target, false);
+	private void levelStartHandler(Level target) {
+		Utils.trace(target, "levelStart");
+	}
+	
+	private void levelCompleteHandler(Level target) {
+		Utils.trace(target, "levelComplete");
+		SetLevelHandlers(target, false);
 	}
 	
 }

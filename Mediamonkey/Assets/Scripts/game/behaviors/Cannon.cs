@@ -68,7 +68,7 @@ public class Cannon : MonoBehaviour {
 		Instantiate(muzzleFlare, spawnPoint.position, spawnPoint.rotation);
 		
 		// update statistics
-		Statistics.bulletsFired++;
+		GameStatistics.bulletsFired++;
 	}
 	
 	// ---- protected methods ----

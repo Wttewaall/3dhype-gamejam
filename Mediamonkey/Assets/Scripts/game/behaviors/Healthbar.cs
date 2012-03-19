@@ -22,7 +22,7 @@ public class Healthbar : MonoBehaviour {
 			return _health;
 		}
 		set {
-			_health = value;
+			_health = Mathf.Clamp(value, 0, 1);
 			DrawTexture2();
 		}
 	}
@@ -45,10 +45,14 @@ public class Healthbar : MonoBehaviour {
 	// ---- public methods ----
 	
 	public void TweenHealth(float value) {
-		iTween.ValueTo(gameObject, iTween.Hash("from", health,
-		                                       "to", value,
-		                                       "time", 1,
-		                                       "onupdate", "TweenUpdateHandler"));
+		iTween.ValueTo(gameObject,
+			iTween.Hash(
+				"from", health,
+				"to", value,
+				"time", 1,
+				"onupdate", "TweenUpdateHandler"
+			)
+		);
 	}
 	
 	// ---- private methods ----
