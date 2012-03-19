@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 /**
@@ -17,10 +18,9 @@ public class Round {
 	//public event RoundEventHandler OnFailed;
 	public event RoundEventHandler OnComplete;
 	
-	public delegate void RoundEventHandler(Round target);
-	
 	// public members
 	public List<Wave> waves;
+	public DataProvider<Wave> dataProvider;
 	
 	[NonSerialized]
 	public int index;
@@ -31,33 +31,6 @@ public class Round {
 	protected float stopTime;	
 	protected RoundState state;
 	
-	// ---- getters & setters ----
-	
-	private int _currentWaveIndex = -1;
-	private Wave _currentWave;
-	
-	public int currentWaveIndex {
-		get { return _currentWaveIndex; }
-		set {
-			if (_currentWaveIndex != value) {
-				_currentWaveIndex = value;
-				
-				_currentWave = (value >= 0 && value < waves.Count)
-					? waves[value]
-					: null;
-			}
-		}
-	}
-	
-	public Wave currentWave {
-		get { return _currentWave; }
-		set {
-			int index = waves.IndexOf(value);
-			if (value != null && index > -1) currentWaveIndex = index;
-			else throw new UnityException("value not found in collection");
-		}
-	}
-	
 	// ---- constructor ----
 	
 	public Round() {
@@ -66,6 +39,9 @@ public class Round {
 		liveEnemies = new List<Enemy>();
 		
 		state = RoundState.IDLE;
+		
+		dataProvider = new DataProvider<Wave>();
+		dataProvider.OnIndexChange += indexChangeHandler;
 	}
 
 	// ---- public methods ----
@@ -157,6 +133,10 @@ public class Round {
 	
 	// ---- event handlers ----
 	
+	private void indexChangeHandler (IndexChangeEventType type, DataProvider<Wave> currentTarget, int oldIndex, int newIndex) {
+		//..
+	}
+	
 	private void waveDepletedHandler(Wave target) {
 		//Utils.trace("waveDepleted", waves.IndexOf(target));
 	}
@@ -176,5 +156,9 @@ public class Round {
 	private void enemyDestroyedHandler(Wave target, Enemy enemy) {
 		liveEnemies.Remove(enemy);
 	}
+	
+	// ---- delegates ----
+	
+	public delegate void RoundEventHandler(Round target);
 	
 }

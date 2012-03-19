@@ -1,76 +1,64 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("King's Ruby/Core/Level")]
 
-[Serializable]
-public class LevelSettings {
-	
-	public int parTime = 12000;
-	// add many more settings
-	
-}
-
 public class Level : MonoBehaviour {
 	
-	/**
-	 * TODO
-	 * . pool mangement (losse manager?)
-	 * 
-	 */
-	
 	// events
+	public event LevelEventHandler OnLoaded;
 	public event LevelEventHandler OnStart;
-	//public event LevelEventHandler OnPaused;
-	//public event LevelEventHandler OnUnpaused;
-	//public event LevelEventHandler OnFailed;
+	public event LevelEventHandler OnPaused;
+	public event LevelEventHandler OnUnpaused;
+	public event LevelEventHandler OnFailed;
 	public event LevelEventHandler OnComplete;
 	
-	public delegate void LevelEventHandler(Level target);
-	
-	public LevelSettings levelSettings = new LevelSettings();
+	// members
+	public LevelSettings settings = new LevelSettings();
 	public List<Spawner> spawners;
 	public List<Transform> goals;
+	public List<GameObject> enemies;
+	
 	public List<Round> rounds;
+	public DataProvider<Round> dataProvider;
 	
-	// ---- getters & setters ----
+	// settings
+	protected int frame = 0;
+	protected int interval = 5;
 	
-	private int _currentRoundIndex = -1;
-	private Round _currentRound;
+	// states
+	protected PlayState playState = PlayState.STOPPED;
 	
-	public int currentRoundIndex {
-		get { return _currentRoundIndex; }
-		set {
-			if (_currentRoundIndex != value) {
-				_currentRoundIndex = value;
-				
-				_currentRound = (value >= 0 && value < rounds.Count)
-					? rounds[value]
-					: null;
-			}
-		}
+	// ---- inherited handlers ----
+	
+	void Start() {
+		// add levels to our dataprovider
+		dataProvider = new DataProvider<Round>(rounds);
+		dataProvider.OnIndexChange += indexChangeHandler;
+		
+		if (OnLoaded != null) OnLoaded(this);
 	}
 	
-	public Round currentRound {
-		get { return _currentRound; }
-		set {
-			if (value == currentRound) return;
+	void Update() {
+		if (++frame % interval > 1) return;
+		else frame = 0;
+		
+		switch (playState) {
 			
-			if (value == null) {
-				currentRoundIndex = -1;
-				return;
-			}
+			case PlayState.PLAYING:
+				dataProvider.selectedItem.Update();
+				break;
 			
-			int index = rounds.IndexOf(value);
+			case PlayState.PAUSED:
+				//..
+				break;
 			
-			if (index > -1) {
-				currentRoundIndex = index;
+			case PlayState.STOPPED:
+				//..
+				break;
 				
-			} else {
-				rounds.Add(value);
-				currentRoundIndex = rounds.Count-1;
-			}
 		}
 	}
 	
@@ -82,7 +70,7 @@ public class Level : MonoBehaviour {
 	
 	public Round CreateRound() {
 		var round = new Round();
-		SetRoundHandlers(round, true);
+		SetEventHandlers(round, true);
 		
 		if (rounds == null) rounds = new List<Round>();
 		rounds.Add(round);
@@ -91,10 +79,19 @@ public class Level : MonoBehaviour {
 		return round;
 	}
 	
-	public void NextRound() {
-		currentRoundIndex = (currentRoundIndex + 1 < rounds.Count)
-			? currentRoundIndex + 1
-			: -1;
+	public void Play() {
+		if (dataProvider.length == 0) {
+			throw new UnityException("no rounds to play");
+		
+		} else {
+			dataProvider.selectedIndex++;
+			playState = PlayState.PLAYING;
+		}
+	}
+	
+	public void Next() {
+		//dataProvider.selectedItem.Destroy();
+		dataProvider.Next();
 		
 		/*if (currentRound != null) {
 			gameState = GameState.LEVEL_START;
@@ -115,7 +112,9 @@ public class Level : MonoBehaviour {
 	
 	// ---- protected methods ----
 	
-	protected void SetRoundHandlers(Round target, bool adding) {
+	protected void SetEventHandlers(Round target, bool adding) {
+		if (target == null) return;
+		
 		if (adding) {
 			target.OnStart += roundStartHandler;
 			target.OnComplete += roundCompleteHandler;
@@ -128,13 +127,36 @@ public class Level : MonoBehaviour {
 	
 	// ---- event handlers ----
 	
+	private void indexChangeHandler(IndexChangeEventType type, DataProvider<Round> currentTarget, int oldIndex, int newIndex) {
+		if (currentTarget.selectedItem == null) {
+			Debug.LogWarning("Cannot start: selected round is null");
+			
+		} else {
+			SetEventHandlers(dataProvider.previousItem, false);
+			Debug.Log("Starting round: "+currentTarget.selectedItem);
+			SetEventHandlers(currentTarget.selectedItem, true);
+		}
+	}
+	
 	private void roundStartHandler(Round target) {
 		Utils.trace(target, "roundStart");
 	}
 	
 	private void roundCompleteHandler(Round target) {
 		Utils.trace(target, "roundComplete");
-		SetRoundHandlers(target, false);
+		SetEventHandlers(target, false);
 	}
+	
+	// ---- delegates ----
+	
+	public delegate void LevelEventHandler(Level target);
+	
+}
+
+[Serializable]
+public class LevelSettings {
+	
+	public int parTime = 12000;
+	// add many more settings
 	
 }

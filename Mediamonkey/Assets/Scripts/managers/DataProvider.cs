@@ -5,9 +5,13 @@ using System.Collections.Generic;
 
 public class DataProvider<T> : ICloneable {
 	
-	public delegate void CollectionEventHandler(CollectionEventKind kind, DataProvider<T> currentTarget, object items, int startIndex, int endIndex);
-	public delegate void IndexChangeEventHandler(IndexChangeEventType type, DataProvider<T> currentTarget, int oldIndex, int newIndex);
+	/**
+	 * TODO
+	 * keep track of the direction for wrapmode, also for previousItem and nextItem getters
+	 * 
+	 */
 	
+	// events
 	public event CollectionEventHandler OnCollectionPreChange;
 	public event CollectionEventHandler OnCollectionChange;
 	public event IndexChangeEventHandler OnIndexChange;
@@ -40,40 +44,16 @@ public class DataProvider<T> : ICloneable {
 	public int selectedIndex {
 		get { return _selectedIndex; }
 		set {
-			int oldIndex = _selectedIndex;
-			
 			if (_selectedIndex == value) return;
+			
+			int oldIndex = _selectedIndex;
 			dispatchIndexChangingEvent(IndexChangeEventType.CHANGING, oldIndex, value);
 			
-			if (_data == null) {
-				_selectedIndex = -1;
-				dispatchIndexChangeEvent(IndexChangeEventType.CHANGE, oldIndex, _selectedIndex);
-				return;
-			}
-			
-			int newIndex = value;
-			int direction = (newIndex < 0) ? -1 : (newIndex >= data.Count) ? 1 : 0;
-			
-			// direction is left or right beyond the list
-			// else would've resulted in an IndexOutOfRangeException
-			if (direction != 0) {
-				switch (wrapMode) {
-					case WrapMode.Clamp:
-						if (direction < 0) newIndex = (data.Count > 0) ? 0 : -1;
-						else if (direction > 0) newIndex = (data.Count > 0) ? data.Count : -1;
-						break;
-					case WrapMode.ClampForever:
-						newIndex = Mathf.Clamp(newIndex, -1, data.Count);
-						break;
-					case WrapMode.Loop:
-						if (direction < 0) newIndex = (data.Count > 0) ? data.Count : -1;
-						else if (direction > 0) newIndex = (data.Count > 0) ? 0 : -1;
-						break;
-				}
-			}
+			int newIndex = wrapIndex(oldIndex, value);
 			
 			_selectedIndex = newIndex;
 			
+			// dispatch, even if the index hasn't changed (possible in some wrapMode cases)
 			dispatchIndexChangeEvent(IndexChangeEventType.CHANGE, oldIndex, newIndex);
 		}
 	}
@@ -86,6 +66,20 @@ public class DataProvider<T> : ICloneable {
 		}
 		set {
 			selectedIndex = data.IndexOf(value);
+		}
+	}
+	
+	public T nextItem {
+		get {
+			var index = wrapIndex(selectedIndex, selectedIndex+1);
+			return GetItemAt(index);
+		}
+	}
+	
+	public T previousItem {
+		get {
+			var index = wrapIndex(selectedIndex, selectedIndex-1);
+			return GetItemAt(index);
 		}
 	}
 	
@@ -396,8 +390,6 @@ public class DataProvider<T> : ICloneable {
 		List<T> items = new List<T>();
 		items.AddRange(data);
 		return items;
-		
-		//return data.Clone() as List<T>;
 	}
 	
 	override public string ToString() {
@@ -442,15 +434,75 @@ public class DataProvider<T> : ICloneable {
 		}
 	}
 	
+	protected int previousDirection;
+	
+	protected int wrapIndex(int oldIndex, int newIndex) {
+		if (data == null) return -1;
+		
+		int direction = (newIndex < 0) ? -1 : (newIndex >= data.Count) ? 1 : 0;
+		if (direction == 0) return newIndex;
+		
+		/**
+		 * WrapMode.Default: Read's the wrap mode from the clip (default for a clip is Once).
+		 * WrapMode.Once: Stops the animation when time reaches the end.
+		 * WrapMode.Loop: Starts at the beginning when time reaches the end.
+		 * WrapMode.PingPong: Ping Pong's back and forth between beginning and end.
+		 * WrapMode.ClampForever: Plays back the animation. When it reaches the end, it will keep sampling the last frame. 
+		**/
+		
+		// direction is left or right beyond the list
+		// else would've resulted in an IndexOutOfRangeException
+	
+		switch (wrapMode) {
+		
+		default:
+			goto case WrapMode.Default;
+			
+		case WrapMode.Default:
+			goto case WrapMode.Once;
+			
+		case WrapMode.Once:
+			if (direction == previousDirection) {
+				// we still are going in the right direction
+				// keep going until the end
+				newIndex = oldIndex + direction;
+				
+			} else {
+				
+			}
+			break;
+			
+		case WrapMode.Loop:
+			if (direction < 0) newIndex = (data.Count > 0) ? data.Count : -1;
+			else if (direction > 0) newIndex = (data.Count > 0) ? 0 : -1;
+			break;
+		
+		case WrapMode.PingPong:
+			break;
+		
+		/*case WrapMode.Clamp:
+			if (direction < 0) newIndex = (data.Count > 0) ? 0 : -1;
+			else if (direction > 0) newIndex = (data.Count > 0) ? data.Count : -1;
+			break;*/
+		
+		case WrapMode.ClampForever:
+			newIndex = Mathf.Clamp(newIndex, -1, data.Count);
+			break;
+		}
+		
+		previousDirection = direction;
+		return newIndex;
+	}
+	
 	protected void validateIndex(int index) {
 		if (index < 0 || index > maximum) {
-			throw new UnityException("DataProvider index ("+index+") is not in acceptable range (0 - "+maximum+")");
+			throw new IndexOutOfRangeException("DataProvider index ("+index+") is not in acceptable range (0 - "+maximum+")");
 		}
 	}
 	
 	protected void validateIndex(int index, int maximum) {
 		if (index < 0 || index > maximum) {
-			throw new UnityException("DataProvider index ("+index+") is not in acceptable range (0 - "+maximum+")");
+			throw new IndexOutOfRangeException("DataProvider index ("+index+") is not in acceptable range (0 - "+maximum+")");
 		}
 	}
 	
@@ -485,6 +537,11 @@ public class DataProvider<T> : ICloneable {
 	}
 	
 	#endregion
+	
+	// ---- delegates ----
+	
+	public delegate void CollectionEventHandler(CollectionEventKind kind, DataProvider<T> currentTarget, object items, int startIndex, int endIndex);
+	public delegate void IndexChangeEventHandler(IndexChangeEventType type, DataProvider<T> currentTarget, int oldIndex, int newIndex);
 }
 
 public enum CollectionEventKind {

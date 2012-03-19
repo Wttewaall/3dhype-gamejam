@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 /**
@@ -83,6 +84,9 @@ public class Wave {
 		if (++spawnAmount == initialAmount) DispatchEvent(OnDepleted);
 		
 		if (startTime == 0) startTime = Time.time;
+		
+		// TODO - find pool by Game.
+		Game.instance.poolManager.GetPoolByEnemyType(EnemyType.ARCHER);
 		
 		Quaternion q = Quaternion.LookRotation(spawner.GetSpawnDirection());
 		GameObject go = pool.Spawn(spawner.GetSpawnPosition() + offset, q);

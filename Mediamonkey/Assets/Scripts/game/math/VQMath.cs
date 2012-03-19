@@ -1,7 +1,6 @@
 using UnityEngine;
-using System;
 
-public class MathHelper {
+public static class VQMath {
 	
 	// source: http://forums.create.msdn.com/forums/t/4574.aspx
 	public static Vector3 QuaternionToVector3(Quaternion q) {

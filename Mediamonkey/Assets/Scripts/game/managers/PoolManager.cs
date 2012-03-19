@@ -13,4 +13,14 @@ public class PoolManager {
 		return pools[go];
 	}
 	
+	public GameObjectPool GetPoolByEnemyType(EnemyType type) {
+		var enumerator = pools.GetEnumerator();
+		
+		while (enumerator.MoveNext()) {
+			if (enumerator.Current.Key.GetComponent<Enemy>().type == type)
+				return enumerator.Current.Value;
+		}
+		return null;
+	}
+	
 }
