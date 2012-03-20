@@ -91,6 +91,10 @@ public class DataProvider<T> : ICloneable {
 		get { return (data != null) ? data.Count : 0; }
 	}
 	
+	public int numItems {
+		get { return (data != null) ? data.Count : 0; }
+	}
+	
 	public int firstEmptyIndex {
 		get {
 			if (capacity > 0) {

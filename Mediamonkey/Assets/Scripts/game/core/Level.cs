@@ -9,14 +9,14 @@ public class Level : MonoBehaviour {
 	
 	// events
 	public event LevelEventHandler OnLoaded;
-	public event LevelEventHandler OnStart;
+	public event LevelEventHandler OnPlay;
 	public event LevelEventHandler OnPaused;
 	public event LevelEventHandler OnUnpaused;
 	public event LevelEventHandler OnFailed;
 	public event LevelEventHandler OnComplete;
 	
 	// members
-	public LevelSettings settings = new LevelSettings();
+	public LevelSettings settings;
 	public List<Spawner> spawners;
 	public List<Transform> goals;
 	public List<GameObject> enemies;
@@ -37,6 +37,9 @@ public class Level : MonoBehaviour {
 		// add levels to our dataprovider
 		dataProvider = new DataProvider<Round>(rounds);
 		dataProvider.OnIndexChange += indexChangeHandler;
+		
+		// initialize all rounds
+		foreach (Round r in rounds) r.Start();
 		
 		if (OnLoaded != null) OnLoaded(this);
 	}
@@ -85,6 +88,7 @@ public class Level : MonoBehaviour {
 		
 		} else {
 			dataProvider.selectedIndex++;
+			dataProvider.selectedItem.Play();
 			playState = PlayState.PLAYING;
 		}
 	}
@@ -116,11 +120,11 @@ public class Level : MonoBehaviour {
 		if (target == null) return;
 		
 		if (adding) {
-			target.OnStart += roundStartHandler;
+			target.OnPlay += roundStartHandler;
 			target.OnComplete += roundCompleteHandler;
 			
 		} else {
-			target.OnStart -= roundStartHandler;
+			target.OnPlay -= roundStartHandler;
 			target.OnComplete -= roundCompleteHandler;
 		}
 	}

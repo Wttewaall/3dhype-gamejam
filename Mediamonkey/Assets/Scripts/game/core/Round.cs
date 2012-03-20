@@ -12,13 +12,14 @@ using System.Collections.Generic;
 public class Round {
 	
 	// events
-	public event RoundEventHandler OnStart;
+	public event RoundEventHandler OnPlay;
 	//public event RoundEventHandler OnPaused;
 	//public event RoundEventHandler OnUnpaused;
 	//public event RoundEventHandler OnFailed;
 	public event RoundEventHandler OnComplete;
 	
 	// public members
+	public RoundSettings settings;
 	public List<Wave> waves;
 	public DataProvider<Wave> dataProvider;
 	
@@ -34,13 +35,15 @@ public class Round {
 	// ---- constructor ----
 	
 	public Round() {
-		waves = new List<Wave>();
-		liveWaves = new List<Wave>();
-		liveEnemies = new List<Enemy>();
-		
 		state = RoundState.IDLE;
+	}
+	
+	public void Start() {
+		if (waves == null) waves = new List<Wave>();
+		if (liveWaves == null) liveWaves = new List<Wave>();
+		if (liveEnemies == null) liveEnemies = new List<Enemy>();
 		
-		dataProvider = new DataProvider<Wave>();
+		dataProvider = new DataProvider<Wave>(waves);
 		dataProvider.OnIndexChange += indexChangeHandler;
 	}
 
@@ -54,10 +57,20 @@ public class Round {
 		return wave;
 	}
 	
-	public void Start() {
+	public void Play() {
 		startTime = Time.time;
-		state = RoundState.RUNNING;
-		DispatchEvent(OnStart);
+		
+		if (dataProvider.length > 0) {
+			NextWave();
+			
+			state = RoundState.RUNNING;
+			DispatchEvent(OnPlay);
+			
+		} else {
+			state = RoundState.IDLE;
+			Debug.LogError("No waves to start");
+			return;
+		}
 	}
 	
 	public void Pause() {
@@ -70,7 +83,10 @@ public class Round {
 	}
 	
 	public void Update() {
-		/*if (state == RoundState.RUNNING) {
+		if (state == RoundState.RUNNING) {
+			
+			int currentWaveIndex = dataProvider.selectedIndex;
+			Wave currentWave = dataProvider.selectedItem;
 			
 			// trigger first wave
 			if (currentWaveIndex < 0) NextWave();
@@ -86,24 +102,12 @@ public class Round {
 					currentWave.Spawn();
 				}
 			}
-		}*/
+		}
 	}
 	
 	public void NextWave() {
-		/*
-		if (currentWaveIndex + 1 < waves.Count) {
-			currentWaveIndex++;
-			//Utils.trace("next wave:", currentWaveIndex);
-			
-			SetWaveHandlers(currentWave, true);
-			currentWave.startTime = Time.time;
-			liveWaves.Add(currentWave);
-			
-		} else if (liveWaves.Count == 0) {
-			DispatchEvent(OnComplete);
-			Stop();
-		}
-		*/
+		Utils.trace("next wave:", dataProvider.selectedIndex + 1);
+		dataProvider.Next();
 	}
 	
 	override public string ToString() {
@@ -112,7 +116,9 @@ public class Round {
 	
 	// ---- protected methods ----
 	
-	protected void SetWaveHandlers(Wave target, bool adding) {
+	protected void SetEventHandlers(Wave target, bool adding) {
+		if (target == null) return;
+		
 		if (adding) {
 			target.OnDepleted += waveDepletedHandler;
 			target.OnCleared += waveClearedHandler;
@@ -134,17 +140,33 @@ public class Round {
 	// ---- event handlers ----
 	
 	private void indexChangeHandler (IndexChangeEventType type, DataProvider<Wave> currentTarget, int oldIndex, int newIndex) {
-		//..
+		if (currentTarget.selectedItem == null) {
+			Debug.LogWarning("Cannot start: selected round is null");
+			
+		} else {
+			SetEventHandlers(dataProvider.previousItem, false);
+			
+			if (dataProvider.previousItem == currentTarget.selectedItem) {
+				DispatchEvent(OnComplete);
+				Stop();
+				
+			} else {
+				Debug.Log("Starting round: "+currentTarget.selectedItem);
+				SetEventHandlers(currentTarget.selectedItem, true);
+				dataProvider.selectedItem.startTime = Time.time;
+				liveWaves.Add(dataProvider.selectedItem);
+			}
+		}
 	}
 	
 	private void waveDepletedHandler(Wave target) {
-		//Utils.trace("waveDepleted", waves.IndexOf(target));
+		Utils.trace("waveDepleted", waves.IndexOf(target));
 	}
 	
 	private void waveClearedHandler(Wave target) {
-		//Utils.trace("waveCleared", waves.IndexOf(target));
+		Utils.trace("waveCleared", waves.IndexOf(target));
 		liveWaves.Remove(target);
-		SetWaveHandlers(target, false);
+		SetEventHandlers(target, false);
 		
 		if (liveWaves.Count == 0) DispatchEvent(OnComplete);
 	}
@@ -160,5 +182,13 @@ public class Round {
 	// ---- delegates ----
 	
 	public delegate void RoundEventHandler(Round target);
+	
+}
+
+[Serializable]
+public class RoundSettings {
+	
+	public string name = "Round";
+	// add many more settings
 	
 }

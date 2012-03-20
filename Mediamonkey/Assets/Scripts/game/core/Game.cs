@@ -49,9 +49,6 @@ public class Game : MonoBehaviour {
 			var level = CreateLevel();
 			dataProvider.AddItem(level);
 		}
-		
-		// setting the index to 0 will trigger te startup
-		dataProvider.selectedIndex = 0;
 	}
 	
 	void OnGUI() {
@@ -60,7 +57,11 @@ public class Game : MonoBehaviour {
 		
 		// handle gamestates and UI
 		if (gameState == GameState.MENU) {
-			GUI.Button(new Rect(), "Start");
+			if (GUI.Button(new Rect(0, 0, 150, 30), "Start")) {
+				// setting the index to 0 will trigger te startup
+				dataProvider.selectedIndex = 0;
+				gameState = GameState.LEVEL_START;
+			}
 		}
 	}
 	
@@ -104,7 +105,7 @@ public class Game : MonoBehaviour {
 		
 		if (adding) {
 			target.OnLoaded += levelLoadedHandler;
-			target.OnStart += levelStartHandler;
+			target.OnPlay += levelStartHandler;
 			target.OnPaused += levelPausedHandler;
 			target.OnUnpaused += levelPausedHandler;
 			target.OnFailed += levelFailedHandler;
@@ -112,7 +113,7 @@ public class Game : MonoBehaviour {
 			
 		} else {
 			target.OnLoaded -= levelLoadedHandler;
-			target.OnStart -= levelStartHandler;
+			target.OnPlay -= levelStartHandler;
 			target.OnPaused -= levelPausedHandler;
 			target.OnUnpaused -= levelPausedHandler;
 			target.OnFailed -= levelFailedHandler;

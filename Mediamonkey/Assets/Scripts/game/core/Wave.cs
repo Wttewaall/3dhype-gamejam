@@ -23,12 +23,10 @@ public class Wave {
 	public Transform goal;
 	public List<Group> groups;
 	
-	[NonSerialized]
-	public int index;
-	
-	protected float startTime = 0;
-	protected float spawnTime = 0;
-	protected float delay = 0;
+	[NonSerialized] public int index;
+	[NonSerialized] public float startTime = 0;
+	[NonSerialized] public float spawnTime = 0;
+	[NonSerialized] public float delay = 0;
 	
 	protected GameObjectPool pool;
 	protected Vector3 offset;
