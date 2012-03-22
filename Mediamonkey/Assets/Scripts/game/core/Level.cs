@@ -10,8 +10,6 @@ public class Level : MonoBehaviour {
 	// events
 	public event LevelEventHandler OnLoaded;
 	public event LevelEventHandler OnPlay;
-	public event LevelEventHandler OnPaused;
-	public event LevelEventHandler OnUnpaused;
 	public event LevelEventHandler OnFailed;
 	public event LevelEventHandler OnComplete;
 	
@@ -39,9 +37,9 @@ public class Level : MonoBehaviour {
 		dataProvider.OnIndexChange += indexChangeHandler;
 		
 		// initialize all rounds
-		foreach (Round r in rounds) r.Start();
+		foreach (Round r in rounds) r.Initialize();
 		
-		if (OnLoaded != null) OnLoaded(this);
+		DispatchEvent(OnLoaded);
 	}
 	
 	void Update() {
@@ -51,7 +49,7 @@ public class Level : MonoBehaviour {
 		switch (playState) {
 			
 			case PlayState.PLAYING:
-				dataProvider.selectedItem.Update();
+				// poll rounds or use events?
 				break;
 			
 			case PlayState.PAUSED:
@@ -90,6 +88,7 @@ public class Level : MonoBehaviour {
 			dataProvider.selectedIndex++;
 			dataProvider.selectedItem.Play();
 			playState = PlayState.PLAYING;
+			DispatchEvent(OnPlay);
 		}
 	}
 	
@@ -114,17 +113,23 @@ public class Level : MonoBehaviour {
 		return score;
 	}
 	
+	public void DispatchEvent(LevelEventHandler evt) {
+		if (evt != null) evt(this);
+	}
+	
 	// ---- protected methods ----
 	
 	protected void SetEventHandlers(Round target, bool adding) {
 		if (target == null) return;
 		
 		if (adding) {
-			target.OnPlay += roundStartHandler;
+			target.OnStart += roundStartHandler;
+			target.OnFailed += roundFailedHandler;
 			target.OnComplete += roundCompleteHandler;
 			
 		} else {
-			target.OnPlay -= roundStartHandler;
+			target.OnStart -= roundStartHandler;
+			target.OnFailed -= roundFailedHandler;
 			target.OnComplete -= roundCompleteHandler;
 		}
 	}
@@ -146,9 +151,20 @@ public class Level : MonoBehaviour {
 		Utils.trace(target, "roundStart");
 	}
 	
+	private void roundFailedHandler(Round target) {
+		//..
+	}
+	
 	private void roundCompleteHandler(Round target) {
 		Utils.trace(target, "roundComplete");
 		SetEventHandlers(target, false);
+		
+		if (dataProvider.nextItem != null) {
+			dataProvider.Next();
+			
+		} else {
+			DispatchEvent(OnComplete);
+		}
 	}
 	
 	// ---- delegates ----

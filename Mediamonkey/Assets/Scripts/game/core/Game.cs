@@ -105,17 +105,13 @@ public class Game : MonoBehaviour {
 		
 		if (adding) {
 			target.OnLoaded += levelLoadedHandler;
-			target.OnPlay += levelStartHandler;
-			target.OnPaused += levelPausedHandler;
-			target.OnUnpaused += levelPausedHandler;
+			target.OnPlay += levelPlayHandler;
 			target.OnFailed += levelFailedHandler;
 			target.OnComplete += levelCompleteHandler;
 			
 		} else {
 			target.OnLoaded -= levelLoadedHandler;
-			target.OnPlay -= levelStartHandler;
-			target.OnPaused -= levelPausedHandler;
-			target.OnUnpaused -= levelPausedHandler;
+			target.OnPlay -= levelPlayHandler;
 			target.OnFailed -= levelFailedHandler;
 			target.OnComplete -= levelCompleteHandler;
 		}
@@ -138,12 +134,8 @@ public class Game : MonoBehaviour {
 		target.Play();
 	}
 	
-	private void levelStartHandler(Level target) {
+	private void levelPlayHandler(Level target) {
 		Utils.trace(target, "levelStart");
-	}
-	
-	private void levelPausedHandler(Level target) {
-		Utils.trace(target, "levelPaused");
 	}
 	
 	private void levelFailedHandler(Level target) {

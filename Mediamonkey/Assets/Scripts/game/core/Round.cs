@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Timers;
 
 /**
  * A Round consists of multiple waves
@@ -12,10 +13,8 @@ using System.Collections.Generic;
 public class Round {
 	
 	// events
-	public event RoundEventHandler OnPlay;
-	//public event RoundEventHandler OnPaused;
-	//public event RoundEventHandler OnUnpaused;
-	//public event RoundEventHandler OnFailed;
+	public event RoundEventHandler OnStart;
+	public event RoundEventHandler OnFailed;
 	public event RoundEventHandler OnComplete;
 	
 	// public members
@@ -28,9 +27,9 @@ public class Round {
 	
 	protected List<Wave> liveWaves;
 	protected List<Enemy> liveEnemies;
-	protected float startTime;
-	protected float stopTime;	
 	protected RoundState state;
+	
+	protected Timer timer;
 	
 	// ---- constructor ----
 	
@@ -38,13 +37,16 @@ public class Round {
 		state = RoundState.IDLE;
 	}
 	
-	public void Start() {
+	public void Initialize() {
 		if (waves == null) waves = new List<Wave>();
 		if (liveWaves == null) liveWaves = new List<Wave>();
 		if (liveEnemies == null) liveEnemies = new List<Enemy>();
 		
 		dataProvider = new DataProvider<Wave>(waves);
 		dataProvider.OnIndexChange += indexChangeHandler;
+		
+		timer = new Timer(1000);
+		timer.Elapsed += elapsedEventHandler;
 	}
 
 	// ---- public methods ----
@@ -58,15 +60,17 @@ public class Round {
 	}
 	
 	public void Play() {
-		startTime = Time.time;
+		
+		DispatchEvent(OnStart);
 		
 		if (dataProvider.length > 0) {
 			NextWave();
 			
+			timer.Start();
 			state = RoundState.RUNNING;
-			DispatchEvent(OnPlay);
 			
 		} else {
+			timer.Stop();
 			state = RoundState.IDLE;
 			Debug.LogError("No waves to start");
 			return;
@@ -74,35 +78,19 @@ public class Round {
 	}
 	
 	public void Pause() {
-		stopTime = Time.time;
+		if (state != RoundState.PAUSED) {
+			state = RoundState.PAUSED;
+			
+		} else {
+			state = RoundState.RUNNING;
+		}
+		
+		timer.Enabled = !timer.Enabled;
 	}
 	
 	public void Stop() {
-		stopTime = Time.time;
+		timer.Stop();
 		state = RoundState.IDLE;
-	}
-	
-	public void Update() {
-		if (state == RoundState.RUNNING) {
-			
-			int currentWaveIndex = dataProvider.selectedIndex;
-			Wave currentWave = dataProvider.selectedItem;
-			
-			// trigger first wave
-			if (currentWaveIndex < 0) NextWave();
-			
-			if (Time.time >= currentWave.spawnTime) {
-				currentWave.spawnTime = Time.time + currentWave.spawnInterval;
-				
-				// only start a next wave after all enemies are cleared
-				if (!currentWave.hasEnemies || currentWave.timeUp) {
-					NextWave();
-					
-				} else {
-					currentWave.Spawn();
-				}
-			}
-		}
 	}
 	
 	public void NextWave() {
@@ -153,10 +141,14 @@ public class Round {
 			} else {
 				Debug.Log("Starting round: "+currentTarget.selectedItem);
 				SetEventHandlers(currentTarget.selectedItem, true);
-				dataProvider.selectedItem.startTime = Time.time;
 				liveWaves.Add(dataProvider.selectedItem);
 			}
 		}
+	}
+	
+	private void elapsedEventHandler (object sender, ElapsedEventArgs e) {
+		// check waves and round state
+		Utils.trace("timer event");
 	}
 	
 	private void waveDepletedHandler(Wave target) {

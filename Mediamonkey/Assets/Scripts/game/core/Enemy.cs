@@ -48,7 +48,10 @@ public class Enemy : MonoBehaviour {
 	}
 	
 	void Update() {
-		if (goal != null) agent.SetDestination(goal.position);
+		
+		if (move && goal != null) {
+			agent.SetDestination(goal.position);
+		}
 		
 		/*// simplest behavior: move forward
 		if (move) {
