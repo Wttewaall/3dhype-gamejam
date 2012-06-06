@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Timers;
 
 /**
  * A Round consists of multiple waves
@@ -16,20 +15,32 @@ public class Round {
 	public event RoundEventHandler OnStart;
 	public event RoundEventHandler OnFailed;
 	public event RoundEventHandler OnComplete;
+	public event RoundEventHandler OnStateChange;
 	
 	// public members
 	public RoundSettings settings;
 	public List<Wave> waves;
 	public DataProvider<Wave> dataProvider;
+	public Wave currentWave;
 	
 	[NonSerialized]
 	public int index;
 	
 	protected List<Wave> liveWaves;
 	protected List<Enemy> liveEnemies;
-	protected RoundState state;
 	
-	protected Timer timer;
+	// ---- getters & setters ----
+	
+	private RoundState _state;
+	
+	public RoundState state {
+		get { return _state; }
+		set {
+			if (_state == value) return;
+			_state = value;
+			DispatchEvent(OnStateChange);
+		}
+	}
 	
 	// ---- constructor ----
 	
@@ -44,11 +55,8 @@ public class Round {
 		
 		dataProvider = new DataProvider<Wave>(waves);
 		dataProvider.OnIndexChange += indexChangeHandler;
-		
-		timer = new Timer(1000);
-		timer.Elapsed += elapsedEventHandler;
 	}
-
+	
 	// ---- public methods ----
 	
 	public Wave CreateWave(Spawner spawner, Transform goal) {
@@ -63,14 +71,12 @@ public class Round {
 		
 		DispatchEvent(OnStart);
 		
-		if (dataProvider.length > 0) {
-			NextWave();
+		if (dataProvider.hasNext) {
+			dataProvider.Next().Play();
 			
-			timer.Start();
 			state = RoundState.RUNNING;
 			
 		} else {
-			timer.Stop();
 			state = RoundState.IDLE;
 			Debug.LogError("No waves to start");
 			return;
@@ -84,12 +90,9 @@ public class Round {
 		} else {
 			state = RoundState.RUNNING;
 		}
-		
-		timer.Enabled = !timer.Enabled;
 	}
 	
 	public void Stop() {
-		timer.Stop();
 		state = RoundState.IDLE;
 	}
 	
@@ -128,35 +131,31 @@ public class Round {
 	// ---- event handlers ----
 	
 	private void indexChangeHandler (IndexChangeEventType type, DataProvider<Wave> currentTarget, int oldIndex, int newIndex) {
-		if (currentTarget.selectedItem == null) {
+		currentWave = currentTarget.selectedItem;
+		
+		if (currentWave == null) {
 			Debug.LogWarning("Cannot start: selected round is null");
 			
 		} else {
 			SetEventHandlers(dataProvider.previousItem, false);
 			
-			if (dataProvider.previousItem == currentTarget.selectedItem) {
+			if (dataProvider.previousItem == currentWave) {
 				DispatchEvent(OnComplete);
 				Stop();
 				
 			} else {
-				Debug.Log("Starting round: "+currentTarget.selectedItem);
-				SetEventHandlers(currentTarget.selectedItem, true);
+				SetEventHandlers(currentWave, true);
 				liveWaves.Add(dataProvider.selectedItem);
 			}
 		}
 	}
 	
-	private void elapsedEventHandler (object sender, ElapsedEventArgs e) {
-		// check waves and round state
-		Utils.trace("timer event");
-	}
-	
 	private void waveDepletedHandler(Wave target) {
-		Utils.trace("waveDepleted", waves.IndexOf(target));
+		Utils.trace(target, "waveDepleted", waves.IndexOf(target));
 	}
 	
 	private void waveClearedHandler(Wave target) {
-		Utils.trace("waveCleared", waves.IndexOf(target));
+		Utils.trace(target, "waveCleared", waves.IndexOf(target));
 		liveWaves.Remove(target);
 		SetEventHandlers(target, false);
 		

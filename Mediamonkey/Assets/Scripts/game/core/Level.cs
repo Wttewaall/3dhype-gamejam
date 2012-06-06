@@ -10,8 +10,11 @@ public class Level : MonoBehaviour {
 	// events
 	public event LevelEventHandler OnLoaded;
 	public event LevelEventHandler OnPlay;
+	public event LevelEventHandler OnPause;
+	public event LevelEventHandler OnStop;
 	public event LevelEventHandler OnFailed;
 	public event LevelEventHandler OnComplete;
+	public event LevelEventHandler OnStateChange;
 	
 	// members
 	public LevelSettings settings;
@@ -21,43 +24,54 @@ public class Level : MonoBehaviour {
 	
 	public List<Round> rounds;
 	public DataProvider<Round> dataProvider;
+	public Round currentRound;
 	
 	// settings
 	protected int frame = 0;
 	protected int interval = 5;
 	
-	// states
-	protected PlayState playState = PlayState.STOPPED;
+	// ---- getters & setters ----
+	
+	private PlayState _state = PlayState.STOPPED;
+	
+	public PlayState state {
+		get { return _state; }
+		set {
+			if (_state == value) return;
+			_state = value;
+			DispatchEvent(OnStateChange);
+		}
+	}
 	
 	// ---- inherited handlers ----
 	
 	void Start() {
+		DispatchEvent(OnLoaded);
+		
 		// add levels to our dataprovider
 		dataProvider = new DataProvider<Round>(rounds);
 		dataProvider.OnIndexChange += indexChangeHandler;
 		
 		// initialize all rounds
 		foreach (Round r in rounds) r.Initialize();
-		
-		DispatchEvent(OnLoaded);
 	}
 	
 	void Update() {
 		if (++frame % interval > 1) return;
 		else frame = 0;
 		
-		switch (playState) {
+		switch (state) {
 			
 			case PlayState.PLAYING:
 				// poll rounds or use events?
 				break;
 			
 			case PlayState.PAUSED:
-				//..
+				//currentRound.Pause();
 				break;
 			
 			case PlayState.STOPPED:
-				//..
+				//Next();
 				break;
 				
 		}
@@ -85,25 +99,43 @@ public class Level : MonoBehaviour {
 			throw new UnityException("no rounds to play");
 		
 		} else {
+			Utils.trace(this, "Play");
+			
 			dataProvider.selectedIndex++;
 			dataProvider.selectedItem.Play();
-			playState = PlayState.PLAYING;
+			state = PlayState.PLAYING;
 			DispatchEvent(OnPlay);
 		}
 	}
 	
+	public void Pause() {
+		Utils.trace(this, "Pause");
+		dataProvider.selectedItem.Pause();
+		state = PlayState.PAUSED;
+		DispatchEvent(OnPause);
+	}
+	
+	public void Stop() {
+		Utils.trace(this, "Stop");
+		dataProvider.selectedItem.Stop();
+		state = PlayState.STOPPED;
+		DispatchEvent(OnStop);
+	}
+	
 	public void Next() {
+		Utils.trace(this, "Next");
+		
 		//dataProvider.selectedItem.Destroy();
 		dataProvider.Next();
 		
 		/*if (currentRound != null) {
 			gameState = GameState.LEVEL_START;
-			playState = PlayState.PLAYING;
+			state = PlayState.PLAYING;
 			currentRound.Start();
 			
 		} else {
 			gameState = GameState.GAMEOVER;
-			playState = PlayState.STOPPED;
+			state = PlayState.STOPPED;
 		}*/
 	}
 	
@@ -124,35 +156,33 @@ public class Level : MonoBehaviour {
 		
 		if (adding) {
 			target.OnStart += roundStartHandler;
-			target.OnFailed += roundFailedHandler;
 			target.OnComplete += roundCompleteHandler;
+			target.OnFailed += roundFailedHandler;
 			
 		} else {
 			target.OnStart -= roundStartHandler;
-			target.OnFailed -= roundFailedHandler;
 			target.OnComplete -= roundCompleteHandler;
+			target.OnFailed -= roundFailedHandler;
 		}
 	}
 	
 	// ---- event handlers ----
 	
 	private void indexChangeHandler(IndexChangeEventType type, DataProvider<Round> currentTarget, int oldIndex, int newIndex) {
-		if (currentTarget.selectedItem == null) {
+		currentRound = currentTarget.selectedItem;
+		
+		if (currentRound == null) {
 			Debug.LogWarning("Cannot start: selected round is null");
 			
 		} else {
 			SetEventHandlers(dataProvider.previousItem, false);
-			Debug.Log("Starting round: "+currentTarget.selectedItem);
+			Debug.Log("Starting round: "+currentRound);
 			SetEventHandlers(currentTarget.selectedItem, true);
 		}
 	}
 	
 	private void roundStartHandler(Round target) {
 		Utils.trace(target, "roundStart");
-	}
-	
-	private void roundFailedHandler(Round target) {
-		//..
 	}
 	
 	private void roundCompleteHandler(Round target) {
@@ -165,6 +195,10 @@ public class Level : MonoBehaviour {
 		} else {
 			DispatchEvent(OnComplete);
 		}
+	}
+	
+	private void roundFailedHandler(Round target) {
+		Utils.trace(target, "roundFailed");
 	}
 	
 	// ---- delegates ----

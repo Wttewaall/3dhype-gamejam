@@ -9,6 +9,10 @@ public class PoolManager {
 		pools = new Dictionary<GameObject, GameObjectPool>();
 	}
 	
+	public GameObjectPool AddPool(GameObjectPool pool) {
+		return pools[pool.prefab] = pool;
+	}
+	
 	public GameObjectPool GetPoolByGameObject(GameObject go) {
 		return pools[go];
 	}

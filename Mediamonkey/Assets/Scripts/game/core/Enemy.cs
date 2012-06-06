@@ -49,9 +49,10 @@ public class Enemy : MonoBehaviour {
 	
 	void Update() {
 		
-		if (move && goal != null) {
+		/*if (move && goal != null) {
 			agent.SetDestination(goal.position);
-		}
+			if (tf.position.z < -20) Die();
+		}*/
 		
 		/*// simplest behavior: move forward
 		if (move) {

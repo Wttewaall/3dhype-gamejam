@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System;
-using System.Timers;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,6 +9,7 @@ public class Game : MonoBehaviour {
 	
 	// visible public members
 	public List<Level> levels;
+	public Level currentLevel;
 	
 	// invisible public members
 	public DataProvider<Level> dataProvider;
@@ -18,9 +18,6 @@ public class Game : MonoBehaviour {
 	// settings
 	protected int frame = 0;
 	protected int interval = 5;
-	
-	// states
-	private GameState gameState = GameState.MENU;
 	
 	// depricated
 	protected List<Spawner> spawners;
@@ -34,6 +31,17 @@ public class Game : MonoBehaviour {
 		get { return _instance; }
 	}
 	
+	private GameState _state = GameState.MENU;
+	
+	public GameState state {
+		get { return _state; }
+		set {
+			if (_state == value) return;
+			_state = value;
+			//DispatchEvent(OnStateChange);
+		}
+	}
+	
 	// ---- inherited handlers ----
 	
 	void Awake() {
@@ -45,6 +53,7 @@ public class Game : MonoBehaviour {
 		dataProvider = new DataProvider<Level>(levels);
 		dataProvider.OnIndexChange += indexChangeHandler;
 		
+		// if level is not declared, build one as a test case
 		if (dataProvider.length == 0) {
 			var level = CreateLevel();
 			dataProvider.AddItem(level);
@@ -55,20 +64,21 @@ public class Game : MonoBehaviour {
 		if (++frame % interval > 1) return;
 		else frame = 0;
 		
-		// handle gamestates and UI
-		if (gameState == GameState.MENU) {
+		// handle states and UI
+		if (state == GameState.MENU) {
 			if (GUI.Button(new Rect(0, 0, 150, 30), "Start")) {
 				// setting the index to 0 will trigger te startup
 				dataProvider.selectedIndex = 0;
-				gameState = GameState.LEVEL_START;
+				state = GameState.LEVEL_START;
 			}
 		}
 	}
-	
+				
 	// ---- public methods ----
 	
 	public Level CreateLevel() {
-	
+		Utils.trace(this, "CreateLevel");
+		
 		var spawner = GameObject.Find("Spawnbox").GetComponent<SpawnBox>();
 		spawners.Add(spawner);
 		
@@ -120,17 +130,22 @@ public class Game : MonoBehaviour {
 	// ---- event handlers ----
 	
 	private void indexChangeHandler(IndexChangeEventType type, DataProvider<Level> currentTarget, int oldIndex, int newIndex) {
+		currentLevel = currentTarget.selectedItem;
+		
 		if (currentTarget.selectedItem == null) {
 			Debug.LogWarning("Cannot start: selected level is null");
 			
 		} else {
 			SetEventHandlers(currentTarget.previousItem, false);
-			Debug.Log("Starting level: "+currentTarget.selectedItem);
 			SetEventHandlers(currentTarget.selectedItem, true);
+			
+			Debug.Log("Starting level: "+currentTarget.selectedItem);
+			currentTarget.selectedItem.Play();
 		}
 	}
 	
 	private void levelLoadedHandler(Level target) {
+		Utils.trace(target, "levelLoaded");
 		target.Play();
 	}
 	

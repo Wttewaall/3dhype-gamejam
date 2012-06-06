@@ -36,6 +36,8 @@ public class Wave {
 	protected int spawnAmount;
 	protected int destroyAmount;
 	
+	protected Timer timer;
+	
 	// ---- getters & setters ----
 	
 	private float _spawnInterval = 0.3f;
@@ -97,6 +99,21 @@ public class Wave {
 		return go;
 	}
 	
+	public void Play() {
+		
+		if (timer == null) {
+			timer = Timer.Create(1000);
+			timer.OnTimerTick += timerTickHandler;
+		}
+		
+		Utils.trace("Playing wave", this);
+		timer.Play();
+	}
+	
+	public void Stop() {
+		timer.Stop();
+	}
+	
 	override public string ToString() {
 		return "Wave "+index;
 	}
@@ -106,6 +123,19 @@ public class Wave {
 	protected void enemyDeathHandler(Enemy target) {
 		DispatchEvent(OnEnemyDestroyed, target);
 		if (++destroyAmount == initialAmount) DispatchEvent(OnCleared);
+	}
+	
+	// DEBUG
+	private void timerTickHandler(Timer timer) {
+		// spawn 3 enemies
+		if (timer.currentCount == 3) {
+			DispatchEvent(OnDepleted);
+		
+		// enemies are defeated after 5 seconds
+		} else if (timer.currentCount == 5) {
+			DispatchEvent(OnCleared);
+			Stop();
+		}
 	}
 	
 	// ---- protected methods ----

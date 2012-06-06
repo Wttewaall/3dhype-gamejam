@@ -12,10 +12,10 @@ public class DataProvider<T> : ICloneable {
 	 */
 	
 	// events
-	public event CollectionEventHandler OnCollectionPreChange;
-	public event CollectionEventHandler OnCollectionChange;
-	public event IndexChangeEventHandler OnIndexChange;
-	public event IndexChangeEventHandler OnIndexChanging;
+	public event CollectionEventHandler		OnCollectionPreChange;
+	public event CollectionEventHandler		OnCollectionChange;
+	public event IndexChangeEventHandler	OnIndexChange;
+	public event IndexChangeEventHandler	OnIndexChanging;
 	
 	#region - variables -
 	
@@ -538,6 +538,14 @@ public class DataProvider<T> : ICloneable {
 	public T Previous() {
 		selectedIndex--;
 		return selectedItem;
+	}
+	
+	public bool hasNext {
+		get { return (selectedIndex + 1 <= length-1); }
+	}
+	
+	public bool hasPrevious {
+		get { return (selectedIndex - 1 >= 0); }
 	}
 	
 	#endregion
