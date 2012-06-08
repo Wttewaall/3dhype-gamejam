@@ -18,4 +18,8 @@ public class Group {
 		this.amount = amount;
 	}
 	
+	override public string ToString() {
+		return "Group {"+type+" "+amount+"}";
+	}
+	
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,17 +31,6 @@ public class Game : MonoBehaviour {
 		get { return _instance; }
 	}
 	
-	private GameState _state = GameState.MENU;
-	
-	public GameState state {
-		get { return _state; }
-		set {
-			if (_state == value) return;
-			_state = value;
-			//DispatchEvent(OnStateChange);
-		}
-	}
-	
 	// ---- inherited handlers ----
 	
 	void Awake() {
@@ -51,31 +40,36 @@ public class Game : MonoBehaviour {
 	void Start() {
 		// add levels to our dataprovider
 		dataProvider = new DataProvider<Level>(levels);
-		dataProvider.OnIndexChange += indexChangeHandler;
 		
+		dataProvider.OnIndexChange += delegate {
+			SetEventHandlers(currentLevel, false);
+			currentLevel = dataProvider.selectedItem as Level;
+			SetEventHandlers(currentLevel, true);
+		};
+		
+		/*
 		// if level is not declared, build one as a test case
 		if (dataProvider.length == 0) {
 			var level = CreateLevel();
 			dataProvider.AddItem(level);
 		}
+		*/
 	}
 	
 	void OnGUI() {
 		if (++frame % interval > 1) return;
 		else frame = 0;
 		
-		// handle states and UI
-		if (state == GameState.MENU) {
-			if (GUI.Button(new Rect(0, 0, 150, 30), "Start")) {
-				// setting the index to 0 will trigger te startup
-				dataProvider.selectedIndex = 0;
-				state = GameState.LEVEL_START;
-			}
+		if (GUI.Button(new Rect(0, 0, 150, 30), "Start")) {
+			// setting the index to 0 will trigger te startup
+			dataProvider.selectedIndex = 0;
+			currentLevel.Play();
 		}
 	}
 				
 	// ---- public methods ----
 	
+	/*
 	public Level CreateLevel() {
 		Utils.trace(this, "CreateLevel");
 		
@@ -84,8 +78,6 @@ public class Game : MonoBehaviour {
 		
 		var level = new Level();
 		SetEventHandlers(level, true);
-		level.spawners = spawners;
-		level.goals = goals;
 		
 		var round1 = level.CreateRound();
 		
@@ -106,7 +98,7 @@ public class Game : MonoBehaviour {
 		wave21.CreateGroup(EnemyType.OGRE, 4, 0);
 		
 		return level;
-	}
+	}*/
 	
 	// ---- protected methods ----
 	
@@ -114,43 +106,22 @@ public class Game : MonoBehaviour {
 		if (target == null) return;
 		
 		if (adding) {
-			target.OnLoaded += levelLoadedHandler;
-			target.OnPlay += levelPlayHandler;
-			target.OnFailed += levelFailedHandler;
-			target.OnComplete += levelCompleteHandler;
+			target.OnLevelLoaded += levelLoadedHandler;
+			target.OnLevelFailed += levelFailedHandler;
+			target.OnLevelComplete += levelCompleteHandler;
 			
 		} else {
-			target.OnLoaded -= levelLoadedHandler;
-			target.OnPlay -= levelPlayHandler;
-			target.OnFailed -= levelFailedHandler;
-			target.OnComplete -= levelCompleteHandler;
+			target.OnLevelLoaded -= levelLoadedHandler;
+			target.OnLevelFailed -= levelFailedHandler;
+			target.OnLevelComplete -= levelCompleteHandler;
 		}
 	}
 	
 	// ---- event handlers ----
 	
-	private void indexChangeHandler(IndexChangeEventType type, DataProvider<Level> currentTarget, int oldIndex, int newIndex) {
-		currentLevel = currentTarget.selectedItem;
-		
-		if (currentTarget.selectedItem == null) {
-			Debug.LogWarning("Cannot start: selected level is null");
-			
-		} else {
-			SetEventHandlers(currentTarget.previousItem, false);
-			SetEventHandlers(currentTarget.selectedItem, true);
-			
-			Debug.Log("Starting level: "+currentTarget.selectedItem);
-			currentTarget.selectedItem.Play();
-		}
-	}
-	
 	private void levelLoadedHandler(Level target) {
 		Utils.trace(target, "levelLoaded");
 		target.Play();
-	}
-	
-	private void levelPlayHandler(Level target) {
-		Utils.trace(target, "levelStart");
 	}
 	
 	private void levelFailedHandler(Level target) {

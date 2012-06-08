@@ -9,15 +9,13 @@ using System.Collections.Generic;
  */
 
 [Serializable]
-public class Wave {
+public class Wave : PlayableItem {
 	
-	public event WaveEventHandler OnDepleted;
-	public event WaveEventHandler OnCleared;
-	public event SpawnEventHandler OnEnemySpawned;
-	public event SpawnEventHandler OnEnemyDestroyed;
-	
-	public delegate void WaveEventHandler(Wave target);
-	public delegate void SpawnEventHandler(Wave target, Enemy enemy);
+	public event WaveEventHandler	OnWaveStarted;
+	public event WaveEventHandler	OnWaveDepleted;
+	public event WaveEventHandler	OnWaveCleared;
+	public event SpawnEventHandler	OnEnemySpawned;
+	public event SpawnEventHandler	OnEnemyDestroyed;
 	
 	public Spawner spawner;
 	public Transform goal;
@@ -35,8 +33,6 @@ public class Wave {
 	protected int initialAmount;
 	protected int spawnAmount;
 	protected int destroyAmount;
-	
-	protected Timer timer;
 	
 	// ---- getters & setters ----
 	
@@ -59,15 +55,14 @@ public class Wave {
 	}
 	
 	// ---- constructor ----
+	public Wave(int index) {
+		this.index = index;
+	}
 	
-	public Wave(Spawner spawner, Transform goal) {
-		/*if (pool == null) throw new UnityException("pool cannot be null");
-		this.pool = pool;
-		this.initialAmount = amount;
-		this.spawnInterval = spawnInterval;
-		this.delay = delay;
-		
-		offset = pool.prefab.GetComponent<Enemy>().offset;*/
+	override public void Initialize() {
+		base.Initialize();
+		timer.repeatCount = 0;
+		// TODO: get pools, setup spawning
 	}
 	
 	// ---- public methods ----
@@ -81,7 +76,7 @@ public class Wave {
 	
 	public GameObject Spawn() {
 		if (spawnAmount == initialAmount) return null;
-		if (++spawnAmount == initialAmount) DispatchEvent(OnDepleted);
+		if (++spawnAmount == initialAmount) DispatchEvent(OnWaveDepleted);
 		
 		if (startTime == 0) startTime = Time.time;
 		
@@ -99,19 +94,9 @@ public class Wave {
 		return go;
 	}
 	
-	public void Play() {
-		
-		if (timer == null) {
-			timer = Timer.Create(1000);
-			timer.OnTimerTick += timerTickHandler;
-		}
-		
-		Utils.trace("Playing wave", this);
-		timer.Play();
-	}
-	
-	public void Stop() {
-		timer.Stop();
+	override public bool Play() {
+		DispatchEvent(OnWaveStarted);
+		return base.Play();
 	}
 	
 	override public string ToString() {
@@ -120,22 +105,30 @@ public class Wave {
 	
 	// ---- event handlers ----
 	
-	protected void enemyDeathHandler(Enemy target) {
-		DispatchEvent(OnEnemyDestroyed, target);
-		if (++destroyAmount == initialAmount) DispatchEvent(OnCleared);
-	}
-	
-	// DEBUG
-	private void timerTickHandler(Timer timer) {
+	override protected void timerTickHandler(Timer target) {
+		
+		if (target.currentCount < groups.Count-1) {
+			Utils.trace("\t\t", this, "- spawn", groups[target.currentCount]);
+		}
+		
 		// spawn 3 enemies
-		if (timer.currentCount == 3) {
-			DispatchEvent(OnDepleted);
+		if (target.currentCount == groups.Count-1) {
+			DispatchEvent(OnWaveDepleted);
 		
 		// enemies are defeated after 5 seconds
-		} else if (timer.currentCount == 5) {
-			DispatchEvent(OnCleared);
+		} else if (target.currentCount == 5) {
+			DispatchEvent(OnWaveCleared);
 			Stop();
 		}
+	}
+	
+	override protected void timerCompleteHandler(Timer target) {
+		DispatchCompleteEvent();
+	}
+	
+	protected void enemyDeathHandler(Enemy target) {
+		DispatchEvent(OnEnemyDestroyed, target);
+		if (++destroyAmount == initialAmount) DispatchEvent(OnWaveCleared);
 	}
 	
 	// ---- protected methods ----
@@ -147,5 +140,10 @@ public class Wave {
 	protected void DispatchEvent(SpawnEventHandler evt, Enemy enemy) {
 		if (evt != null) evt(this, enemy);
 	}
+	
+	// ---- delegates ----
+	
+	public delegate void WaveEventHandler(Wave target);
+	public delegate void SpawnEventHandler(Wave target, Enemy enemy);
 	
 }

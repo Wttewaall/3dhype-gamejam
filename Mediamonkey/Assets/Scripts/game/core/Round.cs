@@ -9,43 +9,34 @@ using System.Collections.Generic;
  */
 
 [Serializable]
-public class Round {
+public class Round : PlayableCollection {
 	
 	// events
-	public event RoundEventHandler OnStart;
-	public event RoundEventHandler OnFailed;
-	public event RoundEventHandler OnComplete;
-	public event RoundEventHandler OnStateChange;
+	public event RoundEventHandler OnRoundStart;
+	public event RoundEventHandler OnRoundFailed;
+	public event RoundEventHandler OnRoundComplete;
 	
 	// public members
 	public RoundSettings settings;
 	public List<Wave> waves;
-	public DataProvider<Wave> dataProvider;
-	public Wave currentWave;
 	
 	[NonSerialized]
 	public int index;
 	
 	protected List<Wave> liveWaves;
 	protected List<Enemy> liveEnemies;
+	protected Wave currentWave;
 	
 	// ---- getters & setters ----
-	
-	private RoundState _state;
-	
-	public RoundState state {
-		get { return _state; }
-		set {
-			if (_state == value) return;
-			_state = value;
-			DispatchEvent(OnStateChange);
-		}
-	}
 	
 	// ---- constructor ----
 	
 	public Round() {
-		state = RoundState.IDLE;
+		this.OnIndexChange += delegate {
+			SetEventHandlers(currentWave, false);
+			currentWave = selectedItem as Wave;
+			SetEventHandlers(currentWave, true);
+		};
 	}
 	
 	public void Initialize() {
@@ -53,56 +44,19 @@ public class Round {
 		if (liveWaves == null) liveWaves = new List<Wave>();
 		if (liveEnemies == null) liveEnemies = new List<Enemy>();
 		
-		dataProvider = new DataProvider<Wave>(waves);
-		dataProvider.OnIndexChange += indexChangeHandler;
+		source = waves;
+		
+		// initialize all rounds
+		for (int i = 0; i<waves.Count; i++) {
+			waves[i].Initialize();
+			waves[i].index = i;
+		}
 	}
 	
 	// ---- public methods ----
 	
-	public Wave CreateWave(Spawner spawner, Transform goal) {
-		// lookup pool by type
-		Wave wave = new Wave(spawner, goal);
-		waves.Add(wave);
-		wave.index = waves.Count - 1;
-		return wave;
-	}
-	
-	public void Play() {
-		
-		DispatchEvent(OnStart);
-		
-		if (dataProvider.hasNext) {
-			dataProvider.Next().Play();
-			
-			state = RoundState.RUNNING;
-			
-		} else {
-			state = RoundState.IDLE;
-			Debug.LogError("No waves to start");
-			return;
-		}
-	}
-	
-	public void Pause() {
-		if (state != RoundState.PAUSED) {
-			state = RoundState.PAUSED;
-			
-		} else {
-			state = RoundState.RUNNING;
-		}
-	}
-	
-	public void Stop() {
-		state = RoundState.IDLE;
-	}
-	
-	public void NextWave() {
-		Utils.trace("next wave:", dataProvider.selectedIndex + 1);
-		dataProvider.Next();
-	}
-	
 	override public string ToString() {
-		return "Round "+index;
+		return "Round \""+settings.name+"\" ["+OutputToString()+"]";
 	}
 	
 	// ---- protected methods ----
@@ -111,14 +65,14 @@ public class Round {
 		if (target == null) return;
 		
 		if (adding) {
-			target.OnDepleted += waveDepletedHandler;
-			target.OnCleared += waveClearedHandler;
+			target.OnWaveDepleted += waveDepletedHandler;
+			target.OnWaveCleared += waveClearedHandler;
 			target.OnEnemySpawned += enemySpawnedHandler;
 			target.OnEnemyDestroyed += enemyDestroyedHandler;
 			
 		} else {
-			target.OnDepleted -= waveDepletedHandler;
-			target.OnCleared -= waveClearedHandler;
+			target.OnWaveDepleted -= waveDepletedHandler;
+			target.OnWaveCleared -= waveClearedHandler;
 			target.OnEnemySpawned -= enemySpawnedHandler;
 			target.OnEnemyDestroyed -= enemyDestroyedHandler;
 		}
@@ -130,36 +84,22 @@ public class Round {
 	
 	// ---- event handlers ----
 	
-	private void indexChangeHandler (IndexChangeEventType type, DataProvider<Wave> currentTarget, int oldIndex, int newIndex) {
-		currentWave = currentTarget.selectedItem;
-		
-		if (currentWave == null) {
-			Debug.LogWarning("Cannot start: selected round is null");
-			
-		} else {
-			SetEventHandlers(dataProvider.previousItem, false);
-			
-			if (dataProvider.previousItem == currentWave) {
-				DispatchEvent(OnComplete);
-				Stop();
-				
-			} else {
-				SetEventHandlers(currentWave, true);
-				liveWaves.Add(dataProvider.selectedItem);
-			}
-		}
+	private void waveStartedHandler(Wave target) {
+		Utils.trace("\t\t", target, "- waveStarted", waves.IndexOf(target));
+		liveWaves.Add(target);
 	}
 	
 	private void waveDepletedHandler(Wave target) {
-		Utils.trace(target, "waveDepleted", waves.IndexOf(target));
+		Utils.trace("\t\t", target, "- waveDepleted", waves.IndexOf(target));
 	}
 	
 	private void waveClearedHandler(Wave target) {
-		Utils.trace(target, "waveCleared", waves.IndexOf(target));
+		Utils.trace("\t\t", target, "- waveCleared", waves.IndexOf(target));
 		liveWaves.Remove(target);
 		SetEventHandlers(target, false);
 		
-		if (liveWaves.Count == 0) DispatchEvent(OnComplete);
+		if (hasNext) Next().Play();
+		else if (liveWaves.Count == 0) DispatchEvent(OnRoundComplete);
 	}
 	
 	private void enemySpawnedHandler(Wave target, Enemy enemy) {

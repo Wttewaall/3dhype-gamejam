@@ -41,6 +41,23 @@ public class DataProvider<T> : ICloneable {
 		}
 	}
 	
+	public object source {
+		get {
+			return data;
+		}
+		set {
+			if (value is DataProvider<T>) {
+				var other = value as DataProvider<T>;
+				this._capacity = other.capacity;
+				this._data = other.ToList();
+				
+			} else {
+				// this may throw an exception
+				data = getDataFromObject(value);
+			}
+		}
+	}
+	
 	public int selectedIndex {
 		get { return _selectedIndex; }
 		set {
@@ -148,16 +165,7 @@ public class DataProvider<T> : ICloneable {
 	}
 	
 	public DataProvider(object source) {
-		
-		if (source is DataProvider<T>) {
-			var other = source as DataProvider<T>;
-			this._capacity = other.capacity;
-			this._data = other.ToList();
-			
-		} else {
-			// this may throw an exception
-			data = getDataFromObject(source);
-		}
+		this.source = source;
 	}
 	
 	#endregion
@@ -386,6 +394,10 @@ public class DataProvider<T> : ICloneable {
 		if (dispatch) dispatchChangeEvent(CollectionEventKind.RESET, items, 0, items.Count);
 	}
 	
+	public bool isValidIndex(int index) {
+		return (index >= 0 & index < maximum);
+	}
+	
 	public System.Object Clone() {
 		return new DataProvider<T>(data);
 	}
@@ -397,32 +409,25 @@ public class DataProvider<T> : ICloneable {
 	}
 	
 	override public string ToString() {
-		string output = "";
-		
-		for (int i = 0; i < length; i++) {
-			string item = (data[i] == null) ? "null" : data[i].ToString();
-			output += item + (i < length-1 ? "," : "");
-		}
-		
-		return "DataProvider ["+output+"]";
+		return "DataProvider ["+OutputToString()+"]";
 	}
 	
 	#endregion
 	#region - protected methods -
 	
 	// convert object to List<T>
-	protected List<T> getDataFromObject(object source) {
+	protected List<T> getDataFromObject(object obj) {
 		
-		if (source == null) {
+		if (obj == null) {
 			return new List<T>();
 		
-		} else if (source is T) {
-			return new List<T>{(T) source};
+		} else if (obj is T) {
+			return new List<T>{(T) obj};
 			
-		} else if (source is ICollection) {
+		} else if (obj is ICollection) {
 			var list = new List<T>();
 			
-			var collection = new ArrayList(source as ICollection);
+			var collection = new ArrayList(obj as ICollection);
 			
 			for (int i = 0; i<collection.Count; i++) {
 				list.Add( (T) collection[i]);
@@ -430,11 +435,11 @@ public class DataProvider<T> : ICloneable {
 			
 			return list;
 			
-		} else if (source is DataProvider<T>) {
-			return (source as DataProvider<T>).ToList();
+		} else if (obj is DataProvider<T>) {
+			return (obj as DataProvider<T>).ToList();
 			
 		} else {
-			throw new UnityException("Error: Type Coercion failed: cannot convert "+source+" to Array or DataProvider.");
+			throw new UnityException("Error: Type Coercion failed: cannot convert "+obj+" to Array or DataProvider.");
 		}
 	}
 	
@@ -524,6 +529,17 @@ public class DataProvider<T> : ICloneable {
 	
 	protected void dispatchIndexChangingEvent(IndexChangeEventType type, int oldIndex, int newIndex) {
 		if (OnIndexChanging != null) OnIndexChanging(type, this, oldIndex, newIndex);
+	}
+	
+	protected string OutputToString() {
+		string output = "";
+		
+		for (int i = 0; i < length; i++) {
+			string item = (data[i] == null) ? "null" : data[i].ToString();
+			output += item + (i < length-1 ? "," : "");
+		}
+		
+		return output;
 	}
 	
 	#endregion

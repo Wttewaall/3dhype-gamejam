@@ -5,76 +5,60 @@ using System.Collections.Generic;
 
 [AddComponentMenu("King's Ruby/Core/Level")]
 
-public class Level : MonoBehaviour {
+public class Level : MonoBehaviour, IPlayable {
 	
 	// events
-	public event LevelEventHandler OnLoaded;
-	public event LevelEventHandler OnPlay;
-	public event LevelEventHandler OnPause;
-	public event LevelEventHandler OnStop;
-	public event LevelEventHandler OnFailed;
-	public event LevelEventHandler OnComplete;
-	public event LevelEventHandler OnStateChange;
+	public event PlayableEventHandler OnPlaying;
+	public event PlayableEventHandler OnPaused;
+	public event PlayableEventHandler OnResumed;
+	public event PlayableEventHandler OnStopped;
+	public event PlayableEventHandler OnReset;
+	public event PlayableEventHandler OnComplete;
 	
-	// members
+	public event LevelEventHandler OnLevelLoaded;
+	public event LevelEventHandler OnLevelFailed;
+	public event LevelEventHandler OnLevelComplete;
+	
+	// public members
 	public LevelSettings settings;
-	public List<Spawner> spawners;
-	public List<Transform> goals;
-	public List<GameObject> enemies;
-	
 	public List<Round> rounds;
-	public DataProvider<Round> dataProvider;
-	public Round currentRound;
 	
-	// settings
-	protected int frame = 0;
-	protected int interval = 5;
+	protected PlayableCollection dataProvider;
+	protected Round currentRound;
 	
 	// ---- getters & setters ----
 	
-	private PlayState _state = PlayState.STOPPED;
+	private bool _isPlaying;
 	
-	public PlayState state {
-		get { return _state; }
-		set {
-			if (_state == value) return;
-			_state = value;
-			DispatchEvent(OnStateChange);
-		}
+	public virtual bool isPlaying {
+		get { return _isPlaying; }
+		protected set { _isPlaying = value; }
+	}
+	
+	private bool _isPaused;
+	
+	public virtual bool isPaused {
+		get { return _isPaused; }
+		protected set { _isPaused = value; }
 	}
 	
 	// ---- inherited handlers ----
 	
 	void Start() {
-		DispatchEvent(OnLoaded);
+		DispatchEvent(OnLevelLoaded);
 		
 		// add levels to our dataprovider
-		dataProvider = new DataProvider<Round>(rounds);
-		dataProvider.OnIndexChange += indexChangeHandler;
+		dataProvider = new PlayableCollection(rounds);
+		Utils.trace(this, "- filled rounds:", dataProvider);
+		
+		dataProvider.OnIndexChange += delegate {
+			SetEventHandlers(currentRound, false);
+			currentRound = dataProvider.selectedItem as Round;
+			SetEventHandlers(currentRound, true);
+		};
 		
 		// initialize all rounds
 		foreach (Round r in rounds) r.Initialize();
-	}
-	
-	void Update() {
-		if (++frame % interval > 1) return;
-		else frame = 0;
-		
-		switch (state) {
-			
-			case PlayState.PLAYING:
-				// poll rounds or use events?
-				break;
-			
-			case PlayState.PAUSED:
-				//currentRound.Pause();
-				break;
-			
-			case PlayState.STOPPED:
-				//Next();
-				break;
-				
-		}
 	}
 	
 	// ---- public methods ----
@@ -83,60 +67,46 @@ public class Level : MonoBehaviour {
 		// programmatically overrides all manual settings in the scene
 	}
 	
-	public Round CreateRound() {
-		var round = new Round();
-		SetEventHandlers(round, true);
-		
-		if (rounds == null) rounds = new List<Round>();
-		rounds.Add(round);
-		
-		round.index = rounds.Count - 1;
-		return round;
-	}
-	
-	public void Play() {
+	public bool Play() {
 		if (dataProvider.length == 0) {
 			throw new UnityException("no rounds to play");
-		
-		} else {
-			Utils.trace(this, "Play");
 			
-			dataProvider.selectedIndex++;
-			dataProvider.selectedItem.Play();
-			state = PlayState.PLAYING;
-			DispatchEvent(OnPlay);
+		} else {
+			if (dataProvider.selectedIndex < 0) {
+				dataProvider.selectedIndex = 0;
+			}
+			
+			Utils.trace(this, "- Play", currentRound);
+			currentRound.Play();
+			DispatchPlayableEvent(OnPlaying);
 		}
+		return true;
 	}
 	
-	public void Pause() {
-		Utils.trace(this, "Pause");
-		dataProvider.selectedItem.Pause();
-		state = PlayState.PAUSED;
-		DispatchEvent(OnPause);
+	public bool Pause() {
+		Utils.trace(this, "- Pause");
+		DispatchPlayableEvent(OnPaused);
+		currentRound.Pause();
+		return true;
 	}
 	
-	public void Stop() {
-		Utils.trace(this, "Stop");
-		dataProvider.selectedItem.Stop();
-		state = PlayState.STOPPED;
-		DispatchEvent(OnStop);
+	public bool Resume() {
+		Utils.trace(this, "- Resume");
+		currentRound.Resume();
+		DispatchPlayableEvent(OnResumed);
+		return true;
 	}
 	
-	public void Next() {
-		Utils.trace(this, "Next");
-		
-		//dataProvider.selectedItem.Destroy();
-		dataProvider.Next();
-		
-		/*if (currentRound != null) {
-			gameState = GameState.LEVEL_START;
-			state = PlayState.PLAYING;
-			currentRound.Start();
-			
-		} else {
-			gameState = GameState.GAMEOVER;
-			state = PlayState.STOPPED;
-		}*/
+	public bool Stop() {
+		Utils.trace(this, "- Stop");
+		currentRound.Stop();
+		DispatchPlayableEvent(OnStopped);
+		return true;
+	}
+	
+	public void Reset() {
+		Utils.trace(this, "- Reset");
+		DispatchPlayableEvent(OnReset);
 	}
 	
 	public ScoreDetails CalculateScore() {
@@ -149,56 +119,47 @@ public class Level : MonoBehaviour {
 		if (evt != null) evt(this);
 	}
 	
+	protected void DispatchPlayableEvent(PlayableEventHandler evt) {
+		if (evt != null) evt(this);
+	}
+	
 	// ---- protected methods ----
 	
 	protected void SetEventHandlers(Round target, bool adding) {
 		if (target == null) return;
 		
 		if (adding) {
-			target.OnStart += roundStartHandler;
-			target.OnComplete += roundCompleteHandler;
-			target.OnFailed += roundFailedHandler;
+			target.OnRoundStart += roundStartHandler;
+			target.OnRoundComplete += roundCompleteHandler;
+			target.OnRoundFailed += roundFailedHandler;
 			
 		} else {
-			target.OnStart -= roundStartHandler;
-			target.OnComplete -= roundCompleteHandler;
-			target.OnFailed -= roundFailedHandler;
+			target.OnRoundStart -= roundStartHandler;
+			target.OnRoundComplete -= roundCompleteHandler;
+			target.OnRoundFailed -= roundFailedHandler;
 		}
 	}
 	
 	// ---- event handlers ----
 	
-	private void indexChangeHandler(IndexChangeEventType type, DataProvider<Round> currentTarget, int oldIndex, int newIndex) {
-		currentRound = currentTarget.selectedItem;
-		
-		if (currentRound == null) {
-			Debug.LogWarning("Cannot start: selected round is null");
-			
-		} else {
-			SetEventHandlers(dataProvider.previousItem, false);
-			Debug.Log("Starting round: "+currentRound);
-			SetEventHandlers(currentTarget.selectedItem, true);
-		}
-	}
-	
 	private void roundStartHandler(Round target) {
-		Utils.trace(target, "roundStart");
+		Utils.trace("\t", target, "- roundStart");
 	}
 	
 	private void roundCompleteHandler(Round target) {
-		Utils.trace(target, "roundComplete");
+		Utils.trace("\t", target, "- roundComplete");
 		SetEventHandlers(target, false);
 		
-		if (dataProvider.nextItem != null) {
-			dataProvider.Next();
+		if (dataProvider.hasNext) {
+			dataProvider.Next().Play();
 			
 		} else {
-			DispatchEvent(OnComplete);
+			DispatchEvent(OnLevelComplete);
 		}
 	}
 	
 	private void roundFailedHandler(Round target) {
-		Utils.trace(target, "roundFailed");
+		Utils.trace("\t", target, "- roundFailed");
 	}
 	
 	// ---- delegates ----
