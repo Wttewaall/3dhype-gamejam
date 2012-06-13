@@ -4,29 +4,23 @@ using UnityEngine;
 public class Billboard : MonoBehaviour {
 	
 	protected Transform tf;
-	//public bool perpendicular = true;
+	public bool parallel = true;
 	
 	void Start() {
 		tf = transform;
 	}
 	
     void Update() {
-		/*if (perpendicular) {
-			var heading = tf.position - Camera.main.transform.position;
-			heading.y = 0;
+		if (parallel) {
+			Vector3 flipped = Camera.main.transform.eulerAngles;
+			flipped.x *= -1;
+			flipped.y += 180;
+			flipped.z *= -1;
 			
-			var direction = heading / heading.magnitude;
+			tf.rotation = Quaternion.Euler(flipped);
 			
-			var perp = Vector3.Cross(tf.position, Camera.main.transform.position);
-			Debug.Log("perp: "+perp);
-			
-			Vector3 project = Vector3.Project(tf.position, Camera.main.transform.right);
-			Debug.Log("project: "+project);
-			
-			tf.rotation = Quaternion.Euler(perp);
-			
-		} else {*/
+		} else {
 			tf.LookAt(Camera.main.transform.position, Vector3.up);
-		//}
+		}
     }
 }
