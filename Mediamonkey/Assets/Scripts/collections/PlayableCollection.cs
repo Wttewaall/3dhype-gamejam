@@ -174,6 +174,7 @@ public class PlayableCollection : DataProvider<IPlayable>, IPlayable {
 			Next().Play();
 			
 		} else {
+			Stop();
 			DispatchPlayableEvent(OnComplete);
 		}
 	}

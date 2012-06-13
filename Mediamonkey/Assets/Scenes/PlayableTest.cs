@@ -8,14 +8,14 @@ public class PlayableTest : MonoBehaviour {
 		
 		var list = new List<IPlayable>();
 		
-		/*//
+		//*//
 		list.Add(new PlayableItem());
 		list.Add(new PlayableItem());
 		list.Add(new PlayableItem());
 		list.Add(new PlayableItem());
 		//*/
 		
-		//*//
+		/*//
 		list.Add(new Wave(1));
 		list.Add(new Wave(2));
 		list.Add(new Wave(3));

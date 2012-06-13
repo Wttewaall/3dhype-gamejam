@@ -7,13 +7,11 @@ using System.Collections.Generic;
 
 public class Enemy : MonoBehaviour {
 	
-	public event EnemyEvent OnDeath;
-	
-	public delegate void EnemyEvent(Enemy target);
+	public event EnemyEventHandler OnEnemieSpawn;
+	public event EnemyEventHandler OnEnemieDeath;
 	
 	public EnemyType type;
 	public bool move = true;
-	public Vector3 offset;
 	public EnemyStatistics stats;
 	public Transform goal;
 	
@@ -40,25 +38,11 @@ public class Enemy : MonoBehaviour {
 	// ---- inherited handlers ----
 	
 	void Awake() {
-		tf = transform;
-		healthbar = GetComponentInChildren<Healthbar>();
-		
-		agent = GetComponent<NavMeshAgent>();
-		if (!agent) agent = gameObject.AddComponent<NavMeshAgent>();
+		Initialize();
 	}
 	
-	void Update() {
-		
-		/*if (move && goal != null) {
-			agent.SetDestination(goal.position);
-			if (tf.position.z < -20) Die();
-		}*/
-		
-		/*// simplest behavior: move forward
-		if (move) {
-			tf.Translate(tf.TransformDirection(tf.forward)*0.05f);
-			if (tf.position.z < -20) Die();
-		}//*/
+	void Start() {
+		DispatchEnemyEvent(OnEnemieSpawn);
 	}
 	
 	void OnTriggerEnter(Collider other) {
@@ -77,16 +61,29 @@ public class Enemy : MonoBehaviour {
 	
 	// ---- public methods ----
 	
-	public void Die() {
-		DispatchEvent(OnDeath);
+	public virtual void Initialize() {
+		tf = transform;
+		
+		healthbar = GetComponentInChildren<Healthbar>();
+		
+		//agent = GetComponent<NavMeshAgent>();
+		//if (!agent) agent = gameObject.AddComponent<NavMeshAgent>();
+	}
+	
+	public virtual void Die() {
+		DispatchEnemyEvent(OnEnemieDeath);
 		
 		// TODO: return to pool
-		Destroy(gameObject);
+		DestroyImmediate(gameObject);
 	}
 	
 	// ---- protected methods ----
 	
-	protected void DispatchEvent(EnemyEvent evt) {
+	protected void DispatchEnemyEvent(EnemyEventHandler evt) {
 		if (evt != null) evt(this);
 	}
+	
+	// ---- delegates ----
+	
+	public delegate void EnemyEventHandler(Enemy target);
 }

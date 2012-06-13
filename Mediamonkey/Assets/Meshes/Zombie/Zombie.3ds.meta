@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: 61467b88a33d6c946a13c24716d46141
+guid: bbde5dcb5f310174d81bea8f761db2b6
 ModelImporter:
   fileIDToRecycleName:
-    4300000: Box001
-    4300002: Box006
-    4300004: Box007
-    4300006: Box008
-    4300008: Box009
-    4300010: Box010
-    4300012: Box011
+    4300000: torso
+    4300002: armRight
+    4300004: armLeft
+    4300006: legRight
+    4300008: legLeft
+    4300010: head
+    4300012: hair
   serializedVersion: 10
   materials:
     importMaterials: 1
@@ -46,53 +46,20 @@ ModelImporter:
     //RootNode:
       data:
         first: 1
-        second: a0860100
-      data:
-        first: 4
-        second: 801a0600
-      data:
-        first: 111
-        second: 605fa900
-    Box001:
-      data:
-        first: 1
-        second: ae860100
-      data:
-        first: 4
-        second: 8e1a0600
-      data:
-        first: 23
-        second: 6c182300
-      data:
-        first: 33
-        second: ac5a3200
-    Box006:
-      data:
-        first: 1
         second: ac860100
       data:
         first: 4
         second: 8c1a0600
       data:
         first: 23
-        second: 6a182300
+        second: 6c182300
       data:
         first: 33
-        second: aa5a3200
-    Box007:
+        second: ac5a3200
       data:
-        first: 1
-        second: aa860100
-      data:
-        first: 4
-        second: 8a1a0600
-      data:
-        first: 23
-        second: 68182300
-      data:
-        first: 33
-        second: a85a3200
-    Box008:
+        first: 111
+        second: 605fa900
+    armLeft:
       data:
         first: 1
         second: a8860100
@@ -101,37 +68,37 @@ ModelImporter:
         second: 881a0600
       data:
         first: 23
-        second: 66182300
+        second: 68182300
       data:
         first: 33
-        second: a65a3200
-    Box009:
+        second: a85a3200
+    armRight:
       data:
         first: 1
-        second: a6860100
+        second: aa860100
       data:
         first: 4
-        second: 861a0600
+        second: 8a1a0600
       data:
         first: 23
-        second: 64182300
+        second: 6a182300
       data:
         first: 33
-        second: a45a3200
-    Box010:
+        second: aa5a3200
+    hair:
       data:
         first: 1
-        second: a4860100
+        second: a0860100
       data:
         first: 4
-        second: 841a0600
+        second: 801a0600
       data:
         first: 23
-        second: 62182300
+        second: 60182300
       data:
         first: 33
-        second: a25a3200
-    Box011:
+        second: a05a3200
+    head:
       data:
         first: 1
         second: a2860100
@@ -140,7 +107,33 @@ ModelImporter:
         second: 821a0600
       data:
         first: 23
-        second: 60182300
+        second: 62182300
       data:
         first: 33
-        second: a05a3200
+        second: a25a3200
+    legLeft:
+      data:
+        first: 1
+        second: a4860100
+      data:
+        first: 4
+        second: 841a0600
+      data:
+        first: 23
+        second: 64182300
+      data:
+        first: 33
+        second: a45a3200
+    legRight:
+      data:
+        first: 1
+        second: a6860100
+      data:
+        first: 4
+        second: 861a0600
+      data:
+        first: 23
+        second: 66182300
+      data:
+        first: 33
+        second: a65a3200

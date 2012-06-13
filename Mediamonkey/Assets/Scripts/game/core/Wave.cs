@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -76,7 +76,7 @@ public class Wave : PlayableItem {
 	
 	public GameObject Spawn() {
 		if (spawnAmount == initialAmount) return null;
-		if (++spawnAmount == initialAmount) DispatchEvent(OnWaveDepleted);
+		if (++spawnAmount == initialAmount) DispatchWaveEvent(OnWaveDepleted);
 		
 		if (startTime == 0) startTime = Time.time;
 		
@@ -86,16 +86,16 @@ public class Wave : PlayableItem {
 		Quaternion q = Quaternion.LookRotation(spawner.GetSpawnDirection());
 		GameObject go = pool.Spawn(spawner.GetSpawnPosition() + offset, q);
 		var enemy = go.GetComponent<Enemy>();
-		enemy.OnDeath += enemyDeathHandler;
+		enemy.OnEnemieDeath += enemyDeathHandler;
 		enemy.goal = goal;
 		
-		DispatchEvent(OnEnemySpawned, enemy);
+		DispatchSpawnEvent(OnEnemySpawned, enemy);
 		
 		return go;
 	}
 	
 	override public bool Play() {
-		DispatchEvent(OnWaveStarted);
+		DispatchWaveEvent(OnWaveStarted);
 		return base.Play();
 	}
 	
@@ -107,17 +107,24 @@ public class Wave : PlayableItem {
 	
 	override protected void timerTickHandler(Timer target) {
 		
+		if (groups == null) {
+			Utils.trace("\t\t", this, "- no group to spawn");
+			// FIX timer met repeatCount = 0
+			DispatchCompleteEvent();
+			return;
+		}
+		
 		if (target.currentCount < groups.Count-1) {
 			Utils.trace("\t\t", this, "- spawn", groups[target.currentCount]);
 		}
 		
 		// spawn 3 enemies
 		if (target.currentCount == groups.Count-1) {
-			DispatchEvent(OnWaveDepleted);
+			DispatchWaveEvent(OnWaveDepleted);
 		
 		// enemies are defeated after 5 seconds
 		} else if (target.currentCount == 5) {
-			DispatchEvent(OnWaveCleared);
+			DispatchWaveEvent(OnWaveCleared);
 			Stop();
 		}
 	}
@@ -127,17 +134,17 @@ public class Wave : PlayableItem {
 	}
 	
 	protected void enemyDeathHandler(Enemy target) {
-		DispatchEvent(OnEnemyDestroyed, target);
-		if (++destroyAmount == initialAmount) DispatchEvent(OnWaveCleared);
+		DispatchSpawnEvent(OnEnemyDestroyed, target);
+		if (++destroyAmount == initialAmount) DispatchWaveEvent(OnWaveCleared);
 	}
 	
 	// ---- protected methods ----
 	
-	protected void DispatchEvent(WaveEventHandler evt) {
+	protected void DispatchWaveEvent(WaveEventHandler evt) {
 		if (evt != null) evt(this);
 	}
 	
-	protected void DispatchEvent(SpawnEventHandler evt, Enemy enemy) {
+	protected void DispatchSpawnEvent(SpawnEventHandler evt, Enemy enemy) {
 		if (evt != null) evt(this, enemy);
 	}
 	
