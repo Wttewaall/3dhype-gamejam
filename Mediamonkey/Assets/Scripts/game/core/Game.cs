@@ -130,7 +130,8 @@ public class Game : MonoBehaviour {
 	
 	private void levelCompleteHandler(Level target) {
 		Utils.trace(target, "levelComplete");
-		SetEventHandlers(target, false);
+		//SetEventHandlers(target, false);
+		target.Reset();
 	}
 	
 }

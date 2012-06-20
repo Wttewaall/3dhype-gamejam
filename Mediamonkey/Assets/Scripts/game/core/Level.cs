@@ -106,6 +106,15 @@ public class Level : MonoBehaviour, IPlayable {
 	
 	public void Reset() {
 		Utils.trace(this, "- Reset");
+		
+		// reset items in dataProvider
+		dataProvider.ForEach(delegate(IPlayable item, int index, DataProvider<IPlayable> collection) {
+			item.Reset();
+		});
+		
+		// reset index to -1
+		dataProvider.selectedIndex = 0;
+		
 		DispatchPlayableEvent(OnReset);
 	}
 	

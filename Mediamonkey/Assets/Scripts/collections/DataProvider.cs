@@ -77,7 +77,7 @@ public class DataProvider<T> : ICloneable {
 	
 	public T selectedItem {
 		get {
-			return (data != null && selectedIndex != -1)
+			return (data != null && selectedIndex > -1)
 				? data[selectedIndex]
 				: default(T);
 		}
@@ -392,6 +392,12 @@ public class DataProvider<T> : ICloneable {
 	public void Refresh(bool dispatch) {
 		var items = ToList();
 		if (dispatch) dispatchChangeEvent(CollectionEventKind.RESET, items, 0, items.Count);
+	}
+	
+	public void ForEach(Action<T, int, DataProvider<T>> method) {
+		for (int i=0; i<length; i++) {
+			method(GetItemAt(i), i, this);
+		}
 	}
 	
 	public bool isValidIndex(int index) {

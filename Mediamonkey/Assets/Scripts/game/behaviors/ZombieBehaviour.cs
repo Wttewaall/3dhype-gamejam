@@ -41,9 +41,7 @@ public class ZombieBehaviour : Enemy {
 		
 		if (move) {
 			
-			/*if (move && goal != null) {
-				agent.SetDestination(goal.position);
-			}*/
+			//if (goal != null) agent.SetDestination(goal.position);
 			
 			tf.Translate(tf.InverseTransformDirection(tf.forward) * walkSpeed);
 			

@@ -131,7 +131,10 @@ public class PlayableCollection : DataProvider<IPlayable>, IPlayable {
 	}
 	
 	public void Reset() {
-		currentItem.Reset();
+		// reset items in dataProvider
+		ForEach(delegate(IPlayable item, int index, DataProvider<IPlayable> collection) {
+			item.Reset();
+		});
 		isPaused = isPlaying = false;
 		selectedIndex = 0;
 	}
