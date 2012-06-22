@@ -12,7 +12,7 @@ public class CannonAim : MonoBehaviour {
 	public Rigidbody bulletRigidbody;
 	public Transform reticleTransform;
 	
-	public Axis pitchAxis		= Axis.iX; // vertical aim
+	public Axis pitchAxis		= Axis.invX; // vertical aim
 	public float pitchOffset	= 0;
 	public Axis yawAxis			= Axis.Y; // horizontal aim
 	public float yawOffset		= 0;
@@ -127,9 +127,9 @@ public class CannonAim : MonoBehaviour {
 			case Axis.X: val = vector.x; break;
 			case Axis.Y: val = vector.y; break;
 			case Axis.Z: val = vector.z; break;
-			case Axis.iX: val = -vector.x; break;
-			case Axis.iY: val = -vector.y; break;
-			case Axis.iZ: val = -vector.z; break;
+			case Axis.invX: val = -vector.x; break;
+			case Axis.invY: val = -vector.y; break;
+			case Axis.invZ: val = -vector.z; break;
 		}
 		return val;
 	}
@@ -139,9 +139,9 @@ public class CannonAim : MonoBehaviour {
 			case Axis.X: vector.x = val; break;
 			case Axis.Y: vector.y = val; break;
 			case Axis.Z: vector.z = val; break;
-			case Axis.iX: vector.x = -val; break;
-			case Axis.iY: vector.y = -val; break;
-			case Axis.iZ: vector.z = -val; break;
+			case Axis.invX: vector.x = -val; break;
+			case Axis.invY: vector.y = -val; break;
+			case Axis.invZ: vector.z = -val; break;
 		}
 	}
 	
@@ -149,5 +149,5 @@ public class CannonAim : MonoBehaviour {
 
 public enum Axis {
 	X, Y, Z,
-	iX, iY, iZ
+	invX, invY, invZ
 }
